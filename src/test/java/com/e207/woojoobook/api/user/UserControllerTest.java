@@ -40,6 +40,8 @@ class UserControllerTest {
 		String nickname = "nickname";
 		UserCreateRequest userCreateRequest = createUserCreateRequest(email, password, passwordConfirm, nickname);
 
+		doNothing().when(userService).join(any(UserCreateRequest.class));
+
 		// when
 		ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
 			.contentType(MediaType.APPLICATION_JSON)
