@@ -1,4 +1,4 @@
-package com.woojoobook.woojoobook;
+package com.e207.woojoobook;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
