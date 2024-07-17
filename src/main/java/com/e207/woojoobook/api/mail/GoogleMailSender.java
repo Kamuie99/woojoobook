@@ -31,7 +31,6 @@ public class GoogleMailSender implements MailSender {
 			// TODO : 예외처리
 			throw new RuntimeException("잠시 후 다시 시도해주세요");
 		}
-
 	}
 }
 

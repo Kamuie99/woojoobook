@@ -26,6 +26,7 @@ public class UserService {
 
 	@Transactional
 	public void join(UserCreateRequest userCreateRequest) {
+		// TODO : 예외처리
 		UserVerification userVerification = this.userVerificationRepository.findById(userCreateRequest.getEmail())
 			.orElseThrow(() -> new RuntimeException("유효하지 않는 email입니다."));
 		if (!userVerification.isVerified()) {
@@ -39,6 +40,7 @@ public class UserService {
 
 	@Transactional
 	public boolean verifyEmail(VerificationMail verificationMail) {
+		// TODO : 예외처리
 		UserVerification userVerification = this.userVerificationRepository.findById(verificationMail.getEmail())
 			.orElseThrow(() -> new RuntimeException("존재하지 않는 email"));
 		userVerification.verify(verificationMail.getVerificationCode());
@@ -51,6 +53,10 @@ public class UserService {
 	@Transactional
 	public void sendMail(EmailCodeCreateRequest request) {
 		String email = request.getEmail();
+		if (userSlaveRepository.existsByEmail(email)) {
+			// TODO : 예외처리
+			throw new RuntimeException("사용할 수 없는 이메일입니다.");
+		}
 		String verificationCode = createVerificationUser(email);
 
 		VerificationMail verificationMail = VerificationMail.builder()
