@@ -17,7 +17,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.woojoobook.woojoobook.global.security.SecurityConfig;
+import com.e207.woojoobook.global.security.SecurityConfig;
+import com.e207.woojoobook.global.security.jwt.JwtAuthenticationFilter;
+import com.e207.woojoobook.global.security.jwt.JwtProvider;
 
 @Import(SecurityConfig.class)
 @ExtendWith(MockitoExtension.class)

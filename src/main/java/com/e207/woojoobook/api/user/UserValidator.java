@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import com.e207.woojoobook.api.user.request.UserCreateRequest;
+
 @Component
 public class UserValidator implements Validator {
 

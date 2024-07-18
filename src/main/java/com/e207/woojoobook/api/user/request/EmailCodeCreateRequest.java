@@ -1,4 +1,4 @@
-package com.e207.woojoobook.api.user;
+package com.e207.woojoobook.api.user.request;
 
 import jakarta.validation.constraints.Email;
 import lombok.Data;

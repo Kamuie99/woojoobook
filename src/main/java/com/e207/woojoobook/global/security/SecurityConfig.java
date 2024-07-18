@@ -73,8 +73,8 @@ public class SecurityConfig {
 			.authorizeHttpRequests(request -> {
 				request.requestMatchers(AUTH_WHITELIST).permitAll()
 					.requestMatchers(HttpMethod.POST, "/users").permitAll()
-					.requestMatchers(HttpMethod.POST, "/users/emails").permitAll()
-					.requestMatchers(HttpMethod.PUT, "/users/emails").permitAll()
+					.requestMatchers(HttpMethod.GET, "/users/nicknames/**").permitAll()
+					.requestMatchers("/users/emails/**").permitAll()
 					.anyRequest().authenticated();
 			})
 			.sessionManagement(sessionManagement ->

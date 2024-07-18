@@ -1,7 +1,5 @@
-package com.e207.woojoobook.api.user;
+package com.e207.woojoobook.api.user.request;
 
-
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.e207.woojoobook.domain.user.User;
 

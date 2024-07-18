@@ -1,4 +1,4 @@
-package com.e207.woojoobook.api.mail;
+package com.e207.woojoobook.api.verification.request;
 
 import jakarta.validation.constraints.Email;
 import lombok.Builder;
