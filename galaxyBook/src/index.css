@@ -3,6 +3,17 @@
   src: url('/삼성고딕.ttf');
 }
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4 {
+  font-weight: normal;
+  font-size: inherit; /* 부모 요소에서 상속받은 폰트 크기 유지 */
+}
+
 html, body {
   margin: 0;
   width: 100%;
@@ -17,8 +28,18 @@ html, body {
   min-height: 100vh;
   height: 100%;
   box-shadow: rgb(100, 100, 100, 0.2) 0px 0px 29px 0px;
+  padding: 0px 0px;
+  position: relative; /* Add this line to make #root relative */
 }
 
 body * {
   font-family: "samsungGodik";
+}
+
+:root {
+  --main-color: #ffffff;
+  --contrast-color: #D66018;
+  --sub-color: #EFECD9;
+  --accent-color: #3172AD;
+  --accent-sub-color: #6FC1CD;
 }

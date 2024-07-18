@@ -1,0 +1,24 @@
+.LinkItem {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  cursor: pointer;
+  gap: 10px;
+
+  text-decoration: none;
+  color: inherit;
+}
+
+.LinkItem:hover, .LinkItem:focus {
+  background-color: var(--accent-color);
+  color:#fff;
+  transform: scale(1.1);
+  border-radius:5px;
+}
+
+.LinkItem a {
+  text-decoration: none;
+}

@@ -1,0 +1,26 @@
+.Banner {
+  height: 300px;
+  background-image: url('../assets/banner.png');
+  background-repeat: no-repeat;
+
+  background-size: cover; /* 배경 이미지 설정 */
+  background-position: center; /* 이미지의 중심을 기준으로 배치합니다 */
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* 가로 방향 중앙 정렬 */
+  justify-content: center; /* 세로 방향 중앙 정렬 */
+
+  color: white;
+  gap: 30px;
+}
+
+.bannerTitle > h2 {
+  font-size: 22px;
+  letter-spacing: 2px;
+}
+
+.bannerTitle strong {
+  color: var(--accent-sub-color);
+  font-size: 30px;
+}

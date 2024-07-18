@@ -1,8 +1,13 @@
 import './App.css'
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Notfound from './pages/Notfound';
+import BookRegister from './pages/BookRegister';
+import Policy from './pages/Policy';
+import MyActivity from './pages/MyActivity';
+import MyLibrary from './pages/MyLibrary';
+
 
 // 1. "/": home 페이지
 // 2. "/login": login 페이지
@@ -11,16 +16,15 @@ import Notfound from './pages/Notfound';
 function App() {
   return (
     <>
-      <div>
-        <Link to={"/"}>홈으로</Link>
-        <Link to={"/login"}>로그인</Link>
-      </div>
       <Routes>
         <Route path="/" element={<Home/>} />
         <Route path="/login" element={<Login />} />
+        <Route path='/bookregister' element={<BookRegister />} />
+        <Route path='/policy' element={<Policy/>} />
+        <Route path='/myactivity' element={<MyActivity />} />
+        <Route path='/mylibrary' element={<MyLibrary />} />
         <Route path="*" element={<Notfound />} />
       </Routes>
-    
     </>
   )
 }

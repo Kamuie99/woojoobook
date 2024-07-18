@@ -1,0 +1,39 @@
+.header_sidebar {
+  position: absolute;
+  top: 0;
+  right: -250px; /* 사이드바 초기 위치 */
+  width: 250px;
+  height: 100%;
+  background-color: var(--sub-color);
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, right 0.3s ease, opacity 0.1s ease; /* opacity 트랜지션 추가 */
+}
+
+.header_sidebar.sidebar_open {
+  visibility: visible; /* 사이드바 열린 상태 */
+  opacity: 1; /* 사이드바 열린 상태 */
+  right: 0; /* 사이드바 열린 상태 */
+}
+
+.profile_box {
+  height: 180px;
+  margin: 30px 15px;
+  background-color: white;
+  border-radius: 25px;
+  padding: 20px;
+}
+
+.header_inner_button {
+  width: 100%;
+  height: 80px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 10px;
+}
+
+.no-href-deco {
+  color: inherit;
+  text-decoration: none;
+}
