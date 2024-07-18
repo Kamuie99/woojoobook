@@ -33,11 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Authentication authentication = jwtProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             log.info("Security Context에 '{}' 인증 정보를 저장했습니다. uri :{}", authentication.getName(), requestURI);
-        } else {
-            // 개발 환경에서 h2 console 을 사용하기 위함. 배포 환경에선 없애줘야함.
-            if(!requestURI.contains("/h2-console")) {
-                log.info("유효한 JWT 토큰이 없습니다. uri :{}", requestURI);
-            }
         }
         filterChain.doFilter(request, response);
     }

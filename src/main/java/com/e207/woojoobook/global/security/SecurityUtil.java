@@ -13,12 +13,16 @@ public class SecurityUtil {
 		return SecurityContextHolder.getContext().getAuthentication();
 	}
 
-	public static String getCurrentUsername() {
+	public static Long getCurrentUsername() {
 		Authentication authentication = getAuthentication();
 		if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
 			UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-			return userDetails.getUsername();
+			return Long.valueOf(userDetails.getUsername());
 		}
 		return null;
+	}
+
+	public static void setAuthentication(Authentication authentication) {
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 }

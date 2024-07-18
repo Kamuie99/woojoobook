@@ -12,13 +12,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.e207.woojoobook.api.user.request.EmailCodeCreateRequest;
+import com.e207.woojoobook.api.user.request.LoginRequest;
 import com.e207.woojoobook.api.user.request.UserCreateRequest;
+import com.e207.woojoobook.api.user.request.UserUpdateRequest;
 import com.e207.woojoobook.api.verification.request.VerificationMail;
+import com.e207.woojoobook.domain.user.UserSlaveRepository;
 import com.e207.woojoobook.global.security.SecurityConfig;
+import com.e207.woojoobook.global.security.jwt.JwtProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Import({SecurityConfig.class, UserValidator.class})
@@ -26,7 +31,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 class UserControllerTest {
 
 	@MockBean
+	private JwtProvider jwtProvider;
+	@MockBean
 	private UserService userService;
+	@MockBean
+	private UserSlaveRepository userSlaveRepository;
 	@Autowired
 	private MockMvc mockMvc;
 	@Autowired
@@ -134,6 +143,57 @@ class UserControllerTest {
 
 		// when
 		ResultActions resultActions = this.mockMvc.perform(get("/users/nicknames/{nickname}", nickname));
+
+		// then
+		resultActions.andExpect(status().isOk());
+	}
+
+	@DisplayName("사용자가 로그인을 성공한다")
+	@Test
+	void login_success() throws Exception {
+		// given
+		String token = "validToken";
+		LoginRequest loginRequest = new LoginRequest("test@test.com", "password");
+		given(this.jwtProvider.createToken(any())).willReturn(token);
+
+		// when
+		ResultActions resultActions = this.mockMvc.perform(post("/auth")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(this.objectMapper.writeValueAsString(loginRequest)));
+
+		// then
+		resultActions.andExpect(status().isOk())
+			.andExpect(header().exists("Authorization"));
+	}
+
+	@WithMockUser
+	@DisplayName("회원이 회원 정보를 수정한다")
+	@Test
+	void updateUser_success() throws Exception {
+		// given
+		UserUpdateRequest userUpdateRequest = new UserUpdateRequest("nickname", "areaCode");
+
+		// when
+		ResultActions resultActions = this.mockMvc.perform(put("/users")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(this.objectMapper.writeValueAsString(userUpdateRequest)));
+
+		// then
+		resultActions.andExpect(status().isOk())
+			.andExpect(header().exists("Authorization"));
+	}
+
+	@WithMockUser
+	@DisplayName("회원이 비밀번호를 변경한다")
+	@Test
+	void updatePassword_success() throws Exception {
+		// given
+		var request = new PasswordUpdateRequest("cur", "change", "change");
+
+		// when
+		ResultActions resultActions = this.mockMvc.perform(put("/users/password")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(this.objectMapper.writeValueAsString(request)));
 
 		// then
 		resultActions.andExpect(status().isOk());

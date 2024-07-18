@@ -15,34 +15,41 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.e207.woojoobook.domain.user.UserSlaveRepository;
 import com.e207.woojoobook.global.security.jwt.JwtAccessDeniedHandler;
 import com.e207.woojoobook.global.security.jwt.JwtAuthenticationEntryPoint;
 import com.e207.woojoobook.global.security.jwt.JwtAuthenticationFilter;
 import com.e207.woojoobook.global.security.jwt.JwtProvider;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
 
 	private static final String[] AUTH_WHITELIST = {
+		"/users/emails/**", "/auth"
 	};
 
+	private final UserSlaveRepository userSlaveRepository;
+
 	@Bean
-	JwtProvider jwtProvider() {
-		return new JwtProvider();
+	public JwtProvider jwtProvider() {
+		return new JwtProvider(userSlaveRepository);
 	}
 
 	@Bean
-	JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint() {
+	public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint() {
 		return new JwtAuthenticationEntryPoint();
 	}
 
 	@Bean
-	JwtAccessDeniedHandler jwtAccessDeniedHandler() {
+	public JwtAccessDeniedHandler jwtAccessDeniedHandler() {
 		return new JwtAccessDeniedHandler();
 	}
 
 	@Bean
-	JwtAuthenticationFilter jwtAuthenticationFilter() {
+	public JwtAuthenticationFilter jwtAuthenticationFilter() {
 		return new JwtAuthenticationFilter(jwtProvider());
 	}
 
@@ -74,7 +81,6 @@ public class SecurityConfig {
 				request.requestMatchers(AUTH_WHITELIST).permitAll()
 					.requestMatchers(HttpMethod.POST, "/users").permitAll()
 					.requestMatchers(HttpMethod.GET, "/users/nicknames/**").permitAll()
-					.requestMatchers("/users/emails/**").permitAll()
 					.anyRequest().authenticated();
 			})
 			.sessionManagement(sessionManagement ->

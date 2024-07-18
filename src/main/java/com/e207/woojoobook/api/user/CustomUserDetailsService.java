@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     // TODO : 예외처리
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        com.e207.woojoobook.domain.user.User user = this.userSlaveRepository.findById(Long.parseLong(username))
+        com.e207.woojoobook.domain.user.User user = this.userSlaveRepository.findByEmail(username)
             .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
         return User.builder()
                 .username(String.valueOf(user.getId()))

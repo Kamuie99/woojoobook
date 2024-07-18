@@ -30,4 +30,13 @@ public class User {
 		this.nickname = nickname;
 		this.areaCode = areaCode;
 	}
+
+	public void update(String nickname, String areaCode) {
+		this.nickname = nickname;
+		this.areaCode = areaCode;
+	}
+
+	public void updatePassword(String password) {
+		this.password = password;
+	}
 }
