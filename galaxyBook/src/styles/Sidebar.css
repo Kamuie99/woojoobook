@@ -37,3 +37,55 @@
   color: inherit;
   text-decoration: none;
 }
+
+.profile_nickname {
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile_buttons {
+  height: 20%;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 10px;
+}
+
+.profile_buttons button {
+  width: 85px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.profile_buttons a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.login_button {
+  background-color: var(--accent-sub-color);
+}
+
+.register_button {
+  background-color: var(--accent-color);
+}
+
+.logout_button {
+  background-color: var(--contrast-color);
+}
+
+.update_button {
+  background-color: var(--accent-color);
+}

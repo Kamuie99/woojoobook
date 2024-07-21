@@ -16,11 +16,11 @@
 }
 
 .bannerTitle > h2 {
-  font-size: 22px;
+  font-size: 24px;
   letter-spacing: 2px;
 }
 
 .bannerTitle strong {
   color: var(--accent-sub-color);
-  font-size: 30px;
+  font-size: 32px;
 }

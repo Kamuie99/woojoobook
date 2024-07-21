@@ -13,7 +13,7 @@ const LinkList = () => {
         to='/bookregister'
       />
       <LinkItem icon={<FaBook color='black' size='40'/>} 
-        text={'대여 중인 책 목록'}
+        text={'대여 중인 책'}
         to='/myactivity'
       />
       <LinkItem icon={<IoLibraryOutline color='black' size='40' />} 
