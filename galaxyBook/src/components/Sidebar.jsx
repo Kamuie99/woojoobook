@@ -1,11 +1,24 @@
 import { Sidebar as ProSidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
 import Button from '../components/Button';
 import { IoMenu } from "react-icons/io5";
+import { AuthContext } from '../contexts/AuthContext';
+
+import { IoIosLogIn, IoIosLogOut } from "react-icons/io";
 import '../styles/Sidebar.css';
 
 // eslint-disable-next-line react/prop-types
 const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles }) => {
+  const { isLoggedIn, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    alert('로그아웃 되었습니다.')
+  };
+
   return (
     <div className={`header_sidebar ${sidebarOpen ? 'sidebar_open' : ''}`} ref={sidebarRef}>
       <ProSidebar width="250px" collapsed={!sidebarOpen}>
@@ -14,7 +27,28 @@ const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles 
             <Button text={<IoMenu size="30"/>} color="rgb(249, 249, 249, 0.7)"/>
           </div>
           <div className='profile_box'>
-            프로필 부분
+            <div className='profile_nickname'>
+              <p>{isLoggedIn ? '사용자님 환영합니다' : '로그인이 필요합니다'}</p>
+            </div>
+            <div className='profile_buttons'>
+              {isLoggedIn ? (
+                <>
+                  <button className='logout_button' onClick={handleLogout}>로그아웃<IoIosLogOut /></button>
+                  <Link to='/user-update'>
+                    <button className='update_button'>내정보 수정</button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link to='/login'>              
+                    <button className='login_button'>로그인<IoIosLogIn /></button>
+                  </Link>
+                  <Link to='/register'>
+                    <button className='register_button'>회원가입</button>
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
           <MenuItem component={<Link to='/bookregister' />}> 내 책 등록하기 </MenuItem>
           <SubMenu label="신청내역">

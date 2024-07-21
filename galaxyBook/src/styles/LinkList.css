@@ -1,6 +1,6 @@
 .LinkList {
   width: 100%;
-  height: 150px;
+  height: 140px;
   background-color: var(--accent-sub-color);
 
   display: flex;

@@ -7,6 +7,7 @@ import BookRegister from './pages/BookRegister';
 import Policy from './pages/Policy';
 import MyActivity from './pages/MyActivity';
 import MyLibrary from './pages/MyLibrary';
+import Register from './pages/Register';
 
 
 // 1. "/": home 페이지
@@ -20,6 +21,7 @@ function App() {
         <Route path="/" element={<Home/>} />
         <Route path="/login" element={<Login />} />
         <Route path='/bookregister' element={<BookRegister />} />
+        <Route path='/register' element={<Register />} />
         <Route path='/policy' element={<Policy/>} />
         <Route path='/myactivity' element={<MyActivity />} />
         <Route path='/mylibrary' element={<MyLibrary />} />

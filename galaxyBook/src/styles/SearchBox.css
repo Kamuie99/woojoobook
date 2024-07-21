@@ -9,7 +9,8 @@
   flex: 1;
   padding: 15px;
   border: 1px solid rgb(220, 220, 220);
-  border-radius: 30px;
+  border-radius: 5px;
+  /* background-color: inherit; */
 }
 
 .SearchBox button {
@@ -18,5 +19,5 @@
   border: none;
   background-color: var(--contrast-color);
   color: white;
-  border-radius: 30px;
+  border-radius: 5px;
 }
