@@ -20,7 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.e207.woojoobook.domain.user.UserSlaveRepository;
+import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.global.security.jwt.JwtAccessDeniedHandler;
 import com.e207.woojoobook.global.security.jwt.JwtAuthenticationEntryPoint;
 import com.e207.woojoobook.global.security.jwt.JwtAuthenticationFilter;
@@ -36,11 +36,11 @@ public class SecurityConfig {
 		"/users/emails/**", "/auth"
 	};
 
-	private final UserSlaveRepository userSlaveRepository;
+	private final UserRepository userRepository;
 
 	@Bean
 	public JwtProvider jwtProvider() {
-		return new JwtProvider(userSlaveRepository);
+		return new JwtProvider(userRepository);
 	}
 
 	@Bean

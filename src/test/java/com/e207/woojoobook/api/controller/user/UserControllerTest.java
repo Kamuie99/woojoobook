@@ -1,4 +1,4 @@
-package com.e207.woojoobook.api.controller.user;
+package com.e207.woojoobook.api.user;
 
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -22,10 +22,11 @@ import com.e207.woojoobook.api.controller.user.request.LoginRequest;
 import com.e207.woojoobook.api.controller.user.request.PasswordUpdateRequest;
 import com.e207.woojoobook.api.controller.user.request.UserCreateRequest;
 import com.e207.woojoobook.api.controller.user.request.UserUpdateRequest;
+import com.e207.woojoobook.api.controller.user.request.VerificationMail;
 import com.e207.woojoobook.api.controller.user.validator.UserValidator;
 import com.e207.woojoobook.api.service.user.UserService;
-import com.e207.woojoobook.api.controller.user.request.VerificationMail;
-import com.e207.woojoobook.domain.user.UserSlaveRepository;
+
+import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.global.security.SecurityConfig;
 import com.e207.woojoobook.global.security.jwt.JwtProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +40,7 @@ class UserControllerTest {
 	@MockBean
 	private UserService userService;
 	@MockBean
-	private UserSlaveRepository userSlaveRepository;
+	private UserRepository userRepository;
 	@Autowired
 	private MockMvc mockMvc;
 	@Autowired

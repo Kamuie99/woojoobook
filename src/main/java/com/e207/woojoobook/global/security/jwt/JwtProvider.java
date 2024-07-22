@@ -15,7 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.e207.woojoobook.domain.user.UserSlaveRepository;
+import com.e207.woojoobook.domain.user.UserRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -37,7 +37,7 @@ public class JwtProvider {
     private String secretString;
     @Value("${jwt.expiration.time}")
     private long expirationTime;
-    private final UserSlaveRepository userSlaveRepository;
+    private final UserRepository userRepository;
 
 
     private SecretKey secretKey;
@@ -49,7 +49,7 @@ public class JwtProvider {
 
     public String createToken(Authentication authentication) {
         // TODO : 예외처리
-        com.e207.woojoobook.domain.user.User user = this.userSlaveRepository.findById(
+        com.e207.woojoobook.domain.user.User user = this.userRepository.findById(
                 Long.valueOf(authentication.getName()))
             .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
         return Jwts.builder()

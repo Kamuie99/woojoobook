@@ -12,7 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import com.e207.woojoobook.domain.chatroom.ChatRoom;
 import com.e207.woojoobook.domain.chatroom.ChatRoomRepository;
 import com.e207.woojoobook.domain.user.User;
-import com.e207.woojoobook.domain.user.UserSlaveRepository;
+import com.e207.woojoobook.domain.user.UserRepository;
 
 @DataJpaTest
 class ChatRepositoryTest {
@@ -24,7 +24,7 @@ class ChatRepositoryTest {
 	private ChatRoomRepository chatRoomRepository;
 
 	@Autowired
-	private UserSlaveRepository userSlaveRepository;
+	private UserRepository userRepository;
 
 	@DisplayName("채팅룸에 존재하는 채팅을 페이지로 조회한다.")
 	@Test
@@ -32,8 +32,8 @@ class ChatRepositoryTest {
 		//given
 		User sender = createUser("sender");
 		User receiver = createUser("receiver");
-		userSlaveRepository.save(sender);
-		userSlaveRepository.save(receiver);
+		userRepository.save(sender);
+		userRepository.save(receiver);
 
 		ChatRoom chatRoom = createChatRoom(sender, receiver);
 		chatRoomRepository.save(chatRoom);

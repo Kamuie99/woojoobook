@@ -17,8 +17,7 @@ import com.e207.woojoobook.api.controller.user.request.UserUpdateRequest;
 import com.e207.woojoobook.api.service.verification.VerificationService;
 import com.e207.woojoobook.api.controller.user.request.VerificationMail;
 import com.e207.woojoobook.domain.user.User;
-import com.e207.woojoobook.domain.user.UserMasterRepository;
-import com.e207.woojoobook.domain.user.UserSlaveRepository;
+import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.domain.user.UserVerification;
 import com.e207.woojoobook.global.security.SecurityUtil;
 
@@ -27,8 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class UserService {
-	private final UserSlaveRepository userSlaveRepository;
-	private final UserMasterRepository userMasterRepository;
+	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final VerificationService verificationService;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -39,7 +37,7 @@ public class UserService {
 
 		userCreateRequest.encode(this.passwordEncoder.encode(userCreateRequest.getPassword()));
 
-		this.userMasterRepository.save(userCreateRequest.toEntity());
+		this.userRepository.save(userCreateRequest.toEntity());
 	}
 
 	@Transactional
@@ -62,12 +60,12 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public boolean checkDuplicateEmail(String email) {
-		return this.userSlaveRepository.existsByEmail(email);
+		return this.userRepository.existsByEmail(email);
 	}
 
 	@Transactional(readOnly = true)
 	public boolean checkDuplicateNickname(String nickname) {
-		return this.userSlaveRepository.existsByNickname(nickname);
+		return this.userRepository.existsByNickname(nickname);
 	}
 
 	// TODO : 예외처리
@@ -85,7 +83,7 @@ public class UserService {
 	@Transactional
 	public void update(UserUpdateRequest userUpdateRequest) {
 		Long currentUserId = SecurityUtil.getCurrentUsername();
-		User user = userSlaveRepository.findById(currentUserId)
+		User user = userRepository.findById(currentUserId)
 			.orElseThrow(() -> new RuntimeException("유효하지 않은 회원입니다."));
 		user.update(userUpdateRequest.nickname(), userUpdateRequest.areaCode());
 	}
@@ -93,7 +91,7 @@ public class UserService {
 	// TODO : 예외처리
 	@Transactional(readOnly = true)
 	public void updatePassword(PasswordUpdateRequest passwordUpdateRequest) {
-		User user = this.userSlaveRepository.findById(Objects.requireNonNull(SecurityUtil.getCurrentUsername()))
+		User user = this.userRepository.findById(Objects.requireNonNull(SecurityUtil.getCurrentUsername()))
 			.orElseThrow(() -> new RuntimeException("인증 정보가 없습니다."));
 
 		if(!passwordEncoder.matches(passwordUpdateRequest.curPassword(), user.getPassword())){
@@ -103,7 +101,7 @@ public class UserService {
 	}
 
 	public User findDomainById(Long id) {
-		return userSlaveRepository.findById(id).orElseThrow(() -> new RuntimeException("user not found"));
+		return userRepository.findById(id).orElseThrow(() -> new RuntimeException("user not found"));
 	}
 
 	// TODO : 예외처리

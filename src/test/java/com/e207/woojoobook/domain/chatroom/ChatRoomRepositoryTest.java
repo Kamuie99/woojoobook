@@ -12,7 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import com.e207.woojoobook.domain.user.User;
-import com.e207.woojoobook.domain.user.UserSlaveRepository;
+import com.e207.woojoobook.domain.user.UserRepository;
 
 @DataJpaTest
 class ChatRoomRepositoryTest {
@@ -21,7 +21,7 @@ class ChatRoomRepositoryTest {
 	private ChatRoomRepository chatRoomRepository;
 
 	@Autowired
-	private UserSlaveRepository userSlaveRepository;
+	private UserRepository userRepository;
 
 	@DisplayName("수신자와 발신자가 참여 중인 채팅룸을 조회한다.")
 	@Test
@@ -30,9 +30,9 @@ class ChatRoomRepositoryTest {
 		User sender = createUser("sender");
 		User receiver = createUser("receiver");
 		User anotherUser = createUser("another user");
-		userSlaveRepository.save(sender);
-		userSlaveRepository.save(receiver);
-		userSlaveRepository.save(anotherUser);
+		userRepository.save(sender);
+		userRepository.save(receiver);
+		userRepository.save(anotherUser);
 
 		ChatRoom chatRoom1 = createChatRoom(sender, receiver);
 		ChatRoom chatRoom2 = createChatRoom(sender, anotherUser);
@@ -53,8 +53,8 @@ class ChatRoomRepositoryTest {
 		//given
 		User sender = createUser("sender");
 		User receiver = createUser("receiver");
-		userSlaveRepository.save(sender);
-		userSlaveRepository.save(receiver);
+		userRepository.save(sender);
+		userRepository.save(receiver);
 
 		//when
 		Optional<ChatRoom> result = chatRoomRepository.findBySenderAndReceiver(sender, receiver);
@@ -70,9 +70,9 @@ class ChatRoomRepositoryTest {
 		User target = createUser("target");
 		User anotherUser1 = createUser("anotherUser1");
 		User anotherUser2 = createUser("anotherUser2");
-		userSlaveRepository.save(target);
-		userSlaveRepository.save(anotherUser1);
-		userSlaveRepository.save(anotherUser2);
+		userRepository.save(target);
+		userRepository.save(anotherUser1);
+		userRepository.save(anotherUser2);
 
 		ChatRoom chatRoom1 = createChatRoom(target, anotherUser1);
 		ChatRoom chatRoom2 = createChatRoom(anotherUser2, target);
@@ -97,9 +97,9 @@ class ChatRoomRepositoryTest {
 		User target = createUser("target");
 		User anotherUser1 = createUser("anotherUser1");
 		User anotherUser2 = createUser("anotherUser2");
-		userSlaveRepository.save(target);
-		userSlaveRepository.save(anotherUser1);
-		userSlaveRepository.save(anotherUser2);
+		userRepository.save(target);
+		userRepository.save(anotherUser1);
+		userRepository.save(anotherUser2);
 
 		ChatRoom chatRoom = createChatRoom(anotherUser1, anotherUser2);
 		chatRoomRepository.save(chatRoom);
@@ -118,9 +118,9 @@ class ChatRoomRepositoryTest {
 		User sender = createUser("sender");
 		User receiver = createUser("receiver");
 		User another = createUser("another");
-		userSlaveRepository.save(sender);
-		userSlaveRepository.save(receiver);
-		userSlaveRepository.save(another);
+		userRepository.save(sender);
+		userRepository.save(receiver);
+		userRepository.save(another);
 
 		ChatRoom chatRoom1 = createChatRoom(sender, receiver);
 		ChatRoom chatRoom2 = createChatRoom(sender, another);

@@ -12,6 +12,7 @@ import com.e207.woojoobook.api.controller.user.request.VerificationMail;
 import com.e207.woojoobook.domain.user.UserVerification;
 import com.e207.woojoobook.domain.user.UserVerificationRepository;
 import com.e207.woojoobook.domain.user.VerificationCodeUtil;
+import com.e207.woojoobook.global.mail.Mail;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,12 +28,10 @@ public class VerificationService {
 	@Async
 	public void send(VerificationMail verificationMail) {
 		try {
-			SimpleMailMessage mailMessage = new SimpleMailMessage();
-			mailMessage.setFrom(from);
-			mailMessage.setTo(verificationMail.getEmail());
-			mailMessage.setSubject("우주도서 가입 인증번호 메일");
-			mailMessage.setText(verificationMail.getVerificationCode());
-			this.mailSender.send(mailMessage);
+			SimpleMailMessage message = Mail.of(from, verificationMail.getEmail(), "우주도서 가입 인증번호 메일",
+				verificationMail.getVerificationCode());
+
+			this.mailSender.send(message);
 		} catch (MailException e) {
 			// TODO : 예외처리
 			throw new RuntimeException("잠시 후 다시 시도해주세요");

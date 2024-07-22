@@ -20,7 +20,7 @@ import com.e207.woojoobook.domain.chat.ChatRepository;
 import com.e207.woojoobook.domain.chatroom.ChatRoom;
 import com.e207.woojoobook.domain.chatroom.ChatRoomRepository;
 import com.e207.woojoobook.domain.user.User;
-import com.e207.woojoobook.domain.user.UserSlaveRepository;
+import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.mock.TestConfig;
 
 @SpringBootTest
@@ -37,13 +37,13 @@ class ChatRoomServiceTest {
 	private ChatRepository chatRepository;
 
 	@Autowired
-	private UserSlaveRepository userSlaveRepository;
+	private UserRepository userRepository;
 
 	@AfterEach
 	void tearDown() {
 		chatRepository.deleteAllInBatch();
 		chatRoomRepository.deleteAllInBatch();
-		userSlaveRepository.deleteAllInBatch();
+		userRepository.deleteAllInBatch();
 	}
 
 	@DisplayName("수신자와 발신자가 참여하는 채팅룸을 생성한다.")
@@ -52,8 +52,8 @@ class ChatRoomServiceTest {
 		//given
 		User sender = createUser("sender");
 		User receiver = createUser("receiver");
-		userSlaveRepository.save(sender);
-		userSlaveRepository.save(receiver);
+		userRepository.save(sender);
+		userRepository.save(receiver);
 
 		ChatRoomRequest request = ChatRoomRequest.builder()
 			.senderId(sender.getId())
@@ -75,8 +75,8 @@ class ChatRoomServiceTest {
 		//given
 		User sender = createUser("sender");
 		User receiver = createUser("receiver");
-		userSlaveRepository.save(sender);
-		userSlaveRepository.save(receiver);
+		userRepository.save(sender);
+		userRepository.save(receiver);
 
 		ChatRoom chatRoom = createChatRoom(sender, receiver);
 		chatRoomRepository.save(chatRoom);
@@ -96,8 +96,8 @@ class ChatRoomServiceTest {
 		//given
 		User sender = createUser("sender");
 		User receiver = createUser("receiver");
-		userSlaveRepository.save(sender);
-		userSlaveRepository.save(receiver);
+		userRepository.save(sender);
+		userRepository.save(receiver);
 
 		ChatRoom chatRoom = createChatRoom(sender, receiver);
 		chatRoomRepository.save(chatRoom);
@@ -116,8 +116,8 @@ class ChatRoomServiceTest {
 		//given
 		User sender = createUser("sender");
 		User receiver = createUser("receiver");
-		userSlaveRepository.save(sender);
-		userSlaveRepository.save(receiver);
+		userRepository.save(sender);
+		userRepository.save(receiver);
 
 		//expected
 		Assertions.assertThatThrownBy(() -> chatRoomService.findByUserIds(sender.getId(), receiver.getId()))
@@ -132,9 +132,9 @@ class ChatRoomServiceTest {
 		User target = createUser("target");
 		User anotherUser1 = createUser("anotherUser1");
 		User anotherUser2 = createUser("anotherUser2");
-		userSlaveRepository.save(target);
-		userSlaveRepository.save(anotherUser1);
-		userSlaveRepository.save(anotherUser2);
+		userRepository.save(target);
+		userRepository.save(anotherUser1);
+		userRepository.save(anotherUser2);
 
 		ChatRoom chatRoom1 = createChatRoom(target, anotherUser1);
 		ChatRoom chatRoom2 = createChatRoom(anotherUser2, target);
@@ -159,8 +159,8 @@ class ChatRoomServiceTest {
 		//given
 		User sender = createUser("sender");
 		User receiver = createUser("receiver");
-		userSlaveRepository.save(sender);
-		userSlaveRepository.save(receiver);
+		userRepository.save(sender);
+		userRepository.save(receiver);
 
 		ChatRoom chatRoom = createChatRoom(sender, receiver);
 		chatRoomRepository.save(chatRoom);

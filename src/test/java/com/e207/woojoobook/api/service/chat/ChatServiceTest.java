@@ -17,7 +17,7 @@ import com.e207.woojoobook.domain.chat.ChatRepository;
 import com.e207.woojoobook.domain.chatroom.ChatRoom;
 import com.e207.woojoobook.domain.chatroom.ChatRoomRepository;
 import com.e207.woojoobook.domain.user.User;
-import com.e207.woojoobook.domain.user.UserSlaveRepository;
+import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.mock.TestConfig;
 
 @SpringBootTest
@@ -34,7 +34,7 @@ class ChatServiceTest {
 	private ChatRoomRepository chatRoomRepository;
 
 	@Autowired
-	private UserSlaveRepository userSlaveRepository;
+	private UserRepository userRepository;
 
 	@DisplayName("채팅 등록에 성공한다.")
 	@Test
@@ -42,8 +42,8 @@ class ChatServiceTest {
 		// given
 		User sender = createUser("sender");
 		User receiver = createUser("receiver");
-		userSlaveRepository.save(sender);
-		userSlaveRepository.save(receiver);
+		userRepository.save(sender);
+		userRepository.save(receiver);
 
 		ChatRoom chatRoom = createChatRoom(sender, receiver);
 		chatRoomRepository.save(chatRoom);
@@ -66,8 +66,8 @@ class ChatServiceTest {
 		//given
 		User sender = createUser("sender");
 		User receiver = createUser("receiver");
-		userSlaveRepository.save(sender);
-		userSlaveRepository.save(receiver);
+		userRepository.save(sender);
+		userRepository.save(receiver);
 
 		ChatRoom chatRoom = createChatRoom(sender, receiver);
 		chatRoomRepository.save(chatRoom);
