@@ -2,7 +2,7 @@ package com.e207.woojoobook.domain.userbook;
 
 import java.util.List;
 
-import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
+import com.e207.woojoobook.api.controller.userbook.request.UserbookPageFindRequest;
 
 import lombok.Builder;
 

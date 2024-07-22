@@ -1,9 +1,7 @@
-package com.e207.woojoobook.api.userbook.response;
+package com.e207.woojoobook.api.controller.userbook.response;
 
-import java.util.Set;
-
-import com.e207.woojoobook.api.book.response.BookResponse;
-import com.e207.woojoobook.api.user.response.UserResponse;
+import com.e207.woojoobook.api.controller.book.response.BookResponse;
+import com.e207.woojoobook.api.controller.user.response.UserResponse;
 import com.e207.woojoobook.domain.userbook.QualityStatus;
 import com.e207.woojoobook.domain.userbook.RegisterType;
 import com.e207.woojoobook.domain.userbook.TradeStatus;

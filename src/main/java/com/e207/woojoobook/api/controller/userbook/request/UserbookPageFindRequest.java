@@ -1,4 +1,4 @@
-package com.e207.woojoobook.api.userbook.request;
+package com.e207.woojoobook.api.controller.userbook.request;
 
 import java.util.List;
 

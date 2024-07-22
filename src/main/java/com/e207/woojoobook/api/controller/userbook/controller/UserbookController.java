@@ -1,4 +1,4 @@
-package com.e207.woojoobook.api.userbook.controller;
+package com.e207.woojoobook.api.controller.userbook.controller;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.e207.woojoobook.api.userbook.service.UserbookService;
-import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
+import com.e207.woojoobook.api.controller.userbook.service.UserbookService;
+import com.e207.woojoobook.api.controller.userbook.request.UserbookPageFindRequest;
 
 import lombok.RequiredArgsConstructor;
 

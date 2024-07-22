@@ -1,4 +1,4 @@
-package com.e207.woojoobook.api.book.response;
+package com.e207.woojoobook.api.controller.book.response;
 
 import java.time.LocalDate;
 

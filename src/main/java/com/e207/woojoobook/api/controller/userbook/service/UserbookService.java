@@ -1,4 +1,4 @@
-package com.e207.woojoobook.api.userbook.service;
+package com.e207.woojoobook.api.controller.userbook.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -7,8 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
-import com.e207.woojoobook.api.userbook.response.UserbookResponse;
+import com.e207.woojoobook.api.controller.userbook.request.UserbookPageFindRequest;
+import com.e207.woojoobook.api.controller.userbook.response.UserbookResponse;
 import com.e207.woojoobook.domain.userbook.UserbookFindCondition;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
 
