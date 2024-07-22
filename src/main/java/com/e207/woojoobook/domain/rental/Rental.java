@@ -40,8 +40,14 @@ public class Rental {
 		if (isApproved) {
 			this.startDate = LocalDateTime.now();
 			this.endDate = LocalDateTime.now().plusDays(7);
+			this.rentalStatus = RentalStatus.IN_PROGRESS;
 		} else {
 			this.rentalStatus = RentalStatus.REJECTED;
 		}
+	}
+
+	public void giveBack() {
+		this.endDate = LocalDateTime.now();
+		this.rentalStatus = RentalStatus.COMPLETED;
 	}
 }

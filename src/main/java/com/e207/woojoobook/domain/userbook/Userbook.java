@@ -7,7 +7,6 @@ import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.book.WishBook;
 import com.e207.woojoobook.domain.user.User;
 
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

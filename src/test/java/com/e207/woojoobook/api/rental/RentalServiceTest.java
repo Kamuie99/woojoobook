@@ -17,6 +17,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 import com.e207.woojoobook.api.rental.response.RentalOfferResponse;
 import com.e207.woojoobook.domain.userbook.TradeStatus;
+import com.e207.woojoobook.domain.userbook.RegisterType;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
 import com.e207.woojoobook.domain.book.WishBook;
 import com.e207.woojoobook.domain.book.WishBookRepository;
@@ -73,6 +74,7 @@ class RentalServiceTest {
 
 		// 사용자 도서
 		Userbook build = Userbook.builder()
+			.registerType(RegisterType.RENTAL_EXCHANGE)
 			.tradeStatus(TradeStatus.RENTAL_EXCHANGE_AVAILABLE)
 			.user(user)
 			.build();
@@ -180,5 +182,29 @@ class RentalServiceTest {
 		// then
 		Optional<Rental> byId = this.rentalRepository.findById(save.getId());
 		assertFalse(byId.isPresent());
+	}
+
+	@DisplayName("도서 소유자가 반납완료를 요청한다")
+	@Test
+	void giveBack () {
+		// given
+		Rental rental = Rental.builder()
+			.user(user)
+			.userbook(userbook)
+			.build();
+		Rental save = this.rentalRepository.save(rental);
+		this.rentalService.offerRespond(save.getId(), new RentalOfferRespondRequest(true));
+		doNothing().when(mailSender).send(any(MimeMessage.class));
+
+		// when
+		this.rentalService.giveBack(save.getId());
+
+		// then
+		Optional<Rental> byId = this.rentalRepository.findById(save.getId());
+		assertTrue(byId.isPresent());
+
+		rental = byId.get();
+		assertNotNull(rental.getEndDate());
+		assertNotEquals(rental.getUserbook().getTradeStatus(), TradeStatus.UNAVAILABLE);
 	}
 }

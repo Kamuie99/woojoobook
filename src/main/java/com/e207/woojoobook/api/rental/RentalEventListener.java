@@ -10,7 +10,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.e207.woojoobook.api.controller.user.UserBookTradeStatusEvent;
-import com.e207.woojoobook.domain.book.TradeStatus;
+import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.rental.Rental;
 
 import lombok.RequiredArgsConstructor;

@@ -82,4 +82,19 @@ class RentalControllerTest {
 		// then
 		resultActions.andExpect(status().isOk());
 	}
+
+	@WithMockUser
+	@DisplayName("도서 소유자가 반납완료를 한다")
+	@Test
+	void checkReturnRental() throws Exception {
+		// given
+		Long rentalId = 1L;
+
+		// when
+		ResultActions resultActions =
+			this.mockMvc.perform(put("/rentals/{rentalId}/return", rentalId));
+
+		// then
+		resultActions.andExpect(status().isOk());
+	}
 }

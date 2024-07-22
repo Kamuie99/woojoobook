@@ -34,4 +34,10 @@ public class RentalController {
 		this.rentalService.deleteRentalOffer(offerId);
 		return ResponseEntity.ok().build();
 	}
+
+	@PutMapping("/rentals/{rentalId}/return")
+	public ResponseEntity<?> giveBack(@PathVariable("rentalId") Long rentalId) {
+		this.rentalService.giveBack(rentalId);
+		return ResponseEntity.ok().build();
+	}
 }

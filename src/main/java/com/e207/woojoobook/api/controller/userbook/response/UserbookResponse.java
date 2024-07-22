@@ -2,9 +2,9 @@ package com.e207.woojoobook.api.controller.userbook.response;
 
 import com.e207.woojoobook.api.controller.book.response.BookResponse;
 import com.e207.woojoobook.api.controller.user.response.UserResponse;
+import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.QualityStatus;
 import com.e207.woojoobook.domain.userbook.RegisterType;
-import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.Userbook;
 
 import lombok.Builder;

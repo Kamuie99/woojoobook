@@ -4,14 +4,15 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.e207.woojoobook.api.controller.user.UserBookTradeStatusEvent;
 import com.e207.woojoobook.api.rental.response.RentalOfferResponse;
-import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
 import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.rental.RentalRepository;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.global.helper.UserHelper;
+import com.e207.woojoobook.domain.userbook.TradeStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,8 +41,7 @@ public class RentalService {
 
 	@Transactional
 	public void offerRespond(Long offerId, RentalOfferRespondRequest request) {
-		Rental rental = this.rentalRepository.findById(offerId)
-			.orElseThrow(() -> new RuntimeException("존재하지 않는 대여 신청입니다"));
+		Rental rental = validateAndFindRental(offerId);
 
 		Userbook userbook = this.userbookRepository.findWithWishBookById(rental.getUserbook().getId());
 		if (!userbook.isAvailable()) {
@@ -58,6 +58,24 @@ public class RentalService {
 	@Transactional
 	public void deleteRentalOffer(Long offerId) {
 		this.rentalRepository.deleteById(offerId);
+	}
+
+	@Transactional
+	public void giveBack(Long rentalId) {
+		Rental rental = validateAndFindRental(rentalId);
+
+		rental.giveBack();
+		Userbook userbook = rental.getUserbook();
+		TradeStatus tradeStatus = userbook.getRegisterType().getDefaultTradeStatus();
+		userbook.updateTradeStatus(tradeStatus);
+
+		eventPublisher.publishEvent(new UserBookTradeStatusEvent(userbook, tradeStatus));
+	}
+
+	private Rental validateAndFindRental(Long rentalId) {
+		Rental rental = this.rentalRepository.findById(rentalId)
+			.orElseThrow(() -> new RuntimeException("존재하지 않는 대여 신청입니다"));
+		return rental;
 	}
 
 	private void validateAndUpdateUserbook(RentalOfferRespondRequest request, Rental rental) {
