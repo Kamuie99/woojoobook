@@ -8,6 +8,8 @@ import Policy from './pages/Policy';
 import MyActivity from './pages/MyActivity';
 import MyLibrary from './pages/MyLibrary';
 import Register from './pages/Register';
+import UserUpdate from './pages/UserUpdate';
+import PasswordChange from './pages/PasswordChange';
 
 
 // 1. "/": home 페이지
@@ -25,6 +27,8 @@ function App() {
         <Route path='/policy' element={<Policy/>} />
         <Route path='/myactivity' element={<MyActivity />} />
         <Route path='/mylibrary' element={<MyLibrary />} />
+        <Route path='/user-update' element={<UserUpdate />} />
+        <Route path='/password-change' element={<PasswordChange />} />
         <Route path="*" element={<Notfound />} />
       </Routes>
     </>
