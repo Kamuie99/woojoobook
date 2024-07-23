@@ -27,7 +27,7 @@ class RentalControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 	@Autowired
-	ObjectMapper objectMapper;
+	private ObjectMapper objectMapper;
 	@MockBean
 	private RentalService rentalService;
 	@MockBean

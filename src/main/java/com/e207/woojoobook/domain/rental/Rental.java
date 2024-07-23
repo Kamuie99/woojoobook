@@ -29,11 +29,13 @@ public class Rental {
 	private LocalDateTime startDate;
 	private LocalDateTime endDate;
 	private RentalStatus rentalStatus;
+	private int extensionCount;
 
 	@Builder
-	public Rental(User user, Userbook userbook) {
+	public Rental(User user, Userbook userbook, RentalStatus rentalStatus) {
 		this.user = user;
 		this.userbook = userbook;
+		this.rentalStatus = rentalStatus;
 	}
 
 	public void respond(boolean isApproved) {
@@ -49,5 +51,12 @@ public class Rental {
 	public void giveBack() {
 		this.endDate = LocalDateTime.now();
 		this.rentalStatus = RentalStatus.COMPLETED;
+	}
+
+	public void extension(boolean isApproved) {
+		if (isApproved) {
+			this.endDate = endDate.plusDays(7);
+			this.extensionCount++;
+		}
 	}
 }
