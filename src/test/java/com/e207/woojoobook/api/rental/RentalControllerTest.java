@@ -15,6 +15,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import com.e207.woojoobook.api.rental.request.RentalOfferRespondRequest;
 import com.e207.woojoobook.api.rental.response.RentalOfferResponse;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.global.security.SecurityConfig;

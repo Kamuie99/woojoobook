@@ -18,11 +18,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.e207.woojoobook.api.controller.book.BookController;
-import com.e207.woojoobook.api.controller.book.request.BookFindRequest;
-import com.e207.woojoobook.api.controller.book.response.BookListResponse;
-import com.e207.woojoobook.api.controller.book.response.BookResponse;
-import com.e207.woojoobook.api.service.book.BookService;
+import com.e207.woojoobook.api.book.request.BookFindRequest;
+import com.e207.woojoobook.api.book.response.BookListResponse;
+import com.e207.woojoobook.api.book.response.BookResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(BookController.class)
