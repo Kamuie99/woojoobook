@@ -6,6 +6,8 @@ import static com.e207.woojoobook.domain.userbook.QUserbook.*;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
@@ -26,8 +28,8 @@ public class UserbookFindRepositoryImpl implements UserbookFindRepository {
 	}
 
 	@Override
-	public List<Userbook> findUserbookList(UserbookFindCondition condition, Pageable pageable) {
-		return this.queryFactory.selectFrom(userbook)
+	public Page<Userbook> findUserbookList(UserbookFindCondition condition, Pageable pageable) {
+		List<Userbook> content = this.queryFactory.selectFrom(userbook)
 			.join(userbook.book, book)
 			.where(isKeywordInTitleOrAuthor(condition.keyword()), isAreaCodeInList(condition.areaCodeList()),
 				canExecuteTrade(condition.registerType()), hasRegisterType(condition.registerType()))
@@ -35,6 +37,10 @@ public class UserbookFindRepositoryImpl implements UserbookFindRepository {
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
+
+		Long count = this.countUserbook(condition);
+
+		return new PageImpl<>(content, pageable, count);
 	}
 
 	@Override

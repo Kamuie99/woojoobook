@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import net.bytebuddy.utility.RandomString;
@@ -53,7 +54,8 @@ class UserbookFindRepositoryTest {
 		userbookList.forEach(em::persist);
 
 		// when
-		List<Userbook> result = userbookRepository.findUserbookList(condition, PageRequest.of(0, 10));
+		Page<Userbook> pageResult = userbookRepository.findUserbookList(condition, PageRequest.of(0, 10));
+		List<Userbook> result = pageResult.getContent();
 
 		// then
 		assertThat(result).isNotEmpty();
@@ -86,7 +88,8 @@ class UserbookFindRepositoryTest {
 		userbookList.forEach(em::persist);
 
 		// when
-		List<Userbook> result = userbookRepository.findUserbookList(condition, PageRequest.of(0, 10));
+		Page<Userbook> pageResult = userbookRepository.findUserbookList(condition, PageRequest.of(0, 10));
+		List<Userbook> result = pageResult.getContent();
 
 		// then
 		assertThat(result).isNotEmpty();
@@ -125,7 +128,8 @@ class UserbookFindRepositoryTest {
 		userbookList.forEach(em::persist);
 
 		// when
-		List<Userbook> result = userbookRepository.findUserbookList(condition, PageRequest.of(0, 10));
+		Page<Userbook> pageResult = userbookRepository.findUserbookList(condition, PageRequest.of(0, 10));
+		List<Userbook> result = pageResult.getContent();
 
 		// then
 		assertThat(result).isNotEmpty();

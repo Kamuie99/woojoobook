@@ -1,13 +1,17 @@
 package com.e207.woojoobook.client;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriBuilder;
 
 import com.e207.woojoobook.api.book.response.BookListResponse;
 import com.e207.woojoobook.api.book.response.BookResponse;
@@ -16,17 +20,18 @@ import com.e207.woojoobook.api.book.response.NaverBookItem;
 
 @Component
 public class NaverBookSearchClient implements BookSearchClient {
-	@Value("${naver-client-key}")
-	private String naver_client_id;
 
-	@Value("${naver-client-secret}")
-	private String naver_client_secret;
+	private final String NAVER_CLIENT_ID;
+	private final String NAVER_CLIENT_SECRET;
+
+	public NaverBookSearchClient(@Value("${naver-client-key}") String NAVER_CLIENT_ID,
+		@Value("${naver-client-secret}") String NAVER_CLIENT_SECRET) {
+		this.NAVER_CLIENT_ID = NAVER_CLIENT_ID;
+		this.NAVER_CLIENT_SECRET = NAVER_CLIENT_SECRET;
+	}
 
 	public BookListResponse findBookByKeyword(String keyword, Integer page, Integer size) {
-		RestClient restClient = RestClient.builder()
-			.baseUrl("https://openapi.naver.com")
-			.build();
-
+		RestClient restClient = createRestClient();
 		NaverBookApiResponse naverBookApiResponse = restClient.get()
 			.uri(uriBuilder -> uriBuilder.path("/v1/search/book.json")
 				.queryParam("query", keyword)
@@ -34,8 +39,8 @@ public class NaverBookSearchClient implements BookSearchClient {
 				.queryParam("display", size)
 				.build())
 			.headers(httpHeaders -> {
-				httpHeaders.set("X-Naver-Client-Id", naver_client_id);
-				httpHeaders.set("X-Naver-Client-Secret", naver_client_secret);
+				httpHeaders.set("X-Naver-Client-Id", NAVER_CLIENT_ID);
+				httpHeaders.set("X-Naver-Client-Secret", NAVER_CLIENT_SECRET);
 			})
 			.retrieve()
 			.body(NaverBookApiResponse.class);
@@ -43,14 +48,33 @@ public class NaverBookSearchClient implements BookSearchClient {
 		List<BookResponse> bookResponses = new ArrayList<>();
 		if (naverBookApiResponse != null && naverBookApiResponse.items() != null) {
 			for (NaverBookItem item : naverBookApiResponse.items()) {
-				BookResponse bookResponse = new BookResponse(item.isbn(), item.title(), item.author(),
-					item.publisher(), LocalDate.parse(item.pubdate(), DateTimeFormatter.ofPattern("yyyyMMdd")),
-					item.image(), item.description());
-
+				BookResponse bookResponse = item.toBookResponse();
 				bookResponses.add(bookResponse);
 			}
 		}
-
 		return new BookListResponse(bookResponses);
+	}
+
+	@Override
+	public Optional<BookResponse> findBookByIsbn(String isbn) {
+		RestClient restClient = createRestClient();
+		NaverBookApiResponse naverBookApiResponse = restClient.get()
+			.uri(uriBuilder -> uriBuilder.path("/v1/search/book_adv.json").queryParam("d_isbn", isbn).build())
+			.headers(httpHeaders -> {
+				httpHeaders.set("X-Naver-Client-Id", NAVER_CLIENT_ID);
+				httpHeaders.set("X-Naver-Client-Secret", NAVER_CLIENT_SECRET);
+			})
+			.retrieve()
+			.body(NaverBookApiResponse.class);
+
+		if (naverBookApiResponse != null && naverBookApiResponse.items() != null) {
+			return naverBookApiResponse.items().stream().map(NaverBookItem::toBookResponse).findAny();
+		} else {
+			return Optional.empty();
+		}
+	}
+
+	private RestClient createRestClient() {
+		return RestClient.builder().baseUrl("https://openapi.naver.com").build();
 	}
 }
