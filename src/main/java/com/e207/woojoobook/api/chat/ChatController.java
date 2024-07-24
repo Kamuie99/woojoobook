@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.e207.woojoobook.api.chat.request.ChatCreateRequest;
 import com.e207.woojoobook.api.chat.response.ChatResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +33,7 @@ public class ChatController {
 	}
 
 	@MessageMapping("/chat")
-	public void createChatMessage(ChatCreateRequest request) {
+	public void createChatMessage(@Valid ChatCreateRequest request) {
 		Long senderId = request.senderId();
 		Long receiverId = request.receiverId();
 		ChatResponse chatResponse = chatService.create(request);

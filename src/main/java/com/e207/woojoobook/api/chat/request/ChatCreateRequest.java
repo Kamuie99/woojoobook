@@ -4,10 +4,12 @@ import com.e207.woojoobook.domain.chat.Chat;
 import com.e207.woojoobook.domain.chatroom.ChatRoom;
 import com.e207.woojoobook.domain.user.User;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record ChatCreateRequest(Long chatRoomId, Long senderId, Long receiverId, String content) {
+public record ChatCreateRequest(@NotNull Long chatRoomId, @NotNull Long senderId, @NotNull Long receiverId,
+								@NotNull String content) {
 
 	public Chat toEntity(ChatRoom chatRoom, User sender) {
 		return Chat.builder()

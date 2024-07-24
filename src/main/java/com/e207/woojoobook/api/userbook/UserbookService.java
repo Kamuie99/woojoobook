@@ -11,6 +11,7 @@ import com.e207.woojoobook.api.book.response.BookResponse;
 import com.e207.woojoobook.api.controller.userbook.request.UserbookCreateRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
+import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.client.BookSearchClient;
 import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.book.BookRepository;
@@ -89,5 +90,9 @@ public class UserbookService {
 			.map(BookResponse::toEntity)
 			.map(bookRepository::save)
 			.orElseThrow(() -> new RuntimeException("검색한 책이 존재하지 않을 때 던지는 예외"));    // todo 예외 처리
+	}
+
+	public Userbook findDomain(Long id) {
+		return userbookRepository.findFetchById(id).orElseThrow(() -> new RuntimeException("userbook not found"));
 	}
 }

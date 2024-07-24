@@ -15,6 +15,7 @@ import com.e207.woojoobook.api.chatroom.request.ChatRoomRequest;
 import com.e207.woojoobook.api.chatroom.response.ChatRoomCheckResponse;
 import com.e207.woojoobook.api.chatroom.response.ChatRoomResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,7 +27,7 @@ public class ChatRoomController {
 	private final ChatRoomService chatRoomService;
 
 	@PostMapping("/chatrooms")
-	public ResponseEntity<ChatRoomResponse> create(@RequestBody ChatRoomRequest request) {
+	public ResponseEntity<ChatRoomResponse> create(@Valid @RequestBody ChatRoomRequest request) {
 		ChatRoomResponse response = chatRoomService.create(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
