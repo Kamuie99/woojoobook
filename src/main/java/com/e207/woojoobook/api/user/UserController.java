@@ -19,6 +19,7 @@ import com.e207.woojoobook.api.user.request.PasswordUpdateRequest;
 import com.e207.woojoobook.api.user.request.UserCreateRequest;
 import com.e207.woojoobook.api.user.request.UserUpdateRequest;
 import com.e207.woojoobook.api.user.request.VerificationMail;
+import com.e207.woojoobook.api.user.response.VerifyResponse;
 import com.e207.woojoobook.api.user.validator.UserValidator;
 import com.e207.woojoobook.global.security.SecurityUtil;
 import com.e207.woojoobook.global.security.jwt.JwtProvider;
@@ -84,11 +85,7 @@ public class UserController {
 
 		boolean isDuplicate = this.userService.checkDuplicateEmail(email);
 
-		if (!isDuplicate) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
-
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.status(HttpStatus.OK).body(new VerifyResponse(isDuplicate));
 	}
 
 	@GetMapping("/users/nicknames/{nickname}")
