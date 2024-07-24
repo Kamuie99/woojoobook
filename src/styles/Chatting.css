@@ -1,3 +1,11 @@
+.MuiInputBase-root {
+  font-family: "samsungGodik" !important;
+}
+
+.MuiTypography-root {
+  font-family: "samsungGodik" !important;
+}
+
 .chat-button {
   position: fixed !important;
   bottom: 16px;
@@ -11,36 +19,100 @@
   width: 100%;
   max-width: 400px;
   height: 500px;
-  background-color: #fff;
+  background-color: var(--sub-color);
   box-shadow: 24px;
   padding: 16px;
   display: flex;
   flex-direction: column;
   border-radius: 20px;
   overflow: hidden;
+  /* overflow-y: auto; */
+}
+
+.modal-header {
+  position: absolute;
+  background-color: var(--sub-color);
+  width: calc(100% - 32px);
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.modal-title {
+  align-self: center;
+}
+
+.chat-list-container {
+  padding-top: 30px;
   overflow-y: auto;
 }
 
-.close-button {
-  position: absolute !important;
-  top: 8px;
-  right: 8px;
-  cursor: pointer;
+.message-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 50px 0px;
 }
 
 .messages-container {
   flex: 1;
   overflow-y: auto;
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
 }
 
 .message {
-  margin-bottom: 10px;
+  display: flex;
+  margin: 10px;
+  max-width: 95%;
 }
 
-.chat-content {
+.message.sent {
+  justify-content: flex-end;
+  align-self: flex-end;
+}
+
+.message.sent > p {
+  background-color: var(--main-color);
+}
+
+.message.received {
+  justify-content: flex-start;
+  align-self: flex-start;
+}
+
+.message.received > p {
+  background-color: var(--main-color);
+}
+
+.message > p {
+  padding: 0.35rem 0.5rem;
+  border-radius: 10px;
+  max-width: 90%;
+}
+
+.message-input {
+  background-color: var(--main-color);
+  font-family: none;
+}
+
+.message-input-container {
   display: flex;
-  flex-direction: column;
-  height: 100%;
+  padding: 8px 0px;
+  position: absolute;
+  bottom: 0;
+  width: calc(100% - 32px);
+  background-color: var(--sub-color);
+}
+
+.message-input-button {
+  flex: 1;
+  margin-left: 3px;
+  display: flex;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  border-radius: 4px;
+  background-color: var(--main-color);
+}
+
+.input-button {
+  align-self: center;
 }

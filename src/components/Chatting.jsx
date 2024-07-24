@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext';
 import { Modal, Box, Fab, TextField, List, ListItem, ListItemText, Divider, IconButton, Typography, Button } from '@mui/material';
 import { IoChatbox } from "react-icons/io5";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { MdKeyboardArrowLeft } from "react-icons/md";
+import { BsArrowReturnLeft } from "react-icons/bs";
 import axiosInstance from '../util/axiosConfig';
 import * as StompJs from '@stomp/stompjs';
 import '../styles/Chatting.css';
 
 const Chatting = () => {
+  const { isLoggedIn, sub, token } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState(1);
   const [userId, setUserId] = useState('');
   const [receiverId, setReceiverId] = useState('');
   const [chatRooms, setChatRooms] = useState([]);
@@ -18,44 +20,25 @@ const Chatting = () => {
   const [messages, setMessages] = useState([]);
   const [chat, setChat] = useState('');
   const client = useRef(null);
+  const receiverIdRef = useRef(null);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
   const location = useLocation();
   const excludedPaths = ['/login', '/register'];
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    if (client.current) {
-      client.current.deactivate();
+  useEffect(() => {
+    if (isLoggedIn) {
+      setUserId(sub);
     }
-    setOpen(false);
-    setMessages([]);
-    setStep(1);
-    setUserId('');
-  };
-
-  const scrollToBottom = () => {
-    messagesContainerRef.current?.scrollTo({ top: messagesContainerRef.current.scrollHeight, behavior: 'smooth' });
-  };
+  }, [isLoggedIn, sub]);
 
   useEffect(() => {
-    if (open) {
-      scrollToBottom();
-    }
-  }, [open, messages]);
-
+    scrollToBottom();
+  }, [messages]);
+  
   useEffect(() => {
-    if (step === 2) {
-      fetchChatRooms();
-    }
-  }, [step]);
-
-  useEffect(() => {
-    if (receiverId && step === 2) {
+    if (receiverId) {
       fetchOrCreateChatRoom();
     }
   }, [receiverId]);
@@ -69,7 +52,7 @@ const Chatting = () => {
   }, []);
 
   useEffect(() => {
-    if (client.current && step === 3) {
+    if (client.current && chatRoomId) {
       const destination = `/queue/chat/${userId}`;
       const subscription = client.current.subscribe(destination, (message) => {
         console.log('수신된 메시지:', message.body);
@@ -78,13 +61,33 @@ const Chatting = () => {
       });
       return () => subscription.unsubscribe();
     }
-  }, [userId, step]);
+  }, [userId, chatRoomId]);
+
+  const handleOpen = () => {
+    setOpen(true);
+    connect();
+    fetchChatRooms();
+  };
+
+  const handleClose = () => {
+    if (client.current) {
+      client.current.deactivate();
+    }
+    setOpen(false);
+    setMessages([]);
+    setChatRoomId('');
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  
 
   const connect = () => {
     client.current = new StompJs.Client({
       brokerURL: 'ws://localhost:8080/ws',
       connectHeaders: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${token}`
       },
       debug: function (str) {
         console.log(str);
@@ -115,7 +118,7 @@ const Chatting = () => {
         params: { userId },
       });
       const data = await response.data;
-      console.log(data);
+      console.log(data.content);
       setChatRooms(Array.isArray(data.content) ? data.content : []);
     } catch (error) {
       console.error('채팅 룸 목록 조회 중 오류 발생:', error);
@@ -130,6 +133,9 @@ const Chatting = () => {
           receiverId
         }
       });
+      if (userId === receiverId) {
+        return;
+      }
       const data = await response.data;
       console.log("exist: " + data.isExist);
       if (data.isExist) {
@@ -146,7 +152,6 @@ const Chatting = () => {
         setChatRoomId(newRoomData.id);
         fetchChatMessages(newRoomData.id);
       }
-      setStep(3);
     } catch (error) {
       console.error('채팅 룸 조회/생성 중 오류 발생:', error);
     }
@@ -165,61 +170,89 @@ const Chatting = () => {
 
   const handleSendMessage = (e) => {
     if (e.key === 'Enter' && chat.trim() !== '') {
-      client.current.publish({
-        destination: '/app/chat',
-        body: JSON.stringify({ content: chat, chatRoomId, senderId: userId, receiverId }),
-      });
-      setChat('');
+      sendMessage();
     }
   };
 
-  const renderStep1 = () => (
-    <div>
-      <h1>사용자 ID 선택</h1>
-      <Button onClick={() => { setUserId('1'); connect(); setStep(2); }}>User 1</Button>
-      <Button onClick={() => { setUserId('2'); connect(); setStep(2); }}>User 2</Button>
-    </div>
-  );
+  const handleSendMessageClick = () => {
+    if (chat.trim() !== '') {
+      sendMessage();
+    }
+  }
 
-  const renderStep2 = () => (
-    <div>
-      <h1>채팅 룸 목록</h1>
+  const sendMessage = () => {
+    client.current.publish({
+      destination: '/app/chat',
+      body: JSON.stringify({ content: chat, chatRoomId, senderId: userId, receiverId }),
+    });
+    setChat('');
+  }
+
+  const handleNewChatSubmit = (e) => {
+    e.preventDefault();
+    const newReceiverId = receiverIdRef.current.value;
+    setReceiverId(newReceiverId);
+    fetchOrCreateChatRoom();
+  };
+
+  const renderChatList = () => (
+    <div class="message-list">
       <List>
         {chatRooms.map((room) => (
           <React.Fragment key={room.id}>
-            <ListItem button onClick={() => { setReceiverId(userId === room.receiverId ? room.senderId : room.receiverId); }}>
-              <ListItemText primary={`채팅 룸 ID: ${room.id} (상대방 ID: ${userId === room.receiverId ? room.senderId : room.receiverId})`} />
+            <ListItem button onClick={() => { 
+              let otherUserId = room.receiverId;
+              if (otherUserId == userId) {
+                otherUserId = room.senderId;
+                console.log('other')
+              }
+              setReceiverId(otherUserId);
+              setChatRoomId(room.id);
+              fetchChatMessages(room.id);
+            }}>
+              <ListItemText primary={`${userId == room.receiverId ? room.senderId : room.receiverId } 님과의 채팅방`} />
             </ListItem>
             <Divider />
           </React.Fragment>
         ))}
       </List>
       <h2>새로운 채팅 시작</h2>
-      <TextField
-        type="text"
-        value={receiverId}
-        onChange={(e) => setReceiverId(e.target.value)}
-        placeholder="수신자 ID 입력"
-      />
-      <Button onClick={fetchOrCreateChatRoom}>채팅 시작</Button>
+      <form onSubmit={handleNewChatSubmit}>
+        <TextField
+          type="text"
+          inputRef={receiverIdRef}
+          placeholder="수신자 ID 입력"
+        />
+        <Button type="submit">채팅 시작</Button>
+      </form>
     </div>
   );
 
-  const renderStep3 = () => (
-    <div>
-      <h1>채팅</h1>
-      <div className="chat-list" ref={messagesContainerRef}>
+  const renderChatRoom = () => (
+    <div class="message-list">
+      <div className="message-container" ref={messagesContainerRef}>
         {messages.map((message, index) => (
-          <div key={index}>{message.senderId} : {message.content}</div>
+          <div key={index} className={`message ${message.senderId == userId ? 'sent' : 'received'}`}>
+            <p>{message.content}</p>
+          </div>
         ))}
+        <div ref={messagesEndRef}/>
       </div>
-      <TextField
-        value={chat}
-        onChange={(e) => setChat(e.target.value)}
-        onKeyDown={handleSendMessage}
-        placeholder="메시지 입력"
-        fullWidth
-      />
+      <div class="message-input-container">
+        <TextField
+          value={chat}
+          onChange={(e) => setChat(e.target.value)}
+          onKeyDown={handleSendMessage}
+          placeholder="메시지 입력"
+          fullWidth
+          className="message-input"
+        />
+        <div class="message-input-button">
+          <Button onClick={handleSendMessageClick} className="input-button">
+            <BsArrowReturnLeft />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 
@@ -242,28 +275,29 @@ const Chatting = () => {
         aria-describedby="chat-modal-description"
       >
         <Box className="chat-modal">
-          <Typography id="chat-modal-title" variant="h6" component="h2">
-            {step === 1 ? "사용자 ID 선택" : step === 2 ? "채팅 룸 목록" : "채팅"}
-          </Typography>
-          <IconButton
-            aria-label="close"
-            onClick={handleClose}
-            className="close-button"
-          >
-            <IoMdCloseCircleOutline size={30} />
-          </IconButton>
-          {step > 1 && (
-            <IconButton
-              aria-label="back"
-              onClick={() => setStep((prevStep) => Math.max(prevStep - 1, 1))}
-              className="back-button"
-            >
-              <MdKeyboardArrowLeft size={30} />
-            </IconButton>
-          )}
-          {step === 1 && renderStep1()}
-          {step === 2 && renderStep2()}
-          {step === 3 && renderStep3()}
+          <div class="modal-header">
+            <div class="modal-title">
+              <p>
+                { chatRoomId ? `${chatRoomId} 님과의 채팅` : "채팅 목록" }
+              </p>
+            </div>
+            {
+              chatRoomId ?
+              <IconButton
+                aria-label="back"
+                onClick={() => setChatRoomId('')}
+              >
+                <MdKeyboardArrowLeft size={30} />
+              </IconButton> :
+              <IconButton
+              aria-label="close"
+              onClick={handleClose}
+              >
+                <IoMdCloseCircleOutline size={30} />
+              </IconButton>
+            }
+          </div>
+          {chatRoomId ? renderChatRoom() : renderChatList()}
         </Box>
       </Modal>
     </div>
