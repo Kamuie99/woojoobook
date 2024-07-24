@@ -1,5 +1,5 @@
 import './App.css'
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Notfound from './pages/Notfound';
@@ -11,6 +11,7 @@ import Register from './pages/Register/Register';
 import UserUpdate from './pages/UserUpdate';
 import PasswordChange from './pages/PasswordChange';
 import ProtectedRoute from './util/ProtectedRoute';
+import Chatting from './components/Chatting';
 
 
 // 1. "/": home 페이지
@@ -18,6 +19,8 @@ import ProtectedRoute from './util/ProtectedRoute';
 
 
 function App() {
+  const location = useLocation();
+  const excludedPaths = ['/login', '/register'];
   return (
     <>
       <Routes>
@@ -37,6 +40,7 @@ function App() {
           
         <Route path="*" element={<Notfound />} />
       </Routes>
+      {!excludedPaths.includes(location.pathname) && <Chatting />}
     </>
   )
 }

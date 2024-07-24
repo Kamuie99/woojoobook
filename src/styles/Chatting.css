@@ -1,0 +1,46 @@
+.chat-button {
+  position: fixed !important;
+  bottom: 16px;
+  left: 16px;
+}
+
+.chat-modal {
+  position: fixed !important;
+  bottom: 16px;
+  left: 16px;
+  width: 100%;
+  max-width: 400px;
+  height: 500px;
+  background-color: #fff;
+  box-shadow: 24px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.close-button {
+  position: absolute !important;
+  top: 8px;
+  right: 8px;
+  cursor: pointer;
+}
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.message {
+  margin-bottom: 10px;
+}
+
+.chat-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
