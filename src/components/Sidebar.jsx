@@ -1,7 +1,7 @@
+import Button from '../components/Button';
 import { Sidebar as ProSidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
-import Button from '../components/Button';
 import { IoMenu } from "react-icons/io5";
 import { AuthContext } from '../contexts/AuthContext';
 
@@ -10,7 +10,7 @@ import '../styles/Sidebar.css';
 
 // eslint-disable-next-line react/prop-types
 const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles }) => {
-  const { isLoggedIn, logout } = useContext(AuthContext);
+  const { isLoggedIn, logout, nickname } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -28,7 +28,7 @@ const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles 
           </div>
           <div className='profile_box'>
             <div className='profile_nickname'>
-              <p>{isLoggedIn ? '사용자님 환영합니다' : '로그인이 필요합니다'}</p>
+              <p>{isLoggedIn ? `${nickname}님, 환영합니다` : '로그인이 필요합니다'}</p>
             </div>
             <div className='profile_buttons'>
               {isLoggedIn ? (
