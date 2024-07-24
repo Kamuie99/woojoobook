@@ -7,7 +7,7 @@ import BookRegister from './pages/BookRegister';
 import Policy from './pages/Policy';
 import MyActivity from './pages/MyActivity';
 import MyLibrary from './pages/MyLibrary';
-import Register from './pages/Register';
+import Register from './pages/Register/Register';
 import UserUpdate from './pages/UserUpdate';
 import PasswordChange from './pages/PasswordChange';
 

@@ -1,0 +1,93 @@
+.Register {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  margin-top: 60px;
+  gap: 20px;
+}
+
+.titleBox {
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+}
+
+.titleBox > p {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.emailInput {
+  width: 300px;
+  padding: 10px 20px;
+  font-size: 22px;
+  border-radius: 5px;
+}
+
+.emailconfirmInput {
+  width: 180px;
+  padding: 10px 20px;
+  font-size: 22px;
+  border-radius: 5px;
+}
+
+.emailButton {
+  background-color: black;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.emailForm {
+  display: flex;
+  gap: 25px;
+  flex-direction: column;
+}
+
+.input_button {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.input_button2 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  width: 300px;
+}
+
+.input_button2 > div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.input_button2 input {
+  width: 180px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid gray;
+  padding-left: 5px;
+}
+
+.input_button2 label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.emailButton2 {
+  border: none;
+  background-color: black;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  margin-top: 20px;
+  cursor: pointer;
+}

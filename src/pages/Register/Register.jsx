@@ -1,7 +1,13 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../util/axiosConfig';
-import Header2 from '../components/Header2';
+import { useNavigate, Link } from 'react-router-dom';
+import axiosInstance from '../../util/axiosConfig';
+import Header2 from '../../components/Header2';
+import Logo from '../../assets/Logo.png';
+import '../../styles/Register.css';
+import EmailForm from './EmailForm';
+import VerificationForm from './VerificationForm';
+import FinalForm from './FinalForm';
+
 
 const Register = () => {
   const navigate = useNavigate();
@@ -12,15 +18,26 @@ const Register = () => {
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [nickname, setNickname] = useState('');
   const [areaCode, setAreaCode] = useState('');
+  const [emailError, setEmailError] = useState(' ');
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
+    setEmailError(''); // 에러 메시지 초기화
     try {
-      await axiosInstance.post('users/emails', 
-        { email }
-      );
+      // 이메일 중복 검사
+      const checkResponse = await axiosInstance.get(`users/emails/${email}`);
+      console.log(checkResponse)
+      if (checkResponse.data.isDuplicated  === true) {
+        setEmailError('이미 가입된 이메일입니다.');
+        console.log('중복')
+        return;
+      }
+      console.log('중복아님')
+
+      // 중복이 없는경우 로직 실행
+      await axiosInstance.post('users/emails', { email });
       setStep(2);
-    } catch (error) {
+      } catch (error) {
       console.error(error);
       if (error.code === 'ERR_NETWORK') {
         console.error('네트워크 오류:', error.message);
@@ -66,7 +83,7 @@ const Register = () => {
         }
       });
       if (response.status === 201) {
-        alert('회원가입 성공');
+        alert('회원가입이 완료되었습니다. 로그인 해주세요.');
         navigate('/');
       }
     } catch (error) {
@@ -78,41 +95,30 @@ const Register = () => {
   const renderStep = () => {
     switch (step) {
       case 1:
-        return (
-          <form onSubmit={handleEmailSubmit}>
-            <p>이메일
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </p>
-            <button type="submit">인증 코드 받기</button>
-          </form>
-        );
+        return <EmailForm 
+        email={email} 
+        setEmail={setEmail} 
+        handleEmailSubmit={handleEmailSubmit} 
+        emailError={emailError} 
+      />;
       case 2:
-        return (
-          <form onSubmit={handleVerificationSubmit}>
-            <p>인증 코드
-              <input type="text" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} required />
-            </p>
-            <button type="submit">인증 확인</button>
-          </form>
-        );
+        return <VerificationForm 
+          verificationCode={verificationCode} 
+          setVerificationCode={setVerificationCode} 
+          handleVerificationSubmit={handleVerificationSubmit} 
+        />;
       case 3:
-        return (
-          <form onSubmit={handleFinalSubmit}>
-            <p>비밀번호
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            </p>
-            <p>비밀번호 확인
-              <input type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} required />
-            </p>
-            <p>닉네임
-              <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} required />
-            </p>
-            <p>행정코드
-              <input type="text" value={areaCode} onChange={(e) => setAreaCode(e.target.value)} />
-            </p>
-            <button type="submit">회원가입</button>
-          </form>
-        );
+        return <FinalForm 
+          password={password}
+          setPassword={setPassword}
+          passwordConfirm={passwordConfirm}
+          setPasswordConfirm={setPasswordConfirm}
+          nickname={nickname}
+          setNickname={setNickname}
+          areaCode={areaCode}
+          setAreaCode={setAreaCode}
+          handleFinalSubmit={handleFinalSubmit}
+        />;
       default:
         return null;
     }
@@ -121,9 +127,13 @@ const Register = () => {
   return (
     <>
       <Header2 />
-      <main>
-        <p>회원가입</p>
-        {renderStep()}
+      <main className='Register'>
+        <Link to="/">
+          <img src={Logo} width='170px' alt="Home" style={{ cursor: 'pointer' }} />
+        </Link>
+        <div>
+          {renderStep()}
+        </div>
       </main>
     </>
   );
