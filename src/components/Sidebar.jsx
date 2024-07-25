@@ -20,7 +20,7 @@ const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles 
     Swal.fire({
       title: '로그아웃 되었습니다.',
       // text: '모든 필드를 입력해주세요.',
-      icon: 'success',
+      icon: 'info',
       confirmButtonText: '확인'
     })
   };

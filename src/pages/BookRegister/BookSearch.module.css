@@ -20,9 +20,10 @@
 
 .searchInputWrapper input {
   width: 100%;
-  padding: 20px;
+  height: 70px;
+  padding: 10px 30px;
   padding-right: 40px;
-  font-size: 16px;
+  font-size: 26px;
   border: 2px solid var(--accent-sub-color);
   border-radius: 30px;
   outline: none;

@@ -59,7 +59,7 @@ const BookSearch = ({ onSelectBook }) => {
           placeholder="등록하실 책 제목을 입력해주세요"
         />
         <button onClick={handleSearch}>
-          <IoSearchOutline /> 
+          <IoSearchOutline size={"35px"} /> 
         </button>
       </div>
       <Modal
