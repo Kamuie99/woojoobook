@@ -30,6 +30,7 @@ import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.domain.userbook.QualityStatus;
 import com.e207.woojoobook.domain.userbook.RegisterType;
+import com.e207.woojoobook.domain.userbook.UserbookRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -45,6 +46,8 @@ class UserbookServiceTest {
 	private BookRepository bookRepository;
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private UserbookRepository userbookRepository;
 
 	@DisplayName("지역 선택 개수를 초과하면 에러가 발생한다.")
 	@Test

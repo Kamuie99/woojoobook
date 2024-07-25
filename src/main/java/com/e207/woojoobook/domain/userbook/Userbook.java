@@ -75,6 +75,10 @@ public class Userbook {
 		this.user = user;
 	}
 
+	public void removeUser() {
+		this.user = null;
+	}
+
 	public void updateTradeStatus(TradeStatus tradeStatus) {
 		this.tradeStatus = tradeStatus;
 	}

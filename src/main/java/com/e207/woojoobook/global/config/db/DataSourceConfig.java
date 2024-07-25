@@ -24,9 +24,9 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import jakarta.persistence.EntityManagerFactory;
 
-@Configuration
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
-@EnableConfigurationProperties(DataSourceProperties.class)
+// @Configuration
+// @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
+// @EnableConfigurationProperties(DataSourceProperties.class)
 public class DataSourceConfig {
 	private final DataSourceProperties databaseProperty;
 	private final JpaProperties jpaProperties;

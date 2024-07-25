@@ -2,6 +2,7 @@ package com.e207.woojoobook.api.user;
 
 import java.util.Objects;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -9,16 +10,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.e207.woojoobook.api.user.event.UserDeleteEvent;
 import com.e207.woojoobook.api.user.request.EmailCodeCreateRequest;
 import com.e207.woojoobook.api.user.request.LoginRequest;
 import com.e207.woojoobook.api.user.request.PasswordUpdateRequest;
 import com.e207.woojoobook.api.user.request.UserCreateRequest;
+import com.e207.woojoobook.api.user.request.UserDeleteRequest;
 import com.e207.woojoobook.api.user.request.UserUpdateRequest;
 import com.e207.woojoobook.api.user.request.VerificationMail;
 import com.e207.woojoobook.api.verification.VerificationService;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.domain.user.UserVerification;
+import com.e207.woojoobook.global.helper.UserHelper;
 import com.e207.woojoobook.global.security.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -27,9 +31,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class UserService {
 	private final UserRepository userRepository;
+	private final UserHelper userHelper;
 	private final PasswordEncoder passwordEncoder;
 	private final VerificationService verificationService;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
+	private final ApplicationEventPublisher eventPublisher;
 
 	@Transactional
 	public void join(UserCreateRequest userCreateRequest) {
@@ -83,14 +89,13 @@ public class UserService {
 	// TODO : 예외처리
 	@Transactional
 	public void update(UserUpdateRequest userUpdateRequest) {
-		Long currentUserId = SecurityUtil.getCurrentUsername();
-		User user = userRepository.findById(currentUserId)
-			.orElseThrow(() -> new RuntimeException("유효하지 않은 회원입니다."));
+		User user = this.userHelper.findCurrentUser();
 		user.update(userUpdateRequest.nickname(), userUpdateRequest.areaCode());
 	}
 
+
 	// TODO : 예외처리
-	@Transactional(readOnly = true)
+	@Transactional
 	public void updatePassword(PasswordUpdateRequest passwordUpdateRequest) {
 		User user = this.userRepository.findById(Objects.requireNonNull(SecurityUtil.getCurrentUsername()))
 			.orElseThrow(() -> new RuntimeException("인증 정보가 없습니다."));
@@ -99,6 +104,13 @@ public class UserService {
 			throw new RuntimeException("비밀번호가 일치하지 않습니다.");
 		}
 		user.updatePassword(passwordEncoder.encode(passwordUpdateRequest.password()));
+	}
+
+	@Transactional
+	public void deleteUser(UserDeleteRequest userDeleteRequest) {
+		User user = this.userHelper.findCurrentUser();
+		checkPassword(user.getId(), userDeleteRequest.password());
+		this.eventPublisher.publishEvent(new UserDeleteEvent(user));
 	}
 
 	public User findDomainById(Long id) {
@@ -118,6 +130,14 @@ public class UserService {
 
 		if (checkDuplicateNickname(userCreateRequest.getNickname())) {
 			throw new RuntimeException("중복된 닉네임은 허용되지 않습니다.");
+		}
+	}
+
+	private void checkPassword(Long id, String password) {
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(id, password);
+		Authentication authenticate = this.authenticationManagerBuilder.getObject().authenticate(token);
+		if (!authenticate.isAuthenticated()) {
+			throw new RuntimeException("비밀번호가 일치하지 않습니다.");
 		}
 	}
 }

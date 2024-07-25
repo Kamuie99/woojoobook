@@ -1,10 +1,13 @@
 package com.e207.woojoobook.domain.userbook;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import com.e207.woojoobook.domain.user.User;
 
 public interface UserbookRepository extends JpaRepository<Userbook, Long>, UserbookFindRepository {
 	@EntityGraph(attributePaths = "wishBooks")
@@ -16,4 +19,6 @@ public interface UserbookRepository extends JpaRepository<Userbook, Long>, Userb
 		+ " where ub.id = :id")
 	Optional<Userbook> findFetchById(Long id);
 
+	@EntityGraph(attributePaths = "user")
+	List<Userbook> findWithUserByUser(User user);
 }

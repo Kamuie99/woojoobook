@@ -1,9 +1,10 @@
-package com.e207.woojoobook.domain.book;
+package com.e207.woojoobook.domain.user.experience;
 
 import com.e207.woojoobook.domain.user.User;
-import com.e207.woojoobook.domain.userbook.Userbook;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,22 +17,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-public class WishBook {
+public class Experience {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@ManyToOne
 	private User user;
-	@ManyToOne
-	private Userbook userbook;
+	@Enumerated(EnumType.STRING)
+	private ExperienceHistory history;
+	private int amount;
 
 	@Builder
-	public WishBook(User user, Userbook userbook) {
+	public Experience(User user, ExperienceHistory history, int amount) {
 		this.user = user;
-		this.userbook = userbook;
-	}
-
-	public void removeUser() {
-		this.user = null;
+		this.history = history;
+		this.amount = amount;
 	}
 }

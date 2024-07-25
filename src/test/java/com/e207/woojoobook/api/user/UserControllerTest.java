@@ -15,11 +15,13 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.e207.woojoobook.api.user.request.EmailCodeCreateRequest;
 import com.e207.woojoobook.api.user.request.LoginRequest;
 import com.e207.woojoobook.api.user.request.PasswordUpdateRequest;
 import com.e207.woojoobook.api.user.request.UserCreateRequest;
+import com.e207.woojoobook.api.user.request.UserDeleteRequest;
 import com.e207.woojoobook.api.user.request.UserUpdateRequest;
 import com.e207.woojoobook.api.user.request.VerificationMail;
 import com.e207.woojoobook.api.user.validator.UserValidator;
@@ -194,6 +196,22 @@ class UserControllerTest {
 
 		// when
 		ResultActions resultActions = this.mockMvc.perform(put("/users/password")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(this.objectMapper.writeValueAsString(request)));
+
+		// then
+		resultActions.andExpect(status().isOk());
+	}
+
+	@WithMockUser
+	@DisplayName("회원이 탈퇴를 한다")
+	@Test
+	void delete() throws Exception {
+		// given
+		var request = new UserDeleteRequest("password");
+
+		// when
+		ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.delete("/users")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(this.objectMapper.writeValueAsString(request)));
 

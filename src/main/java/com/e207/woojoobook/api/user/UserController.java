@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import com.e207.woojoobook.api.user.request.EmailCodeCreateRequest;
 import com.e207.woojoobook.api.user.request.LoginRequest;
 import com.e207.woojoobook.api.user.request.PasswordUpdateRequest;
 import com.e207.woojoobook.api.user.request.UserCreateRequest;
+import com.e207.woojoobook.api.user.request.UserDeleteRequest;
 import com.e207.woojoobook.api.user.request.UserUpdateRequest;
 import com.e207.woojoobook.api.user.request.VerificationMail;
 import com.e207.woojoobook.api.user.response.VerifyResponse;
@@ -125,6 +127,16 @@ public class UserController {
 		}
 		this.userService.updatePassword(passwordUpdateRequest);
 		return ResponseEntity.ok().build();
+	}
+
+	@DeleteMapping("/users/")
+	public ResponseEntity<?> delete(@Valid @RequestBody UserDeleteRequest userDeleteRequest,
+		Errors errors) {
+		if (errors.hasErrors()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("필수 입력값입니다.");
+		}
+		this.userService.deleteUser(userDeleteRequest);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	private HttpHeaders createTokenFromAuthentication() {
