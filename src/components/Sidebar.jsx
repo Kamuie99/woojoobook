@@ -1,4 +1,5 @@
 import Button from '../components/Button';
+import Swal from "sweetalert2";
 import { Sidebar as ProSidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
@@ -16,7 +17,12 @@ const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles 
   const handleLogout = () => {
     logout();
     navigate('/');
-    alert('로그아웃 되었습니다.')
+    Swal.fire({
+      title: '로그아웃 되었습니다.',
+      // text: '모든 필드를 입력해주세요.',
+      icon: 'success',
+      confirmButtonText: '확인'
+    })
   };
 
   return (

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { LuBookPlus } from "react-icons/lu";
-
+import { useNavigate } from 'react-router-dom';
+import Swal from "sweetalert2";
 import Header from "../../components/Header";
 import BookSearch from "./BookSearch";
 import SelectedBook from "./SelectedBook";
@@ -12,34 +13,72 @@ const BookRegister = () => {
   const [isRentable, setIsRentable] = useState(false);
   const [isExchangeable, setIsExchangeable] = useState(false);
   const [quality, setQuality] = useState('');
-
-  const handleSubmit = async () => {
-    if (!selectedBook || (!isRentable && !isExchangeable) || !quality) {
-      alert('모든 필드를 입력해주세요.');
-      return;
-    }
-
-    const registerType = getRegisterType();
-
-    try {
-      const response = await axiosInstance.post('/userbooks', {
-        isbn: selectedBook.isbn,
-        registerType: registerType,
-        quality: quality
-      });
-      console.log('Book registered:', response.data);
-      // 성공 메시지 표시 또는 다른 작업 수행
-    } catch (error) {
-      console.error('Error registering book:', error);
-      // 에러 메시지 표시
-    }
-  };
+  const navigate = useNavigate();
 
   const getRegisterType = () => {
     if (isRentable && isExchangeable) return 'RENTAL_EXCHANGE';
     if (isRentable) return 'RENTAL';
     if (isExchangeable) return 'EXCHANGE';
     return '';
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedBook || (!isRentable && !isExchangeable) || !quality) {
+      await Swal.fire({
+        title: '입력 오류',
+        text: '모든 필드를 입력해주세요.',
+        icon: 'error',
+        confirmButtonText: '확인'
+      });
+      return;
+    }
+    
+    const registerType = getRegisterType();
+
+    const truncateTitle = (title, maxLength) => {
+      return title.length > maxLength ? title.slice(0, maxLength) + '...' : title;
+    };
+    
+    const result = await Swal.fire({
+      title: '다음과 같이 등록 하시겠습니까?',
+      html: `
+        <div style="text-align: left; line-height: 1.5;">
+          <p><strong>제목:</strong> ${truncateTitle(selectedBook.title, 20)}</p>
+          <p><strong>대여:</strong> ${isRentable ? '가능' : '불가능'}</p>
+          <p><strong>교환:</strong> ${isExchangeable ? '가능' : '불가능'}</p>
+        </div>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '등록',
+      cancelButtonText: '취소'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.post('/userbooks', {
+          isbn: selectedBook.isbn,
+          registerType: registerType,
+          quality: quality
+        });
+        
+        await Swal.fire({
+          title: "등록 완료!",
+          html: `책이 정상적으로 등록되었습니다.`,
+          icon: "success",
+          confirmButtonText: "확인",
+        });
+        
+        navigate('/'); // 홈으로 이동
+      } catch (error) {
+        await Swal.fire({
+          title: '오류',
+          text: '책 등록 중 오류가 발생했습니다.',
+          icon: 'error',
+          confirmButtonText: '확인'
+        });
+      }
+    }
   };
 
   return (

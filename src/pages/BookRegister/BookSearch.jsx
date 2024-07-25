@@ -10,6 +10,7 @@ const BookSearch = ({ onSelectBook }) => {
   const [bookList, setBookList] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [page, setPage] = useState(1);
+  const [isBookSelected, setIsBookSelected] = useState(false);
   const uniqueBooks = useRef(new Set());
 
   const handleSearch = async () => {
@@ -44,10 +45,11 @@ const BookSearch = ({ onSelectBook }) => {
   const handleSelectBook = (book) => {
     onSelectBook(book);
     setModalIsOpen(false);
+    setIsBookSelected(true);
   };
 
   return (
-    <div className={styles.inputContainer}>
+    <div className={`${styles.inputContainer} ${isBookSelected ? styles.inputContainerSelected : ''}`}>
       <div className={styles.searchInputWrapper}>
         <input
           type="text"
@@ -56,11 +58,9 @@ const BookSearch = ({ onSelectBook }) => {
           onKeyPress={handleKeyPress}
           placeholder="등록하실 책 제목을 입력해주세요"
         />
-        {searchKeyword.trim() && (
-          <button onClick={handleSearch}>
-            <IoSearchOutline /> 
-          </button>
-        )}
+        <button onClick={handleSearch}>
+          <IoSearchOutline /> 
+        </button>
       </div>
       <Modal
         isOpen={modalIsOpen}

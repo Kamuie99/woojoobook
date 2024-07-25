@@ -3,7 +3,15 @@
   justify-content: center;
   align-items: center;
   padding: 10px 20px;
+  height: 80vh;
+  transition: height 0.5s ease;
 }
+
+.inputContainerSelected {
+  height: 10vh;
+}
+
+/* ... 나머지 스타일 유지 ... */
 
 .searchInputWrapper {
   position: relative;
@@ -15,7 +23,7 @@
   padding: 20px;
   padding-right: 40px;
   font-size: 16px;
-  border: 1px solid #ccc;
+  border: 2px solid var(--accent-sub-color);
   border-radius: 30px;
   outline: none;
 }

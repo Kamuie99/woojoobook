@@ -7,7 +7,7 @@
   align-items: center;
   align-self: center;
   gap: 30px;
-  margin-top: 30px;
+  margin-top: 10px;
   background-color: var(--sub-color);
   border-radius: 15px;
 }

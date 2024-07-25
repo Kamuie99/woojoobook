@@ -13,6 +13,7 @@
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   border-radius: 15px;
   overflow-y: auto;
+  min-height: 30vh;
   max-height: 80vh;
   outline: none;
 }
