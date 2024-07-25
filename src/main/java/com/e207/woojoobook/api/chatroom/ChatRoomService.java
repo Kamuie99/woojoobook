@@ -26,6 +26,7 @@ public class ChatRoomService {
 	public ChatRoomResponse create(ChatRoomRequest request) {
 		User sender = userService.findDomainById(request.senderId());
 		User receiver = userService.findDomainById(request.receiverId());
+		checkIfUsersAreDifferent(sender, receiver);
 		ChatRoom chatRoom = createChatRoom(sender, receiver);
 		ChatRoom createdChatRoom = chatRoomRepository.save(chatRoom);
 		return ChatRoomResponse.of(createdChatRoom);
@@ -35,8 +36,7 @@ public class ChatRoomService {
 		User sender = userService.findDomainById(senderId);
 		User receiver = userService.findDomainById(receiverId);
 		Long count = chatRoomRepository.countBySenderAndReceiver(sender, receiver);
-		log.info("room count: {}", count);
-		return ChatRoomCheckResponse.of(count == 1);
+		return ChatRoomCheckResponse.of(count >= 1); // TODO <jhl221123> 동시성 문제 발생
 	}
 
 	public ChatRoomResponse findByUserIds(Long senderId, Long receiverId) {
@@ -67,5 +67,11 @@ public class ChatRoomService {
 	private ChatRoom findDomainBySenderAndReceiver(User sender, User receiver) {
 		return chatRoomRepository.findBySenderAndReceiver(sender, receiver)
 			.orElseThrow(() -> new RuntimeException("채팅방이 존재하지 않습니다."));
+	}
+
+	private void checkIfUsersAreDifferent(User sender, User receiver) {
+		if (sender.getId() == receiver.getId()) {
+			throw new RuntimeException("수신자와 송신자는 다른 사람이어야 합니다.");
+		}
 	}
 }
