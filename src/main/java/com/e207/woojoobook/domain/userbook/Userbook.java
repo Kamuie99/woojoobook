@@ -60,12 +60,15 @@ public class Userbook {
 		this.areaCode = user.getAreaCode();
 	}
 
-	public void inactivate(){
+	public void inactivate() {
 		this.tradeStatus = TradeStatus.UNAVAILABLE;
 	}
 
 	public boolean isAvailable() {
-		return !this.tradeStatus.equals(TradeStatus.UNAVAILABLE);
+		if (this.tradeStatus == TradeStatus.UNAVAILABLE || this.tradeStatus == TradeStatus.EXCHANGED) {
+			return false;
+		}
+		return true;
 	}
 
 	public void setUser(User user) {

@@ -3,8 +3,8 @@ package com.e207.woojoobook.api.extension;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -102,9 +102,9 @@ class ExtensionServiceTest {
 		Optional<Extension> byId = this.extensionRepository.findById(extension.getId());
 		assertTrue(byId.isPresent());
 		LocalDateTime endDate = byId.get().getRental().getEndDate();
-		Duration between = Duration.between(currentEndDate, endDate);
+		long days = ChronoUnit.DAYS.between(currentEndDate, endDate);
 		assertEquals(byId.get().getExtensionStatus(), ExtensionStatus.APPROVED);
-		assertEquals(between.toDays(), 7);
+		assertEquals(days, 7);
 	}
 
 	@DisplayName("연장 신청자가 연장신청을 취소한다")
