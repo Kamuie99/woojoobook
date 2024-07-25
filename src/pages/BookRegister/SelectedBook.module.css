@@ -1,0 +1,113 @@
+.selectedBook {
+  width: 70%;
+  height: 400px;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: center;
+  gap: 30px;
+  margin-top: 30px;
+  background-color: var(--sub-color);
+  border-radius: 15px;
+}
+
+.selectedImgDetail {
+  display: flex;
+  flex-direction: row;
+  width: 80%;
+  height: 300px;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.selectedBook img {
+  width: 100px;
+  height: auto;
+}
+
+.selectedBookDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
+}
+
+.selectedBookDetails h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.selectedBookDetails p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.additionalInfo {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.rentalexchangestate {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.checkboxGroup {
+  width: 60%;
+  margin-bottom: 10px;
+}
+
+.checkboxGroup label {
+  margin-right: 20px;
+}
+
+.checkboxGroup input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.bookCondition {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.emotionImages {
+  width: 60%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+.emotionImages img {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.emotionImages img:not(.selected) {
+  opacity: 0.2;
+}
+
+/* 새로 추가된 스타일 */
+.statusText {
+  font-weight: bold;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.statusRental {
+  color: var(--accent-sub-color);
+}
+
+.statusExchange {
+  color: var(--accent-color);
+}
+
+.statusBoth {
+  color: var(--contrast-color);
+}

@@ -1,0 +1,38 @@
+.bookRegisterContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.bookRegister {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.titleDiv {
+  padding: 10px 20px;
+  font-size: 22px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+}
+
+.submitButton {
+  width: 70%;
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  align-self: center;
+}
+
+.submitButton:hover {
+  background-color: #45a049;
+}

@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Notfound from './pages/Notfound';
-import BookRegister from './pages/BookRegister';
+import BookRegister from './pages/BookRegister/BookRegister';
 import Policy from './pages/Policy';
 import MyActivity from './pages/MyActivity';
 import MyLibrary from './pages/MyLibrary';

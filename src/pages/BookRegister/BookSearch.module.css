@@ -1,0 +1,72 @@
+.inputContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.searchInputWrapper {
+  position: relative;
+  width: 70%;
+}
+
+.searchInputWrapper input {
+  width: 100%;
+  padding: 20px;
+  padding-right: 40px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  outline: none;
+}
+
+.searchInputWrapper button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #555;
+  padding: 5px;
+}
+
+.searchInputWrapper button:hover {
+  color: #000;
+}
+
+.bookList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bookItem {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin: 20px 0;
+}
+
+.bookItem img {
+  width: 50px;
+  height: auto;
+  margin-right: 10px;
+}
+
+.bookDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.bookDetails h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.bookDetails p {
+  margin: 0;
+  font-size: 14px;
+}
