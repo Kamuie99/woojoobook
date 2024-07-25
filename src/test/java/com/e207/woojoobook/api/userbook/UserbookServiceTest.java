@@ -75,7 +75,7 @@ class UserbookServiceTest {
 		userRepository.save(user);
 
 		String expectIsbn = RandomString.make();
-		Book book = Book.builder().isbn(expectIsbn).build();
+		Book book = Book.builder().isbn(expectIsbn).description("test").build();
 
 		BookResponse bookResponse = BookResponse.of(book);
 		given(bookSearchClient.findBookByIsbn(any())).willReturn(Optional.of(bookResponse));

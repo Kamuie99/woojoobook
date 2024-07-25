@@ -10,6 +10,8 @@ import lombok.Builder;
 public record BookResponse(String isbn, String title, String author, String publisher, LocalDate publicationDate,
 						   String thumbnail, String description) {
 
+	private static final int MAX_DESC_LENGTH = 103;
+
 	public static BookResponse of(Book book) {
 		return BookResponse.builder()
 			.isbn(book.getIsbn())
@@ -23,6 +25,11 @@ public record BookResponse(String isbn, String title, String author, String publ
 	}
 
 	public Book toEntity() {
+		String description = this.description;
+		if (description.length() > MAX_DESC_LENGTH) {
+			description = description.substring(0, MAX_DESC_LENGTH-3) + "...";
+		}
+
 		return Book.builder()
 			.isbn(this.isbn)
 			.title(this.title)
@@ -30,7 +37,7 @@ public record BookResponse(String isbn, String title, String author, String publ
 			.publisher(this.publisher)
 			.publicationDate(this.publicationDate)
 			.thumbnail(this.thumbnail)
-			.description(this.description)
+			.description(description)
 			.build();
 	}
 }

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,7 +35,7 @@ public class UserbookController {
 	}
 
 	@PostMapping
-	public ResponseEntity<UserbookResponse> createUserbook(@Valid UserbookCreateRequest userbookCreateRequest) {
+	public ResponseEntity<UserbookResponse> createUserbook(@Valid @RequestBody UserbookCreateRequest userbookCreateRequest) {
 		// todo 예외 처리: Validation 예외 처리
 		Long userId = SecurityUtil.getCurrentUsername();
 		return ResponseEntity.ok(userbookService.createUserbook(userId, userbookCreateRequest));

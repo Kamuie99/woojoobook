@@ -79,6 +79,7 @@ public class UserbookService {
 			.user(user)
 			.qualityStatus(request.quality())
 			.registerType(request.registerType())
+			.tradeStatus(request.registerType().getDefaultTradeStatus())
 			.build();
 		userbookRepository.save(userbook);
 
