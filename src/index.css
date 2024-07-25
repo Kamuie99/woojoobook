@@ -21,6 +21,8 @@ html, body {
 }
 
 #root {
+  display: flex;            /* 추가된 코드입니다. 버그 시 삭제 */
+  flex-direction: column;   /* 추가된 코드입니다. 버그 시 삭제 */
   background-color: white;
   max-width: 900px;
   width: 100%;
