@@ -19,6 +19,7 @@ import jakarta.persistence.OneToMany;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
@@ -31,6 +32,7 @@ public class Userbook {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Book book;
 
+	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	private User user;
 
@@ -71,8 +73,16 @@ public class Userbook {
 		return true;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public boolean isPossibleToChangeRegisterType() {
+		return this.tradeStatus.isPossibleToChangeRegisterType();
+	}
+
+	public boolean canRent() {
+		return this.registerType.canRent() && this.tradeStatus.canRent();
+	}
+
+	public boolean canExchange() {
+		return this.registerType.canExchange() && this.tradeStatus.canExchange();
 	}
 
 	public void removeUser() {
@@ -82,4 +92,14 @@ public class Userbook {
 	public void updateTradeStatus(TradeStatus tradeStatus) {
 		this.tradeStatus = tradeStatus;
 	}
+
+	public void updateRegisterType(RegisterType registerType) {
+		this.registerType = registerType;
+		this.tradeStatus = this.registerType.getDefaultTradeStatus();
+	}
+
+	public void updateQualityStatus(QualityStatus qualityStatus) {
+		this.qualityStatus = qualityStatus;
+	}
+
 }

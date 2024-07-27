@@ -13,6 +13,9 @@ public interface UserbookRepository extends JpaRepository<Userbook, Long>, Userb
 	@EntityGraph(attributePaths = "wishBooks")
 	Userbook findWithWishBookById(Long id);
 
+	@EntityGraph(attributePaths = "user")
+	Optional<Userbook> findWithUserById(Long id);
+
 	@Query("select ub from Userbook ub"
 		+ " join fetch Book sb on ub.book.isbn = sb.isbn"
 		+ " join fetch Book rb on ub.book.isbn = rb.isbn"

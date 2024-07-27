@@ -56,4 +56,8 @@ public class Exchange {
 	public void registerExchangeDate(LocalDateTime exchangeDate) {
 		this.exchangeDate = exchangeDate;
 	}
+
+	public boolean isOffering() {
+		return this.exchangeStatus == IN_PROGRESS;
+	}
 }

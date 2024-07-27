@@ -13,7 +13,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import com.e207.woojoobook.api.user.event.UserBookTradeStatusEvent;
+import com.e207.woojoobook.domain.userbook.event.UserBookTradeStatusUpdateEvent;
 import com.e207.woojoobook.domain.exchange.Exchange;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.userbook.Userbook;
@@ -40,7 +40,7 @@ class ExchangeEventListenerTest {
 		exchangeEventListener.handleExchangeRespond(event);
 
 		//then
-		verify(applicationEventPublisher, times(2)).publishEvent(any(UserBookTradeStatusEvent.class));
+		verify(applicationEventPublisher, times(2)).publishEvent(any(UserBookTradeStatusUpdateEvent.class));
 	}
 
 	@DisplayName("교환 신청을 거절하면 책 상태를 변경하는 이벤트가 발행되지 않는다.")
@@ -53,7 +53,7 @@ class ExchangeEventListenerTest {
 		exchangeEventListener.handleExchangeRespond(event);
 
 		//then
-		verify(applicationEventPublisher, times(0)).publishEvent(any(UserBookTradeStatusEvent.class));
+		verify(applicationEventPublisher, times(0)).publishEvent(any(UserBookTradeStatusUpdateEvent.class));
 	}
 
 	@DisplayName("교환 이벤트 발생 시, 메일이 발송된다.")
@@ -70,28 +70,18 @@ class ExchangeEventListenerTest {
 	}
 
 	private ExchangeRespondEvent createEvent(Boolean isApproved) {
-		return ExchangeRespondEvent.builder()
-			.exchange(createExchange())
-			.isApproved(isApproved)
-			.build();
+		return ExchangeRespondEvent.builder().exchange(createExchange()).isApproved(isApproved).build();
 	}
 
 	private Exchange createExchange() {
-		return Exchange.builder()
-			.senderBook(createUserbook())
-			.receiverBook(createUserbook())
-			.build();
+		return Exchange.builder().senderBook(createUserbook()).receiverBook(createUserbook()).build();
 	}
 
 	private User createUser() {
-		return User.builder()
-			.email("user@email.com")
-			.build();
+		return User.builder().email("user@email.com").build();
 	}
 
 	private Userbook createUserbook() {
-		return Userbook.builder()
-			.user(createUser())
-			.build();
+		return Userbook.builder().user(createUser()).build();
 	}
 }

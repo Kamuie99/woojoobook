@@ -11,8 +11,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import com.e207.woojoobook.api.user.event.UserBookTradeStatusEvent;
 import com.e207.woojoobook.domain.exchange.Exchange;
+import com.e207.woojoobook.domain.exchange.ExchangeRepository;
+import com.e207.woojoobook.domain.userbook.event.UserBookTradeStatusUpdateEvent;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,8 +30,8 @@ public class ExchangeEventListener {
 	public void handleExchangeRespond(ExchangeRespondEvent event) {
 		Exchange exchange = sendMail(event);
 		if (event.isApproved()) {
-			eventPublisher.publishEvent(new UserBookTradeStatusEvent(exchange.getSenderBook(), EXCHANGED));
-			eventPublisher.publishEvent(new UserBookTradeStatusEvent(exchange.getReceiverBook(), EXCHANGED));
+			eventPublisher.publishEvent(new UserBookTradeStatusUpdateEvent(exchange.getSenderBook(), EXCHANGED));
+			eventPublisher.publishEvent(new UserBookTradeStatusUpdateEvent(exchange.getReceiverBook(), EXCHANGED));
 		}
 	}
 

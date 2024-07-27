@@ -63,4 +63,8 @@ public class Rental {
 	public void removeUser() {
 		this.user = null;
 	}
+
+	public boolean isOffering() {
+		return this.rentalStatus == RentalStatus.IN_PROGRESS && this.startDate == null;
+	}
 }

@@ -54,7 +54,7 @@ class UserbookFindRepositoryTest {
 		userbookList.forEach(em::persist);
 
 		// when
-		Page<Userbook> pageResult = userbookRepository.findUserbookList(condition, PageRequest.of(0, 10));
+		Page<Userbook> pageResult = userbookRepository.findUserbookListByPage(condition, PageRequest.of(0, 10));
 		List<Userbook> result = pageResult.getContent();
 
 		// then
@@ -88,7 +88,7 @@ class UserbookFindRepositoryTest {
 		userbookList.forEach(em::persist);
 
 		// when
-		Page<Userbook> pageResult = userbookRepository.findUserbookList(condition, PageRequest.of(0, 10));
+		Page<Userbook> pageResult = userbookRepository.findUserbookListByPage(condition, PageRequest.of(0, 10));
 		List<Userbook> result = pageResult.getContent();
 
 		// then
@@ -128,7 +128,7 @@ class UserbookFindRepositoryTest {
 		userbookList.forEach(em::persist);
 
 		// when
-		Page<Userbook> pageResult = userbookRepository.findUserbookList(condition, PageRequest.of(0, 10));
+		Page<Userbook> pageResult = userbookRepository.findUserbookListByPage(condition, PageRequest.of(0, 10));
 		List<Userbook> result = pageResult.getContent();
 
 		// then
@@ -176,7 +176,6 @@ class UserbookFindRepositoryTest {
 
 	private Book createBookByKeywordInAuthor(String keyword) {
 		String title = RandomString.make(5);
-
 		String prefix = RandomString.make(5);
 		String suffix = RandomString.make(5);
 		String author = prefix + keyword + suffix;

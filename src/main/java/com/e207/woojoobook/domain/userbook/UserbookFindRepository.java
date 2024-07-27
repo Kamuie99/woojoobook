@@ -4,6 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface UserbookFindRepository {
-	Page<Userbook> findUserbookList(UserbookFindCondition condition, Pageable pageable);
+	Page<Userbook> findUserbookListByPage(UserbookFindCondition condition, Pageable pageable);
 	Long countUserbook(UserbookFindCondition condition);
 }

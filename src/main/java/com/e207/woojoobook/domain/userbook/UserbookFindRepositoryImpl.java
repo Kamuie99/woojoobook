@@ -29,7 +29,7 @@ public class UserbookFindRepositoryImpl implements UserbookFindRepository {
 	}
 
 	@Override
-	public Page<Userbook> findUserbookList(UserbookFindCondition condition, Pageable pageable) {
+	public Page<Userbook> findUserbookListByPage(UserbookFindCondition condition, Pageable pageable) {
 		List<Userbook> content = this.queryFactory.selectFrom(userbook)
 			.join(userbook.book, book)
 			.where(isKeywordInTitleOrAuthor(condition.keyword()), isAreaCodeInList(condition.areaCodeList()),

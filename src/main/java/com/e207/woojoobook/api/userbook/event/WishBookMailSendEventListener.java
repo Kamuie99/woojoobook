@@ -1,4 +1,4 @@
-package com.e207.woojoobook.api.user.event;
+package com.e207.woojoobook.api.userbook.event;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
@@ -8,13 +8,14 @@ import org.springframework.stereotype.Component;
 
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
+import com.e207.woojoobook.domain.userbook.event.UserBookTradeStatusUpdateEvent;
 import com.e207.woojoobook.global.mail.Mail;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Component
-public class UserBookEventListener {
+public class WishBookMailSendEventListener {
 
 	@Value("${spring.mail.username}")
 	private String from;
@@ -22,7 +23,7 @@ public class UserBookEventListener {
 	private final UserbookRepository userbookRepository;
 
 	@EventListener
-	public void handleChangeUserBookStatus(UserBookTradeStatusEvent event) {
+	public void handleChangeUserBookTradeStatus(UserBookTradeStatusUpdateEvent event) {
 		Userbook withWishBookById = this.userbookRepository.findWithWishBookById(event.userbook().getId());
 		withWishBookById.getWishBooks().forEach(wishBook -> {
 			String to = wishBook.getUser().getEmail();

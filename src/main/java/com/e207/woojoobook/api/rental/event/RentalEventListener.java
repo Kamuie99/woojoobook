@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import com.e207.woojoobook.api.user.event.UserBookTradeStatusEvent;
 import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.userbook.TradeStatus;
+import com.e207.woojoobook.domain.userbook.event.UserBookTradeStatusUpdateEvent;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +27,10 @@ public class RentalEventListener {
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleRentalRespond(RentalOfferEvent event) {
 		Rental rental = sendMail(event);
+
+		if (event.isApproved()) {
+			eventPublisher.publishEvent(new UserBookTradeStatusUpdateEvent(rental.getUserbook(), TradeStatus.RENTED));
+		}
 	}
 
 	@Async

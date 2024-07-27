@@ -1,36 +1,49 @@
 package com.e207.woojoobook.api.userbook;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
+import org.assertj.core.api.ThrowableAssert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.function.Executable;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import net.bytebuddy.utility.RandomString;
 
 import com.e207.woojoobook.api.book.response.BookResponse;
-import com.e207.woojoobook.api.controller.userbook.request.UserbookCreateRequest;
+import com.e207.woojoobook.api.userbook.request.UserbookCreateRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
+import com.e207.woojoobook.api.userbook.request.UserbookUpdateRequest;
 import com.e207.woojoobook.client.BookSearchClient;
 import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.book.BookRepository;
+import com.e207.woojoobook.domain.exchange.Exchange;
+import com.e207.woojoobook.domain.exchange.ExchangeRepository;
+import com.e207.woojoobook.domain.exchange.ExchangeStatus;
+import com.e207.woojoobook.domain.rental.Rental;
+import com.e207.woojoobook.domain.rental.RentalRepository;
+import com.e207.woojoobook.domain.rental.RentalStatus;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.domain.userbook.QualityStatus;
 import com.e207.woojoobook.domain.userbook.RegisterType;
+import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
+import com.e207.woojoobook.global.helper.UserHelper;
 
 import jakarta.transaction.Transactional;
 
@@ -40,20 +53,36 @@ class UserbookServiceTest {
 
 	@MockBean
 	private BookSearchClient bookSearchClient;
+	@MockBean
+	private UserHelper userHelper;
+	@MockBean
+	private JavaMailSender mailSender;
 	@Autowired
 	private UserbookService userbookService;
 	@Autowired
 	private BookRepository bookRepository;
 	@Autowired
-	private UserRepository userRepository;
-	@Autowired
 	private UserbookRepository userbookRepository;
+	@Autowired
+	private RentalRepository rentalRepository;
+	@Autowired
+	private ExchangeRepository exchangeRepository;
+
+	private User currentUser;
+	@Autowired
+	private UserRepository userRepository;
+
+	@BeforeEach
+	public void setUp() {
+		currentUser = User.builder().build();
+		userRepository.save(currentUser);
+		given(userHelper.findCurrentUser()).willReturn(currentUser);
+	}
 
 	@DisplayName("지역 선택 개수를 초과하면 에러가 발생한다.")
 	@Test
 	void When_ExceedAreaCode_Expect_ThrowException() {
 		// given
-		Long userId = 1L;
 		Pageable pageable = Pageable.ofSize(10);
 
 		Integer MAX_AREA_CODE_SIZE = 3;
@@ -63,33 +92,119 @@ class UserbookServiceTest {
 		UserbookPageFindRequest request = new UserbookPageFindRequest(null, areaCodeList, null);
 
 		// when
-		Executable expectException = () -> userbookService.findUserbookPageList(userId, request, pageable);
+		ThrowableAssert.ThrowingCallable expectException = () -> userbookService.findUserbookPageList(request,
+			pageable);
 
 		// then
-		assertThrows(RuntimeException.class, expectException);
+		assertThatThrownBy(expectException);
 	}
 
 	@DisplayName("사용자가 등록하려는 도서가 저장되어 있지 않으면 저장 후 등록한다.")
-	@Transactional
 	@Test
 	void When_NotExistBook_Expect_SaveBook() {
 		// given
-		User user = User.builder().build();
-		userRepository.save(user);
-
 		String expectIsbn = RandomString.make();
-		Book book = Book.builder().isbn(expectIsbn).description("test").build();
+		Book book = Book.builder().isbn(expectIsbn).description(RandomString.make()).build();
 
 		BookResponse bookResponse = BookResponse.of(book);
 		given(bookSearchClient.findBookByIsbn(any())).willReturn(Optional.of(bookResponse));
 
-		UserbookCreateRequest request = new UserbookCreateRequest(expectIsbn, RegisterType.RENTAL,
-			QualityStatus.GOOD);
+		UserbookCreateRequest request = new UserbookCreateRequest(expectIsbn, RegisterType.RENTAL, QualityStatus.GOOD);
 
 		// when
-		userbookService.createUserbook(user.getId(), request);
+		userbookService.createUserbook(request);
 
 		// then
 		assertTrue(bookRepository.findById(expectIsbn).isPresent());
+	}
+
+	@DisplayName("사용자 도서의 등록 상태가 대여 불가로 변경되면, 모든 대여 신청은 거절된다.")
+	@Transactional
+	@Test
+	void When_DisableRental_Expect_RejectAllOffer() {
+		// given
+		List<User> borrowerList = makeRandomUserList(3);
+
+		Book book = makeRandomBookList(1).get(0);
+		Userbook userbook = makeUserbookList(List.of(currentUser), List.of(book), RegisterType.RENTAL).get(0);
+		makeRental(borrowerList, userbook);
+
+		UserbookUpdateRequest request = new UserbookUpdateRequest(false, true, QualityStatus.GOOD);
+
+		// when
+		userbookService.updateUserbook(userbook.getId(), request);
+		List<Rental> result = rentalRepository.findAllByUserbook(userbook);
+
+		// then
+		assertThat(result).allMatch(rental -> rental.getRentalStatus() == RentalStatus.REJECTED);
+	}
+
+	@DisplayName("사용자 도서의 등록 상태가 교환 불가로 변경되면, 모든 교환 신청은 거절된다.")
+	@Transactional
+	@Test
+	void When_DisableExchange_Expect_RejectAllOffer() {
+		// given
+		List<Book> bookList = makeRandomBookList(4);
+		Book receiverBook = bookList.get(0);
+		List<Book> senderBookList = bookList.subList(1, 4);
+
+		List<User> senderList = makeRandomUserList(3);
+
+		Userbook receiverUserbook = makeUserbookList(List.of(currentUser), List.of(receiverBook),
+			RegisterType.EXCHANGE).get(0);
+		List<Userbook> senderUserbookList = makeUserbookList(senderList, senderBookList, RegisterType.EXCHANGE);
+
+		makeExchange(senderUserbookList, receiverUserbook);
+		UserbookUpdateRequest request = new UserbookUpdateRequest(true, false, QualityStatus.GOOD);
+
+		// when
+		userbookService.updateUserbook(receiverUserbook.getId(), request);
+		List<Exchange> result = exchangeRepository.findAllByReceiverBook(receiverUserbook);
+
+		// then
+		assertThat(result).allMatch(exchange -> exchange.getExchangeStatus() == ExchangeStatus.REJECTED);
+	}
+
+	private List<User> makeRandomUserList(int size) {
+		return Stream.generate(() -> User.builder().build()).limit(size).peek(userRepository::save).toList();
+	}
+
+	private List<Book> makeRandomBookList(int size) {
+		return Stream.generate(() -> Book.builder().isbn(RandomString.make()).build())
+			.limit(size)
+			.peek(bookRepository::save)
+			.toList();
+	}
+
+	private List<Userbook> makeUserbookList(List<User> userList, List<Book> bookList, RegisterType registerType) {
+		assertEquals(userList.size(), bookList.size());
+
+		List<Userbook> userbookList = new ArrayList<>();
+		for (int i = 0; i < userList.size(); i++) {
+			Userbook userbook = Userbook.builder()
+				.user(userList.get(i))
+				.book(bookList.get(i))
+				.registerType(registerType)
+				.tradeStatus(registerType.getDefaultTradeStatus())
+				.qualityStatus(QualityStatus.GOOD)
+				.build();
+			userbookList.add(userbook);
+		}
+		userbookRepository.saveAll(userbookList);
+
+		return userbookList;
+	}
+
+	private void makeRental(List<User> borrowerList, Userbook userbook) {
+		borrowerList.stream()
+			.map(user -> Rental.builder().user(user).userbook(userbook).rentalStatus(RentalStatus.IN_PROGRESS).build())
+			.peek(rentalRepository::save)
+			.toList();
+	}
+
+	private void makeExchange(List<Userbook> senderUserbookList, Userbook receiverUserbook) {
+		senderUserbookList.stream()
+			.map(userbook -> Exchange.builder().senderBook(userbook).receiverBook(receiverUserbook).build())
+			.toList();
 	}
 }
