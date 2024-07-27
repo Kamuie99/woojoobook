@@ -5,6 +5,9 @@ import static org.mockito.BDDMockito.*;
 
 import java.util.Optional;
 
+import com.e207.woojoobook.domain.user.point.Point;
+import com.e207.woojoobook.domain.user.point.PointHistory;
+import com.e207.woojoobook.domain.user.point.PointRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,6 +56,8 @@ class RentalServiceTest {
 	private ExtensionService extensionService;
 	@Autowired
 	private ExtensionRepository extensionRepository;
+	@Autowired
+	private PointRepository pointRepository;
 	@MockBean
 	private JavaMailSender mailSender;
 	@MockBean
@@ -81,6 +86,12 @@ class RentalServiceTest {
 			.areaCode("areaCode")
 			.build();
 		this.user = this.userRepository.save(user);
+		Point point = Point.builder()
+				.user(this.user)
+				.history(PointHistory.BOOK_RENTAL)
+				.amount(PointHistory.BOOK_RENTAL.getAmount())
+				.build();
+		this.pointRepository.save(point);
 
 		// 도서 소유자
 		User owner = User.builder()

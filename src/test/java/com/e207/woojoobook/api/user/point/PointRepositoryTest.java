@@ -1,9 +1,10 @@
-package com.e207.woojoobook.domain.user.point;
+package com.e207.woojoobook.api.user.point;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 
+import com.e207.woojoobook.domain.user.point.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

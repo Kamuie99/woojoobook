@@ -34,6 +34,7 @@ public class UserService {
 	private final UserHelper userHelper;
 	private final PasswordEncoder passwordEncoder;
 	private final VerificationService verificationService;
+	private final UserPersonalFacade userPersonalFacade;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final ApplicationEventPublisher eventPublisher;
 
@@ -111,6 +112,12 @@ public class UserService {
 		User user = this.userHelper.findCurrentUser();
 		checkPassword(user.getId(), userDeleteRequest.password());
 		this.eventPublisher.publishEvent(new UserDeleteEvent(user));
+	}
+
+	@Transactional(readOnly = true)
+	public int retrievePoint() {
+		User user = this.userHelper.findCurrentUser();
+		return this.userPersonalFacade.getUserPoints(user.getId());
 	}
 
 	public User findDomainById(Long id) {

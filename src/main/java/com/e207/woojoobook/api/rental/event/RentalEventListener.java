@@ -27,10 +27,6 @@ public class RentalEventListener {
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleRentalRespond(RentalOfferEvent event) {
 		Rental rental = sendMail(event);
-
-		if (event.isApproved()) {
-			eventPublisher.publishEvent(new UserBookTradeStatusEvent(rental.getUserbook(), TradeStatus.RENTED));
-		}
 	}
 
 	@Async

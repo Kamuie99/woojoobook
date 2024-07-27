@@ -94,6 +94,25 @@ class UserServiceTest {
 		assertNull(rental.get().getUser());
 	}
 
+	@DisplayName("회원의 포인트를 조회한다")
+	@Test
+	void findUserPoint() {
+		// given
+		User user = this.userRepository.save(createUser("password"));
+		PointHistory history = PointHistory.BOOK_EXCHANGE;
+		int expectedPoints = history.getAmount();
+		this.pointRepository.save(createPoint(user, history));
+
+		given(this.userHelper.findCurrentUser()).willReturn(user);
+
+		// when
+		int amount = this.userService.retrievePoint();
+
+		// then
+		assertEquals(amount, expectedPoints);
+
+	}
+
 	private static Rental createRental(Userbook userbook, User user) {
 		Rental rental = Rental.builder()
 			.userbook(userbook)
@@ -108,6 +127,15 @@ class UserServiceTest {
 			.history(PointHistory.ATTENDANCE)
 			.amount(PointHistory.ATTENDANCE.getAmount())
 			.build();
+		return point;
+	}
+
+	private static Point createPoint(User user, PointHistory history) {
+		Point point = Point.builder()
+				.user(user)
+				.history(history)
+				.amount(history.getAmount())
+				.build();
 		return point;
 	}
 

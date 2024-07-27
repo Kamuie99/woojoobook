@@ -1,5 +1,8 @@
 package com.e207.woojoobook.api.rental;
 
+import com.e207.woojoobook.api.user.UserPersonalFacade;
+import com.e207.woojoobook.api.user.event.PointEvent;
+import com.e207.woojoobook.domain.user.point.PointHistory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,50 +27,61 @@ public class RentalService {
 
 	private final UserbookRepository userbookRepository;
 	private final RentalRepository rentalRepository;
+	private final UserPersonalFacade userPersonalFacade;
 	private final ApplicationEventPublisher eventPublisher;
 	private final UserHelper userHelper;
 
 	@Transactional
 	public RentalOfferResponse rentalOffer(Long userbooksId) {
 		Userbook userbook = validateAndFindUserbook(userbooksId);
-		User currentUser = this.userHelper.findCurrentUser();
+		User currentUser = validateAndFindCurrentUser();
 
-		validateIsOwner(userbook, currentUser);
+		checkIsNotOwner(userbook, currentUser);
 
 		Rental rental = Rental.builder()
-			.user(currentUser)
-			.userbook(userbook)
-			.build();
-		Rental save = this.rentalRepository.save(rental);
+				.user(currentUser)
+				.userbook(userbook)
+				.build();
+		Rental savedRental = rentalRepository.save(rental);
 
-		return new RentalOfferResponse(save.getId());
+		return new RentalOfferResponse(savedRental.getId());
 	}
 
 	@Transactional
 	public void offerRespond(Long offerId, RentalOfferRespondRequest request) {
 		Rental rental = validateAndFindRental(offerId);
+		User currentUser = validateAndFindCurrentUser();
 
-		checkCurrentUserIsOwner(rental.getUserbook().getId());
+		checkCurrentUserIsOwner(rental.getUserbook().getUser(), currentUser);
 
-		rental.respond(request.isApproved());
+		boolean isApproved = request.isApproved();
+		boolean hasSufficientPoints = userPersonalFacade.checkPointToRental(rental.getUser().getId());
 
-		validateAndUpdateUserbook(request, rental);
+		if (!isApproved || !hasSufficientPoints) {
+			handleRentalResponse(rental, isApproved);
+			return;
+		}
 
-		eventPublisher.publishEvent(new RentalOfferEvent(rental, request.isApproved()));
+		approveRentalRequest(rental, request);
 	}
 
-	// TODO : 컨트롤러 어드바이스에서 예외 발생시 로그 남기기
 	@Transactional
 	public void deleteRentalOffer(Long offerId) {
-		Rental rental = checkCurrentUserIsOwnerAndFindRental(offerId);
-		this.rentalRepository.delete(rental);
+		Rental rental = validateAndFindRental(offerId);
+		User currentUser = validateAndFindCurrentUser();
+
+		checkCurrentUserIsOwner(rental.getUser(), currentUser);
+		rentalRepository.delete(rental);
 	}
 
 	@Transactional
 	public void giveBack(Long rentalId) {
 		Rental rental = validateAndFindRental(rentalId);
-		checkRentalCurrentUserIsOwner(rental);
+		User currentUser = validateAndFindCurrentUser();
+
+		checkCurrentUserIsOwner(rental.getUserbook().getUser(), currentUser);
 		rental.giveBack();
+
 		Userbook userbook = rental.getUserbook();
 		TradeStatus tradeStatus = userbook.getRegisterType().getDefaultTradeStatus();
 		userbook.updateTradeStatus(tradeStatus);
@@ -75,29 +89,43 @@ public class RentalService {
 		eventPublisher.publishEvent(new UserBookTradeStatusEvent(userbook, tradeStatus));
 	}
 
-	private void checkRentalCurrentUserIsOwner(Rental rental) {
-		if (rental.getUserbook().getUser().getId() != userHelper.findCurrentUser().getId()) {
-			throw new RuntimeException("도서 소유자만이 반납완료를 할 수 있습니다.");
+	private User validateAndFindCurrentUser() {
+		User currentUser = userHelper.findCurrentUser();
+		if (!userPersonalFacade.checkPointToRental(currentUser.getId())) {
+			throw new RuntimeException("대여에 필요한 포인트가 부족합니다.");
 		}
-	}
-
-	private Rental checkCurrentUserIsOwnerAndFindRental(Long offerId) {
-		Rental rental = validateAndFindRental(offerId);
-		if (rental.getUser().getId() != userHelper.findCurrentUser().getId()) {
-			throw new RuntimeException("대여 신청자만 대여 신청을 취소할 수 있습니다.");
-		}
-		return rental;
+		return currentUser;
 	}
 
 	private Rental validateAndFindRental(Long rentalId) {
-		Rental rental = this.rentalRepository.findById(rentalId)
-			.orElseThrow(() -> new RuntimeException("존재하지 않는 대여 신청입니다"));
-		return rental;
+		return rentalRepository.findById(rentalId)
+				.orElseThrow(() -> new RuntimeException("존재하지 않는 대여 신청입니다"));
 	}
 
-	private void validateAndUpdateUserbook(RentalOfferRespondRequest request, Rental rental) {
+	private Userbook validateAndFindUserbook(Long userbooksId) {
+		Userbook userbook = userbookRepository.findById(userbooksId)
+				.orElseThrow(() -> new RuntimeException("존재하지 않는 도서입니다."));
+		if (!userbook.isAvailable()) {
+			throw new RuntimeException("접근이 불가능한 도서 상태입니다.");
+		}
+		return userbook;
+	}
+
+	private void checkCurrentUserIsOwner(User owner, User currentUser) {
+		if (!owner.getId().equals(currentUser.getId())) {
+			throw new RuntimeException("권한이 없습니다.");
+		}
+	}
+
+	private void checkIsNotOwner(Userbook userbook, User currentUser) {
+		if (userbook.getUser().equals(currentUser)) {
+			throw new RuntimeException("자신의 책은 대여 신청 대상이 아닙니다.");
+		}
+	}
+
+	private void updateUserbookIfApproved(RentalOfferRespondRequest request, Rental rental) {
 		if (request.isApproved()) {
-			Userbook userbook = this.userbookRepository.findWithWishBookById(rental.getUserbook().getId());
+			Userbook userbook = userbookRepository.findWithWishBookById(rental.getUserbook().getId());
 			if (!userbook.isAvailable()) {
 				throw new RuntimeException("대여가 불가능한 도서 상태입니다.");
 			}
@@ -105,27 +133,20 @@ public class RentalService {
 		}
 	}
 
-	private void checkCurrentUserIsOwner(Long userbookId) {
-		Userbook userbook = validateAndFindUserbook(userbookId);
-		if (userbook.getUser().getId() != this.userHelper.findCurrentUser().getId()) {
-			throw new RuntimeException("도서의 소유자만이 신청에 응답할 수 있습니다.");
-		}
+	private void handleRentalResponse(Rental rental, boolean isApproved) {
+		rental.respond(isApproved);
+		eventPublisher.publishEvent(new RentalOfferEvent(rental, isApproved));
 	}
 
-	private Userbook validateAndFindUserbook(Long userbooksId) {
-		Userbook userbook = this.userbookRepository.findById(userbooksId)
-			.orElseThrow(() -> new RuntimeException("존재하지 않는 도서입니다."));
-
-		if (!userbook.isAvailable()) {
-			throw new RuntimeException("접근이 불가능한 도서 상태입니다.");
-		}
-
-		return userbook;
+	private void approveRentalRequest(Rental rental, RentalOfferRespondRequest request) {
+		rental.respond(request.isApproved());
+		updateUserbookIfApproved(request, rental);
+		publishRentalApprovalEvents(rental);
 	}
 
-	private void validateIsOwner(Userbook userbook, User currentUser) {
-		if (userbook.getUser() == currentUser) {
-			throw new RuntimeException("자신의 책은 대여 신청 대상이 아닙니다.");
-		}
+	private void publishRentalApprovalEvents(Rental rental) {
+		eventPublisher.publishEvent(new RentalOfferEvent(rental, true));
+		eventPublisher.publishEvent(new PointEvent(rental.getUser(), PointHistory.USE_BOOK_RENTAL));
+		eventPublisher.publishEvent(new UserBookTradeStatusEvent(rental.getUserbook(), TradeStatus.RENTED));
 	}
 }
