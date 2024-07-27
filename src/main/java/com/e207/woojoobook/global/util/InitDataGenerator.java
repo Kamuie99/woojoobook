@@ -26,6 +26,7 @@ public class InitDataGenerator {
 			.email("test@test.com")
 			.password(passwordEncoder.encode("1234"))
 			.nickname("testUser")
+			.areaCode("1111051500")
 			.build();
 		userRepository.save(user);
 		transactionManager.commit(ts);

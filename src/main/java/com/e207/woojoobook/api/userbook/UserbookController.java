@@ -27,15 +27,18 @@ public class UserbookController {
 	private final UserbookService userbookService;
 
 	@GetMapping
-	public ResponseEntity<Page<UserbookResponse>> findUserbookPageList(
-		@ModelAttribute UserbookPageFindRequest condition, @PageableDefault(sort = "title") Pageable pageable) {
+	public ResponseEntity<Page<UserbookResponse>> findUserbookPageList(@ModelAttribute UserbookPageFindRequest request,
+		@PageableDefault(sort = "title") Pageable pageable) {
+		UserbookPageFindRequest condition = new UserbookPageFindRequest(request.keyword(), request.areaCodeList(),
+			request.registerType());
 		Long userId = SecurityUtil.getCurrentUsername();
 		Page<UserbookResponse> userbookPageList = userbookService.findUserbookPageList(userId, condition, pageable);
 		return ResponseEntity.ok(userbookPageList);
 	}
 
 	@PostMapping
-	public ResponseEntity<UserbookResponse> createUserbook(@Valid @RequestBody UserbookCreateRequest userbookCreateRequest) {
+	public ResponseEntity<UserbookResponse> createUserbook(
+		@Valid @RequestBody UserbookCreateRequest userbookCreateRequest) {
 		// todo 예외 처리: Validation 예외 처리
 		Long userId = SecurityUtil.getCurrentUsername();
 		return ResponseEntity.ok(userbookService.createUserbook(userId, userbookCreateRequest));

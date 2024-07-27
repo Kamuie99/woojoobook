@@ -17,7 +17,6 @@ import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.book.BookRepository;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
-import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookFindCondition;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
 

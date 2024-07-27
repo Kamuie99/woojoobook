@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
+import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.global.util.DynamicQueryHelper;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -33,13 +34,12 @@ public class UserbookFindRepositoryImpl implements UserbookFindRepository {
 			.join(userbook.book, book)
 			.where(isKeywordInTitleOrAuthor(condition.keyword()), isAreaCodeInList(condition.areaCodeList()),
 				canExecuteTrade(condition.registerType()), hasRegisterType(condition.registerType()))
-			.orderBy(this.queryHelper.generateFieldSort(Userbook.class, pageable.getSort(), "userbook"))
+			.orderBy(this.queryHelper.generateFieldSort(Book.class, pageable.getSort(), "userbook.book"))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
 
 		Long count = this.countUserbook(condition);
-
 		return new PageImpl<>(content, pageable, count);
 	}
 
