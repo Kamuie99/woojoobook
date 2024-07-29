@@ -5,5 +5,5 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record NaverBookApiResponse(List<NaverBookItem> items) {
+public record NaverBookApiResponse(Integer total, List<NaverBookItem> items) {
 }

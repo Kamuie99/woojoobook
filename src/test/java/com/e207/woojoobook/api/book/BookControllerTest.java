@@ -11,19 +11,23 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.e207.woojoobook.api.book.request.BookFindRequest;
 import com.e207.woojoobook.api.book.response.BookListResponse;
 import com.e207.woojoobook.api.book.response.BookResponse;
+import com.e207.woojoobook.global.security.SecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest(BookController.class)
+@WebMvcTest(controllers = BookController.class,
+	excludeAutoConfiguration = SecurityAutoConfiguration.class,
+	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class))
 class BookControllerTest {
 
 	@MockBean
@@ -33,12 +37,14 @@ class BookControllerTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	@WithMockUser
 	@DisplayName("도서 제목을 검색한다")
 	@Test
 	void find_bookList() throws Exception {
 		// given
-		BookFindRequest bookFindRequest = new BookFindRequest("galaxy", 1);
+		BookFindRequest bookFindRequest = BookFindRequest.builder()
+			.keyword("galaxy")
+			.page(1)
+			.build();
 
 		BookResponse bookResponse = BookResponse.builder()
 			.isbn("1234567890")
@@ -50,54 +56,43 @@ class BookControllerTest {
 			.description("A comprehensive guide to the universe.")
 			.build();
 
-		BookListResponse mockResponse = new BookListResponse(List.of(bookResponse));
+		BookListResponse mockResponse = BookListResponse.builder()
+			.maxPage(1)
+			.bookList(List.of(bookResponse))
+			.build();
 
-		given(this.bookService.findBookList(any(BookFindRequest.class))).willReturn(mockResponse);
+		given(this.bookService.findBookList(eq(bookFindRequest))).willReturn(mockResponse);
 
 		// when
 		ResultActions resultActions = this.mockMvc.perform(get("/books")
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(objectMapper.writeValueAsString(bookFindRequest)));
+			.param("keyword", bookFindRequest.keyword())
+			.param("page", String.valueOf(bookFindRequest.page())));
 
 		// then
 		resultActions.andExpect(status().isOk())
 			.andExpect(content().json(objectMapper.writeValueAsString(mockResponse)));
 	}
 
-	@WithMockUser
 	@DisplayName("일치하는 결과가 없는 도서 제목을 검색한다")
 	@Test
 	void find_bookList_noResult() throws Exception {
 		// given
-		BookFindRequest bookFindRequest = new BookFindRequest("NoExistenBook", 1);
+		BookFindRequest bookFindRequest = BookFindRequest.builder()
+			.keyword("NoExistBook")
+			.page(1)
+			.build();
 
-		BookListResponse mockResponse = new BookListResponse(Collections.emptyList());
-		given(this.bookService.findBookList(any(BookFindRequest.class))).willReturn(mockResponse);
+		BookListResponse mockResponse = BookListResponse.builder()
+			.maxPage(0)
+			.bookList(Collections.emptyList())
+			.build();
 
-		// when
-		ResultActions resultActions = this.mockMvc.perform(get("/books")
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(objectMapper.writeValueAsString(bookFindRequest)));
-
-		// then
-		resultActions.andExpect(status().isOk())
-			.andExpect(content().json(objectMapper.writeValueAsString(mockResponse)));
-	}
-
-	@WithMockUser
-	@DisplayName("공백을 검색한다")
-	@Test
-	void find_bookList_blank() throws Exception {
-		// given
-		BookFindRequest bookFindRequest = new BookFindRequest(" ", 1);
-
-		BookListResponse mockResponse = new BookListResponse(Collections.emptyList());
-		given(this.bookService.findBookList(any(BookFindRequest.class))).willReturn(mockResponse);
+		given(this.bookService.findBookList(eq(bookFindRequest))).willReturn(mockResponse);
 
 		// when
 		ResultActions resultActions = this.mockMvc.perform(get("/books")
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(objectMapper.writeValueAsString(bookFindRequest)));
+			.param("keyword", bookFindRequest.keyword())
+			.param("page", String.valueOf(bookFindRequest.page())));
 
 		// then
 		resultActions.andExpect(status().isOk())

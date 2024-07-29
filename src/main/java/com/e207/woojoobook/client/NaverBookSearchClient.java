@@ -1,17 +1,12 @@
 package com.e207.woojoobook.client;
 
-import java.net.URI;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.util.UriBuilder;
 
 import com.e207.woojoobook.api.book.response.BookListResponse;
 import com.e207.woojoobook.api.book.response.BookResponse;
@@ -46,13 +41,16 @@ public class NaverBookSearchClient implements BookSearchClient {
 			.body(NaverBookApiResponse.class);
 
 		List<BookResponse> bookResponses = new ArrayList<>();
+		Integer totalResult = 0;
 		if (naverBookApiResponse != null && naverBookApiResponse.items() != null) {
+			totalResult = naverBookApiResponse.total();
 			for (NaverBookItem item : naverBookApiResponse.items()) {
 				BookResponse bookResponse = item.toBookResponse();
 				bookResponses.add(bookResponse);
 			}
 		}
-		return new BookListResponse(bookResponses);
+		Integer maxPage = totalResult != 0 ? (totalResult / size) + 1 : 0;
+		return new BookListResponse(maxPage, bookResponses);
 	}
 
 	@Override

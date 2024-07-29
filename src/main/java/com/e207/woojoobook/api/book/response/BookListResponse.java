@@ -5,5 +5,5 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record BookListResponse(List<BookResponse> bookList) {
+public record BookListResponse(Integer maxPage, List<BookResponse> bookList) {
 }
