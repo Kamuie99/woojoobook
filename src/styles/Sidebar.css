@@ -6,13 +6,13 @@
   height: 100%;
   background-color: var(--sub-color);
   visibility: hidden;
-  opacity: 0;
-  transition: visibility 0s, right 0.3s ease, opacity 0.1s ease; /* opacity 트랜지션 추가 */
+  opacity: 1 !important;
+  transition: visibility 0s, right 0.3s ease;
 }
 
 .header_sidebar.sidebar_open {
-  visibility: visible; /* 사이드바 열린 상태 */
-  opacity: 1; /* 사이드바 열린 상태 */
+  visibility: visible !important; /* 사이드바 열린 상태 */
+  opacity: 1 !important; /* 사이드바 열린 상태 */
   right: 0; /* 사이드바 열린 상태 */
 }
 
