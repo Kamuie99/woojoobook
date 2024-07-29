@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.e207.woojoobook.domain.book.Book;
-import com.e207.woojoobook.domain.book.WishBook;
+import com.e207.woojoobook.domain.userbook.WishBook;
 import com.e207.woojoobook.domain.user.User;
 
 import jakarta.persistence.Entity;

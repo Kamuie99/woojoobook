@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import com.e207.woojoobook.domain.book.WishBook;
-import com.e207.woojoobook.domain.book.WishBookRepository;
+import com.e207.woojoobook.domain.userbook.WishBook;
+import com.e207.woojoobook.domain.userbook.WishBookRepository;
 import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.rental.RentalRepository;
 import com.e207.woojoobook.domain.user.User;

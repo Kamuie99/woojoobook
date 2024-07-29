@@ -89,6 +89,7 @@ public class SecurityConfig {
 				request.requestMatchers(AUTH_WHITELIST).permitAll()
 					.requestMatchers(HttpMethod.POST, "/users").permitAll()
 					.requestMatchers(HttpMethod.GET, "/users/nicknames/**").permitAll()
+					.requestMatchers("/ws/**", "/sub/**", "/pub/**").permitAll()
 					.anyRequest().authenticated();
 			})
 			.sessionManagement(sessionManagement ->

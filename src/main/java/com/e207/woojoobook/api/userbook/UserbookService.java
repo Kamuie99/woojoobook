@@ -76,4 +76,8 @@ public class UserbookService {
 
 		return UserbookResponse.of(userbook);
 	}
+
+	public Userbook findUserbook(Long id) {
+		return userbookReader.findDomain(id);
+	}
 }

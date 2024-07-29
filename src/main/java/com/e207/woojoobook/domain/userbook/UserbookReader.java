@@ -49,4 +49,8 @@ public class UserbookReader {
 			.build();
 		return userbookRepository.save(userbook);
 	}
+
+	public Userbook findUserbook(Long id) {
+		return userbookRepository.findUserbookById(id).orElseThrow(() -> new RuntimeException("사용자 도서가 없습니다."));
+	}
 }

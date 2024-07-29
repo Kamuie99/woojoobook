@@ -24,4 +24,6 @@ public interface UserbookRepository extends JpaRepository<Userbook, Long>, Userb
 
 	@EntityGraph(attributePaths = "user")
 	List<Userbook> findWithUserByUser(User user);
+
+	Optional<Userbook> findUserbookById(Long id);
 }
