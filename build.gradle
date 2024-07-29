@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.1'
 	id 'io.spring.dependency-management' version '1.1.5'
+	id "org.sonarqube" version "4.4.1.3373"
+	id "jacoco"
 }
 
 group = 'com.woojoobook'
@@ -68,4 +70,72 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
+
+sonar {
+	properties {
+		property "sonar.projectKey", "sonar-book"
+		property "sonar.projectName", "sonar-book"
+		property "sonar.language", "java"
+		property "sonar.sourceEncoding", "UTF-8"
+		property "sonar.sources", "src/main/java"
+		property "sonar.tests", "src/test/java"
+		property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
+		property "sonar.java.binaries", "build/classes/java/main"
+		property "sonar.test.inclusions", "**/*Test.java"
+		property "sonar.exclusions", "**/util/**, **/support/**, **/dto/**"
+	}
+}
+
+jacoco {
+	toolVersion = '0.8.12'
+	// reportsDir = ${project.reporting.baseDir}/jacoco - 따로 설정해 주지 않을 경우 기본 경로
+}
+
+jacocoTestReport {
+	dependsOn test // tests are required to run before generating the report
+
+	reports {
+		html.required = true // html 보고서를 활성화
+		xml.required = true  // xml 보고서를 활성화
+		csv.required = false // csv 보고서를 비활성화
+	}
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			enabled = true
+			element = 'CLASS'
+
+			// 브랜치 커버리지 최소 50%
+			limit {
+				counter = 'BRANCH'
+				value = 'COVEREDRATIO'
+				minimum = 0.50
+			}
+
+			// 라인 커버리지 최소한 80%
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.80
+			}
+
+			// 빈 줄을 제외한 코드의 라인수 최대 300라인
+			limit {
+				counter = 'LINE'
+				value = 'TOTALCOUNT'
+				maximum = 300
+			}
+
+			// 커버리지 체크를 제외할 클래스들
+			excludes = []
+		}
+	}
+}
+
+test {
+	jacoco {}
 }

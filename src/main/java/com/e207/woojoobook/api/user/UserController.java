@@ -129,7 +129,7 @@ public class UserController {
 		return ResponseEntity.ok().build();
 	}
 
-	@DeleteMapping("/users/")
+	@DeleteMapping("/users")
 	public ResponseEntity<?> delete(@Valid @RequestBody UserDeleteRequest userDeleteRequest,
 		Errors errors) {
 		if (errors.hasErrors()) {
