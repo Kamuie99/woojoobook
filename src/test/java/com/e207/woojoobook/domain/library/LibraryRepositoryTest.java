@@ -1,7 +1,6 @@
 package com.e207.woojoobook.domain.library;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
@@ -31,18 +30,35 @@ class LibraryRepositoryTest {
 	@Test
 	void findMaxOrderNumber() {
 		// given
-		User testUser = mock(User.class);
+		User testUser = User.builder()
+			.email("test@email.com")
+			.password("password")
+			.nickname("test")
+			.areaCode("areacode")
+			.build();
 		em.persist(testUser);
 
-		Library library1 = new Library(testUser, "카테고리1", "책 리스트1", 2L);
-		Library library2 = new Library(testUser, "카테고리2", "책 리스트2", 4L);
+		Library library1 = Library.builder()
+			.user(testUser)
+			.name("카테고리1")
+			.bookList("책 리스트1")
+			.orderNumber(2L)
+			.build();
+		Library library2 = Library.builder()
+			.user(testUser)
+			.name("카테고리2")
+			.bookList("책 리스트2")
+			.orderNumber(4L)
+			.build();
+
 		em.persist(library1);
 		em.persist(library2);
 
 		em.flush();
+		em.clear();
 
 		// when
-		Optional<Long> result = libraryRepository.findMaxOrderNumber();
+		Optional<Long> result = libraryRepository.findMaxOrderNumber(testUser.getId());
 
 		// then
 		assertThat(result).isPresent();
@@ -53,12 +69,17 @@ class LibraryRepositoryTest {
 	@Test
 	void findMaxOrderNumberWhenCategoryEmpty() {
 		// given
-		User testUser = mock(User.class);
+		User testUser = User.builder()
+			.email("test@email.com")
+			.password("password")
+			.nickname("test")
+			.areaCode("areacode")
+			.build();
 		em.persist(testUser);
 		em.flush();
 
 		// when
-		Optional<Long> result = libraryRepository.findMaxOrderNumber();
+		Optional<Long> result = libraryRepository.findMaxOrderNumber(testUser.getId());
 
 		// then
 		assertThat(result).isEmpty();

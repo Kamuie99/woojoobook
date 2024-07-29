@@ -41,11 +41,16 @@ class LibraryServiceTest {
 		userRepository.save(user);
 		when(userHelper.findCurrentUser()).thenReturn(user);
 
-		Library library = new Library(user, "카테고리1", "책 리스트", 1L);
+		Library library = Library.builder()
+			.user(user)
+			.name("카테고리")
+			.bookList("책 리스트")
+			.orderNumber(1L)
+			.build();
 		libraryRepository.save(library);
 
 		// when
-		LibraryResponse libraryResponse = libraryService.find(library.getId());
+		LibraryResponse libraryResponse = libraryService.find(user.getId(), library.getId());
 
 		// then
 		assertThat(libraryResponse).isNotNull();
@@ -61,9 +66,9 @@ class LibraryServiceTest {
 		when(userHelper.findCurrentUser()).thenReturn(user);
 
 		// when & then
-		assertThatThrownBy(() -> libraryService.find(1L))
+		assertThatThrownBy(() -> libraryService.find(1L, user.getId()))
 			.isInstanceOf(RuntimeException.class)
-			.hasMessage("library not found");
+			.hasMessage("Category not found");
 	}
 
 	@DisplayName("새로운 카테고리를 생성한다")
@@ -74,10 +79,13 @@ class LibraryServiceTest {
 		userRepository.save(user);
 		when(userHelper.findCurrentUser()).thenReturn(user);
 
-		LibraryCreateRequest libraryCreateRequest = new LibraryCreateRequest("카테고리명", "책 리스트");
+		LibraryCreateRequest libraryCreateRequest = LibraryCreateRequest.builder()
+			.categoryName("카테고리명")
+			.books("책 리스트")
+			.build();
 
 		// when
-		LibraryResponse result = libraryService.create(libraryCreateRequest);
+		LibraryResponse result = libraryService.create(user.getId(), libraryCreateRequest);
 
 		// then
 		assertThat(result).isNotNull();
@@ -92,13 +100,21 @@ class LibraryServiceTest {
 		userRepository.save(user);
 		when(userHelper.findCurrentUser()).thenReturn(user);
 
-		Library library = new Library(user, "카테고리1", "책 리스트", 1L);
+		Library library = Library.builder()
+			.user(user)
+			.name("카테고리")
+			.bookList("책 리스트")
+			.orderNumber(1L)
+			.build();
 		libraryRepository.save(library);
 
-		LibraryUpdateRequest libraryUpdateRequest = new LibraryUpdateRequest("카테고리명 수정", "책 리스트 수정");
+		LibraryUpdateRequest libraryUpdateRequest = LibraryUpdateRequest.builder()
+			.categoryName("카테고리명 수정")
+			.books("책 리스트 수정")
+			.build();
 
 		// when
-		LibraryResponse result = libraryService.update(library.getId(), libraryUpdateRequest);
+		LibraryResponse result = libraryService.update(user.getId(), library.getId(), libraryUpdateRequest);
 
 		// then
 		assertThat(result.categoryName()).isEqualTo("카테고리명 수정");
@@ -113,12 +129,15 @@ class LibraryServiceTest {
 		userRepository.save(user);
 		when(userHelper.findCurrentUser()).thenReturn(user);
 
-		LibraryUpdateRequest libraryUpdateRequest = new LibraryUpdateRequest("카테고리명 수정", "책 리스트 수정");
+		LibraryUpdateRequest libraryUpdateRequest = LibraryUpdateRequest.builder()
+			.categoryName("카테고리명 수정")
+			.books("책 리스트 수정")
+			.build();
 
 		// when & then
-		assertThatThrownBy(() -> libraryService.update(1L, libraryUpdateRequest))
+		assertThatThrownBy(() -> libraryService.update(user.getId(), 1L, libraryUpdateRequest))
 			.isInstanceOf(RuntimeException.class)
-			.hasMessage("library not found");
+			.hasMessage("Category not found");
 	}
 
 	@DisplayName("등록된 카테고리를 삭제한다")
@@ -129,11 +148,16 @@ class LibraryServiceTest {
 		userRepository.save(user);
 		when(userHelper.findCurrentUser()).thenReturn(user);
 
-		Library library = new Library(user, "카테고리1", "책 리스트", 1L);
+		Library library = Library.builder()
+			.user(user)
+			.name("카테고리")
+			.bookList("책 리스트")
+			.orderNumber(1L)
+			.build();
 		libraryRepository.save(library);
 
 		// when
-		libraryService.delete(library.getId());
+		libraryService.delete(user.getId(), library.getId());
 
 		// then
 		assertThat(libraryRepository.findById(library.getId())).isEmpty();
@@ -148,9 +172,9 @@ class LibraryServiceTest {
 		when(userHelper.findCurrentUser()).thenReturn(user);
 
 		// when & then
-		assertThatThrownBy(() -> libraryService.delete(1L))
+		assertThatThrownBy(() -> libraryService.delete(user.getId(), 1L))
 			.isInstanceOf(RuntimeException.class)
-			.hasMessage("library not found");
+			.hasMessage("Category not found");
 	}
 
 	@DisplayName("카테고리의 순서를 교환한다")
@@ -161,13 +185,23 @@ class LibraryServiceTest {
 		userRepository.save(user);
 		when(userHelper.findCurrentUser()).thenReturn(user);
 
-		Library library1 = new Library(user, "카테고리1", "책 리스트1", 1L);
-		Library library2 = new Library(user, "카테고리2", "책 리스트2", 3L);
+		Library library1 = Library.builder()
+			.user(user)
+			.name("카테고리1")
+			.bookList("책 리스트1")
+			.orderNumber(1L)
+			.build();
+		Library library2 = Library.builder()
+			.user(user)
+			.name("카테고리2")
+			.bookList("책 리스트2")
+			.orderNumber(3L)
+			.build();
 		libraryRepository.save(library1);
 		libraryRepository.save(library2);
 
 		// when
-		libraryService.swapOrderNumber(library1.getId(), library2.getId());
+		libraryService.swapOrderNumber(user.getId(), library1.getId(), library2.getId());
 
 		// then
 		Library updatedLibrary1 = libraryRepository.findById(library1.getId()).orElseThrow();

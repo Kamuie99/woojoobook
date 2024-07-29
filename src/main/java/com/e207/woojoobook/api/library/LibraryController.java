@@ -20,41 +20,43 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@RequestMapping("/libraries")
+@RequestMapping("/users/{userId}/libraries")
 @RestController
 public class LibraryController {
 	private final LibraryService libraryService;
 
 	@GetMapping
-	public ResponseEntity<LibraryListResponse> findList() {
-		return ResponseEntity.status(HttpStatus.OK).body(libraryService.findList());
+	public ResponseEntity<LibraryListResponse> findList(@PathVariable Long userId) {
+		return ResponseEntity.status(HttpStatus.OK).body(libraryService.findList(userId));
 	}
 
-	@GetMapping("/{id}")
-	public ResponseEntity<LibraryResponse> findById(@PathVariable Long id) {
-		return ResponseEntity.status(HttpStatus.OK).body(libraryService.find(id));
+	@GetMapping("/{categoryId}")
+	public ResponseEntity<LibraryResponse> findById(@PathVariable Long userId, @PathVariable Long categoryId) {
+		return ResponseEntity.status(HttpStatus.OK).body(libraryService.find(userId, categoryId));
 	}
 
 	@PostMapping("/categories")
-	public ResponseEntity<LibraryResponse> create(@Valid @RequestBody LibraryCreateRequest request) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(libraryService.create(request));
+	public ResponseEntity<LibraryResponse> create(@PathVariable Long userId,
+		@Valid @RequestBody LibraryCreateRequest request) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(libraryService.create(userId, request));
 	}
 
-	@PutMapping("/categories/{id}")
-	public ResponseEntity<LibraryResponse> update(@PathVariable Long id,
+	@PutMapping("/categories/{categoryId}")
+	public ResponseEntity<LibraryResponse> update(@PathVariable Long userId, @PathVariable Long categoryId,
 		@RequestBody LibraryUpdateRequest request) {
-		return ResponseEntity.status(HttpStatus.OK).body(libraryService.update(id, request));
+		return ResponseEntity.status(HttpStatus.OK).body(libraryService.update(userId, categoryId, request));
 	}
 
 	@PutMapping("/categories/{from}/{to}")
-	public ResponseEntity<?> swapOrderNumber(@PathVariable Long from, @PathVariable Long to) {
-		libraryService.swapOrderNumber(from, to);
+	public ResponseEntity<?> swapOrderNumber(@PathVariable Long userId, @PathVariable Long from,
+		@PathVariable Long to) {
+		libraryService.swapOrderNumber(userId, from, to);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
-	@DeleteMapping("/categories/{id}")
-	public ResponseEntity<?> delete(@PathVariable Long id) {
-		libraryService.delete(id);
+	@DeleteMapping("/categories/{categoryId}")
+	public ResponseEntity<?> delete(@PathVariable Long userId, @PathVariable Long categoryId) {
+		libraryService.delete(userId, categoryId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

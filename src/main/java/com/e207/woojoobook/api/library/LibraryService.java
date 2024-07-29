@@ -24,14 +24,19 @@ public class LibraryService {
 	private final LibraryRepository libraryRepository;
 	private final UserHelper userHelper;
 
-	private Library findByIdAndUserId(Long id, Long userId) {
-		return libraryRepository.findByIdAndUserId(id, userId)
-			.orElseThrow(() -> new RuntimeException("library not found"));
+	private Library findByIdAndUserId(Long categoryId, Long userId) {
+		return libraryRepository.findByIdAndUserId(categoryId, userId)
+			.orElseThrow(() -> new RuntimeException("Category not found"));
+	}
+
+	private void verifyOwnership(Long userId, Long currentUserId) {
+		if (!userId.equals(currentUserId)) {
+			throw new RuntimeException("카테고리 접근 권한이 없을 때 던지는 예외");
+		}
 	}
 
 	@Transactional(readOnly = true)
-	public LibraryListResponse findList() {
-		Long userId = userHelper.findCurrentUser().getId();
+	public LibraryListResponse findList(Long userId) {
 		List<Library> categoryList = libraryRepository.findByUserId(userId);
 
 		List<LibraryResponse> libraryResponses = categoryList.stream()
@@ -44,16 +49,15 @@ public class LibraryService {
 	}
 
 	@Transactional(readOnly = true)
-	public LibraryResponse find(Long id) {
-		Long userId = userHelper.findCurrentUser().getId();
-		Library library = findByIdAndUserId(id, userId);
+	public LibraryResponse find(Long userId, Long categoryId) {
+		Library library = findByIdAndUserId(categoryId, userId);
 		return LibraryResponse.of(library);
 	}
 
 	@Transactional
-	public LibraryResponse create(LibraryCreateRequest request) {
+	public LibraryResponse create(Long userId, LibraryCreateRequest request) {
 		User user = userHelper.findCurrentUser();
-		Long newOrderNumber = findMaxOrderNumber() + 1L;
+		Long newOrderNumber = findMaxOrderNumber(userId) + 1L;
 		Library library = libraryRepository.save(Library.builder()
 			.user(user)
 			.name(request.categoryName())
@@ -65,25 +69,33 @@ public class LibraryService {
 	}
 
 	@Transactional
-	public LibraryResponse update(Long id, LibraryUpdateRequest request) {
-		Long userId = userHelper.findCurrentUser().getId();
-		Library library = findByIdAndUserId(id, userId);
+	public LibraryResponse update(Long userId, Long categoryId, LibraryUpdateRequest request) {
+		Library library = findByIdAndUserId(categoryId, userId);
+
+		Long currentUserId = userHelper.findCurrentUser().getId();
+		verifyOwnership(userId, currentUserId);
+
 		library.update(request.categoryName(), request.books());
 		return LibraryResponse.of(library);
 	}
 
 	@Transactional
-	public void delete(Long id) {
-		Long userId = userHelper.findCurrentUser().getId();
-		Library library = findByIdAndUserId(id, userId);
+	public void delete(Long userId, Long categoryId) {
+		Library library = findByIdAndUserId(categoryId, userId);
+
+		Long currentUserId = userHelper.findCurrentUser().getId();
+		verifyOwnership(userId, currentUserId);
+
 		libraryRepository.delete(library);
 	}
 
 	@Transactional
-	public void swapOrderNumber(Long fromId, Long toId) {
-		Long userId = userHelper.findCurrentUser().getId();
+	public void swapOrderNumber(Long userId, Long fromId, Long toId) {
 		Library fromLibrary = findByIdAndUserId(fromId, userId);
 		Library toLibrary = findByIdAndUserId(toId, userId);
+
+		Long currentUserId = userHelper.findCurrentUser().getId();
+		verifyOwnership(userId, currentUserId);
 
 		Long tempOrderNumber = fromLibrary.getOrderNumber();
 		fromLibrary.updateOrderNumber(toLibrary.getOrderNumber());
@@ -94,7 +106,7 @@ public class LibraryService {
 	}
 
 	@Transactional(readOnly = true)
-	public Long findMaxOrderNumber() {
-		return libraryRepository.findMaxOrderNumber().orElse(0L);
+	public Long findMaxOrderNumber(Long userId) {
+		return libraryRepository.findMaxOrderNumber(userId).orElse(0L);
 	}
 }

@@ -49,17 +49,29 @@ class LibraryControllerTest {
 		User testUser = mock(User.class);
 		when(testUser.getId()).thenReturn(1L);
 
-		Library library1 = new Library(testUser, "카테고리1", "책 리스트1", 2L);
-		Library library2 = new Library(testUser, "카테고리2", "책 리스트2", 4L);
+		Library library1 = Library.builder()
+			.user(testUser)
+			.name("카테고리1")
+			.bookList("책 리스트1")
+			.orderNumber(2L)
+			.build();
+		Library library2 = Library.builder()
+			.user(testUser)
+			.name("카테고리2")
+			.bookList("책 리스트2")
+			.orderNumber(4L)
+			.build();
 
 		LibraryResponse libraryResponse1 = LibraryResponse.of(library1);
 		LibraryResponse libraryResponse2 = LibraryResponse.of(library2);
 
-		LibraryListResponse libraryListResponse = new LibraryListResponse(List.of(libraryResponse1, libraryResponse2));
-		given(this.libraryService.findList()).willReturn(libraryListResponse);
+		LibraryListResponse libraryListResponse = LibraryListResponse.builder()
+			.libraryList(List.of(libraryResponse1, libraryResponse2))
+			.build();
+		given(this.libraryService.findList(testUser.getId())).willReturn(libraryListResponse);
 
 		// when
-		ResultActions resultActions = this.mockMvc.perform(get("/libraries"));
+		ResultActions resultActions = this.mockMvc.perform(get("/users/{userId}/libraries", testUser.getId()));
 
 		// then
 		resultActions.andExpect(status().isOk())
@@ -72,14 +84,20 @@ class LibraryControllerTest {
 		// given
 		User testUser = mock(User.class);
 
-		Library library = new Library(testUser, "카테고리1", "책 리스트", 2L);
+		Library library = Library.builder()
+			.user(testUser)
+			.name("카테고리")
+			.bookList("책 리스트")
+			.orderNumber(2L)
+			.build();
 		LibraryResponse libraryResponse = LibraryResponse.of(library);
 		String jsonResponse = objectMapper.writeValueAsString(libraryResponse);
 
-		given(this.libraryService.find(eq(1L))).willReturn(libraryResponse);
+		given(this.libraryService.find(eq(testUser.getId()), eq(1L))).willReturn(libraryResponse);
 
 		// when
-		ResultActions resultActions = this.mockMvc.perform(get("/libraries/{id}", 1L));
+		ResultActions resultActions = this.mockMvc.perform(
+			get("/users/{userId}/libraries/{categoryId}", testUser.getId(), 1L));
 
 		// then
 		resultActions.andExpect(status().isOk())
@@ -93,16 +111,25 @@ class LibraryControllerTest {
 		User testUser = mock(User.class);
 		when(testUser.getId()).thenReturn(1L);
 
-		Library library = new Library(testUser, "카테고리1", "책 리스트", 2L);
+		Library library = Library.builder()
+			.user(testUser)
+			.name("카테고리")
+			.bookList("책 리스트")
+			.orderNumber(2L)
+			.build();
 		LibraryResponse libraryResponse = LibraryResponse.of(library);
 
-		LibraryCreateRequest libraryCreateRequest = new LibraryCreateRequest("카테고리1", "책 리스트");
-		given(this.libraryService.create(eq(libraryCreateRequest))).willReturn(libraryResponse);
+		LibraryCreateRequest libraryCreateRequest = LibraryCreateRequest.builder()
+			.categoryName("카테고리")
+			.books("책 리스트")
+			.build();
+		given(this.libraryService.create(eq(testUser.getId()), eq(libraryCreateRequest))).willReturn(libraryResponse);
 
 		// when
-		ResultActions resultActions = this.mockMvc.perform(post("/libraries/categories")
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(this.objectMapper.writeValueAsString(libraryCreateRequest)));
+		ResultActions resultActions = this.mockMvc.perform(
+			post("/users/{userId}/libraries/categories", testUser.getId())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(this.objectMapper.writeValueAsString(libraryCreateRequest)));
 
 		// then
 		resultActions.andExpect(status().isCreated())
@@ -116,16 +143,26 @@ class LibraryControllerTest {
 		User testUser = mock(User.class);
 		when(testUser.getId()).thenReturn(1L);
 
-		Library library = new Library(testUser, "카테고리1", "책 리스트", 2L);
+		Library library = Library.builder()
+			.user(testUser)
+			.name("카테고리")
+			.bookList("책 리스트")
+			.orderNumber(2L)
+			.build();
 		LibraryResponse libraryResponse = LibraryResponse.of(library);
 
-		LibraryUpdateRequest libraryUpdateRequest = new LibraryUpdateRequest("카테고리 수정", "책 리스트");
-		given(this.libraryService.update(eq(1L), eq(libraryUpdateRequest))).willReturn(libraryResponse);
+		LibraryUpdateRequest libraryUpdateRequest = LibraryUpdateRequest.builder()
+			.categoryName("카테고리 수정")
+			.books("책 리스트")
+			.build();
+		given(this.libraryService.update(eq(testUser.getId()), eq(1L), eq(libraryUpdateRequest))).willReturn(
+			libraryResponse);
 
 		// when
-		ResultActions resultActions = this.mockMvc.perform(put("/libraries/categories/{id}", 1L)
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(this.objectMapper.writeValueAsString(libraryUpdateRequest)));
+		ResultActions resultActions = this.mockMvc.perform(
+			put("/users/{userId}/libraries/categories/{categoryId}", testUser.getId(), 1L)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(this.objectMapper.writeValueAsString(libraryUpdateRequest)));
 
 		// then
 		resultActions.andExpect(status().isOk())
@@ -139,16 +176,26 @@ class LibraryControllerTest {
 		User testUser = mock(User.class);
 		when(testUser.getId()).thenReturn(1L);
 
-		Library library = new Library(testUser, "카테고리1", "책 리스트", 2L);
+		Library library = Library.builder()
+			.user(testUser)
+			.name("카테고리")
+			.bookList("책 리스트")
+			.orderNumber(2L)
+			.build();
 		LibraryResponse libraryResponse = LibraryResponse.of(library);
 
-		LibraryUpdateRequest libraryUpdateRequest = new LibraryUpdateRequest("카테고리1", "변경된 책 리스트");
-		given(this.libraryService.update(eq(1L), eq(libraryUpdateRequest))).willReturn(libraryResponse);
+		LibraryUpdateRequest libraryUpdateRequest = LibraryUpdateRequest.builder()
+			.categoryName("카테고리1")
+			.books("변경된 책 리스트")
+			.build();
+		given(this.libraryService.update(eq(testUser.getId()), eq(1L), eq(libraryUpdateRequest))).willReturn(
+			libraryResponse);
 
 		// when
-		ResultActions resultActions = this.mockMvc.perform(put("/libraries/categories/{id}", 1L)
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(this.objectMapper.writeValueAsString(libraryUpdateRequest)));
+		ResultActions resultActions = this.mockMvc.perform(
+			put("/users/{userId}/libraries/categories/{categoryId}", testUser.getId(), 1L)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(this.objectMapper.writeValueAsString(libraryUpdateRequest)));
 
 		// then
 		resultActions.andExpect(status().isOk())
@@ -157,32 +204,46 @@ class LibraryControllerTest {
 
 	@DisplayName("나의 서재에 있는 카테고리 순서를 변경한다")
 	@Test
-	void swapOrderNumberNumber() throws Exception {
+	void swapOrderNumber() throws Exception {
 		// given
-		doNothing().when(libraryService).swapOrderNumber(eq(2L), eq(3L));
+		User testUser = mock(User.class);
+		when(testUser.getId()).thenReturn(1L);
+
+		doNothing().when(libraryService).swapOrderNumber(eq(1L), eq(2L), eq(3L));
 
 		// when
-		ResultActions resultActions = this.mockMvc.perform(put("/libraries/categories/{from}/{to}", 2L, 3L));
+		ResultActions resultActions = this.mockMvc.perform(
+			put("/users/{userId}/libraries/categories/{from}/{to}", testUser.getId(), 2L, 3L));
 
 		// then
 		resultActions.andExpect(status().isOk())
 			.andDo(print());
-		verify(libraryService).swapOrderNumber(2L, 3L);
+		verify(libraryService).swapOrderNumber(1L, 2L, 3L);
 	}
 
 	@DisplayName("나의 서재에 있는 카테고리 하나를 삭제한다")
 	@Test
 	void delete() throws Exception {
 		// given
-		doNothing().when(libraryService).delete(1L);
+		User testUser = mock(User.class);
+		when(testUser.getId()).thenReturn(1L);
+
+		Library library = Library.builder()
+			.user(testUser)
+			.name("카테고리1")
+			.bookList("책 리스트")
+			.orderNumber(2L)
+			.build();
+
+		doNothing().when(libraryService).delete(1L, library.getId());
 
 		// when
 		ResultActions resultActions = this.mockMvc.perform(
-			MockMvcRequestBuilders.delete("/libraries/categories/{id}", 1L));
+			MockMvcRequestBuilders.delete("/users/{userId}/libraries/categories/{id}", testUser.getId(), 1L));
 
 		// then
 		resultActions.andExpect(status().isNoContent())
 			.andDo(print());
-		verify(libraryService).delete(eq(1L));
+		verify(libraryService).delete(eq(1L), eq(1L));
 	}
 }
