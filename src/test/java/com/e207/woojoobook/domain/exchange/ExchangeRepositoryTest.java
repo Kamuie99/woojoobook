@@ -82,9 +82,9 @@ class ExchangeRepositoryTest {
 		Exchange exchange = createExchange(mine, userbook);
 		Exchange approvedExchange = createExchange(mine, userbook);
 		Exchange rejectedExchange = createExchange(mine, userbook);
-		exchangeRepository.saveAll(List.of(exchange, approvedExchange, rejectedExchange));
 		approvedExchange.respond(APPROVED);
 		rejectedExchange.respond(REJECTED);
+		exchangeRepository.saveAll(List.of(exchange, approvedExchange, rejectedExchange));
 
 		// when
 		Page<Exchange> result = exchangeRepository.findAllByExchangeStatus(APPROVED, PageRequest.of(0, 10));
@@ -109,9 +109,9 @@ class ExchangeRepositoryTest {
 		Exchange exchange = createExchange(mine, userbook);
 		Exchange approvedExchange = createExchange(mine, userbook);
 		Exchange rejectedExchange = createExchange(mine, userbook);
-		exchangeRepository.saveAll(List.of(exchange, approvedExchange, rejectedExchange));
 		approvedExchange.respond(APPROVED);
 		rejectedExchange.respond(REJECTED);
+		exchangeRepository.saveAll(List.of(exchange, approvedExchange, rejectedExchange));
 
 		// when
 		Page<Exchange> result = exchangeRepository.findAllByExchangeStatus(REJECTED, PageRequest.of(0, 10));
@@ -136,8 +136,8 @@ class ExchangeRepositoryTest {
 		Exchange exchangeAsSender = createExchange(mine, userbook);
 		Exchange exchangeAsReceiver = createExchange(userbook, mine);
 		Exchange completedExchange = createExchange(mine, userbook);
-		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 		completedExchange.respond(APPROVED);
+		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 
 		// when
 		Page<Exchange> result = exchangeRepository.findAllWithUserConditionAndExchangeStatus(me.getId(), SENDER,
@@ -166,8 +166,8 @@ class ExchangeRepositoryTest {
 		Exchange exchangeAsSender = createExchange(mine, userbook);
 		Exchange exchangeAsReceiver = createExchange(userbook, mine);
 		Exchange completedExchange = createExchange(mine, userbook);
-		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 		completedExchange.respond(APPROVED);
+		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 
 		// when
 		Page<Exchange> result = exchangeRepository.findAllWithUserConditionAndExchangeStatus(me.getId(), RECEIVER,
@@ -195,13 +195,12 @@ class ExchangeRepositoryTest {
 		Exchange exchangeAsSender = createExchange(mine, userbook);
 		Exchange exchangeAsReceiver = createExchange(userbook, mine);
 		Exchange completedExchange = createExchange(mine, userbook);
-		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 		completedExchange.respond(APPROVED);
+		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 
 		// when
 		Page<Exchange> result = exchangeRepository.findAllWithUserConditionAndExchangeStatus(me.getId(),
-			SENDER_RECEIVER,
-			IN_PROGRESS, PageRequest.of(0, 10));
+			SENDER_RECEIVER, IN_PROGRESS, PageRequest.of(0, 10));
 
 		///then
 		List<Exchange> exchanges = result.getContent();

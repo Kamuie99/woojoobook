@@ -1,13 +1,18 @@
 package com.e207.woojoobook.api.rental;
 
+import static com.e207.woojoobook.domain.rental.RentalStatus.*;
+import static com.e207.woojoobook.domain.rental.RentalUserCondition.*;
+import static com.e207.woojoobook.domain.userbook.QualityStatus.*;
+import static com.e207.woojoobook.domain.userbook.RegisterType.*;
+import static com.e207.woojoobook.domain.userbook.TradeStatus.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
-import com.e207.woojoobook.domain.user.point.Point;
-import com.e207.woojoobook.domain.user.point.PointHistory;
-import com.e207.woojoobook.domain.user.point.PointRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,13 +21,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import com.e207.woojoobook.api.extension.ExtensionService;
+import com.e207.woojoobook.api.rental.request.RentalFindCondition;
 import com.e207.woojoobook.api.rental.request.RentalOfferRespondRequest;
 import com.e207.woojoobook.api.rental.response.RentalOfferResponse;
-import com.e207.woojoobook.domain.userbook.WishBook;
-import com.e207.woojoobook.domain.userbook.WishBookRepository;
+import com.e207.woojoobook.api.rental.response.RentalResponse;
+import com.e207.woojoobook.api.userbook.response.UserbookResponse;
+import com.e207.woojoobook.domain.book.Book;
+import com.e207.woojoobook.domain.book.BookRepository;
 import com.e207.woojoobook.domain.extension.Extension;
 import com.e207.woojoobook.domain.extension.ExtensionRepository;
 import com.e207.woojoobook.domain.rental.Rental;
@@ -30,10 +40,15 @@ import com.e207.woojoobook.domain.rental.RentalRepository;
 import com.e207.woojoobook.domain.rental.RentalStatus;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
+import com.e207.woojoobook.domain.user.point.Point;
+import com.e207.woojoobook.domain.user.point.PointHistory;
+import com.e207.woojoobook.domain.user.point.PointRepository;
 import com.e207.woojoobook.domain.userbook.RegisterType;
 import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
+import com.e207.woojoobook.domain.userbook.WishBook;
+import com.e207.woojoobook.domain.userbook.WishBookRepository;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 import jakarta.mail.internet.MimeMessage;
@@ -44,6 +59,8 @@ class RentalServiceTest {
 
 	@Autowired
 	private RentalService rentalService;
+	@Autowired
+	private BookRepository bookRepository;
 	@Autowired
 	private UserbookRepository userbookRepository;
 	@Autowired
@@ -87,10 +104,10 @@ class RentalServiceTest {
 			.build();
 		this.user = this.userRepository.save(user);
 		Point point = Point.builder()
-				.user(this.user)
-				.history(PointHistory.BOOK_RENTAL)
-				.amount(PointHistory.BOOK_RENTAL.getAmount())
-				.build();
+			.user(this.user)
+			.history(PointHistory.BOOK_RENTAL)
+			.amount(PointHistory.BOOK_RENTAL.getAmount())
+			.build();
 		this.pointRepository.save(point);
 
 		// 도서 소유자
@@ -259,5 +276,94 @@ class RentalServiceTest {
 		// then
 		Optional<Extension> byId = this.extensionRepository.findById(extensionId);
 		assertTrue(byId.isPresent());
+	}
+
+	@DisplayName("조건에 맞는 대여 목록을 조회한다.")
+	@Test
+	void findRentalByCondition() {
+		// given
+		User me = createUser("me");
+		User user = createUser("someone");
+		userRepository.saveAll(List.of(me, user));
+
+		Userbook mine = createUserbook(me, "001");
+		Userbook userbook = createUserbook(user, "002");
+		userbookRepository.saveAll(List.of(mine, userbook));
+
+		Rental asSender = createRental(me, userbook, OFFERING);
+		Rental asReceiver = createRental(user, mine, OFFERING);
+		Rental rental1 = createRental(me, userbook, COMPLETED);
+		Rental rental2 = createRental(me, userbook, REJECTED);
+		Rental rental3 = createRental(me, userbook, IN_PROGRESS);
+		rentalRepository.saveAll(List.of(asSender, asReceiver, rental1, rental2, rental3));
+
+		given(userHelper.findCurrentUser()).willReturn(me);
+		RentalFindCondition condition = new RentalFindCondition(RECEIVER, OFFERING);
+
+		// when
+		Page<RentalResponse> result = rentalService.findRentalOffer(condition, PageRequest.of(0, 10));
+
+		///then
+		List<RentalResponse> rentals = result.getContent();
+		assertRentalWithRentalStatus(rentals, 1, OFFERING);
+
+		UserbookResponse receiverBook = rentals.get(0).userbook();
+		assertThatUserbookMatchExactly(receiverBook, mine);
+	}
+
+	private User createUser(String nickname) {
+		return User.builder()
+			.email("user@email.com")
+			.password("encrypted password")
+			.nickname(nickname)
+			.areaCode("1234567")
+			.build();
+	}
+
+	private Book createBook(String isbn, String title, LocalDate publicationDate) {
+		return Book.builder()
+			.isbn(isbn)
+			.title(title)
+			.author("author")
+			.publisher("publisher")
+			.publicationDate(publicationDate)
+			.thumbnail("thumbnail")
+			.description("description")
+			.build();
+	}
+
+	private Userbook createUserbook(User user, String isbn) {
+		LocalDate publicationDate = LocalDate.of(2024, 7, 22);
+		Book book = createBook(isbn, "title", publicationDate);
+		bookRepository.save(book);
+
+		return Userbook.builder()
+			.book(book)
+			.user(user)
+			.qualityStatus(NORMAL)
+			.registerType(RENTAL)
+			.tradeStatus(RENTAL_AVAILABLE)
+			.build();
+	}
+
+	private Rental createRental(User user, Userbook userbook, RentalStatus rentalStatus) {
+		return Rental.builder()
+			.user(user)
+			.userbook(userbook)
+			.rentalStatus(rentalStatus)
+			.build();
+	}
+
+	private void assertRentalWithRentalStatus(List<RentalResponse> resultContent, int size, RentalStatus rentalStatus) {
+		assertThat(resultContent)
+			.hasSize(size)
+			.extracting("rentalStatus").contains(rentalStatus);
+	}
+
+	private void assertThatUserbookMatchExactly(UserbookResponse target, Userbook pair) {
+		assertThat(target)
+			.extracting("id", "qualityStatus", "registerType", "tradeStatus")
+			.containsExactlyInAnyOrder(pair.getId(), pair.getQualityStatus(), pair.getRegisterType(),
+				pair.getTradeStatus());
 	}
 }

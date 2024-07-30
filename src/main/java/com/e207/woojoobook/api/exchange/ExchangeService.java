@@ -67,9 +67,9 @@ public class ExchangeService {
 	}
 
 	@Transactional
-	public Page<ExchangeResponse> findExchangeOffer(ExchangeOfferFindCondition condition, Pageable pageable) {
+	public Page<ExchangeResponse> findExchangeOffer(ExchangeOfferFindCondition offerCondition, Pageable pageable) {
 		Long userId = userHelper.findCurrentUser().getId();
-		ExchangeUserCondition userCond = condition.userCondition();
+		ExchangeUserCondition userCond = offerCondition.userCondition();
 		return exchangeRepository.findAllWithUserConditionAndExchangeStatus(userId, userCond, IN_PROGRESS, pageable)
 			.map(ExchangeResponse::of);
 	}

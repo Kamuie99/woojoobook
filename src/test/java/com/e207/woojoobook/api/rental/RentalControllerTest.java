@@ -1,7 +1,10 @@
 package com.e207.woojoobook.api.rental;
 
+import static com.e207.woojoobook.domain.rental.RentalStatus.*;
+import static com.e207.woojoobook.domain.rental.RentalUserCondition.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +18,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import com.e207.woojoobook.api.rental.request.RentalFindCondition;
 import com.e207.woojoobook.api.rental.request.RentalOfferRespondRequest;
 import com.e207.woojoobook.api.rental.response.RentalOfferResponse;
 import com.e207.woojoobook.domain.user.UserRepository;
@@ -50,6 +54,23 @@ class RentalControllerTest {
 		// then
 		resultActions.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.rentalId").exists());
+	}
+
+	@WithMockUser
+	@DisplayName("대여 신청 내역을 조회한다.")
+	@Test
+	void findRentalOffer() throws Exception {
+		// given
+		RentalFindCondition request = new RentalFindCondition(SENDER_RECEIVER, OFFERING);
+		String requestJson = objectMapper.writeValueAsString(request);
+
+		// expected
+		mockMvc.perform(get("/rentals/offer")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestJson)
+			)
+			.andDo(print())
+			.andExpect(status().isOk());
 	}
 
 	@WithMockUser

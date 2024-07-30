@@ -212,9 +212,9 @@ class ExchangeServiceTest {
 		Exchange exchange = createExchange(mine, userbook);
 		Exchange approvedExchange = createExchange(mine, userbook);
 		Exchange rejectedExchange = createExchange(mine, userbook);
-		exchangeRepository.saveAll(List.of(exchange, approvedExchange, rejectedExchange));
 		approvedExchange.respond(APPROVED);
 		rejectedExchange.respond(REJECTED);
+		exchangeRepository.saveAll(List.of(exchange, approvedExchange, rejectedExchange));
 
 		ExchangeFindCondition condition = new ExchangeFindCondition(APPROVED);
 
@@ -242,9 +242,9 @@ class ExchangeServiceTest {
 		Exchange exchange = createExchange(mine, userbook);
 		Exchange approvedExchange = createExchange(mine, userbook);
 		Exchange rejectedExchange = createExchange(mine, userbook);
-		exchangeRepository.saveAll(List.of(exchange, approvedExchange, rejectedExchange));
 		approvedExchange.respond(APPROVED);
 		rejectedExchange.respond(REJECTED);
+		exchangeRepository.saveAll(List.of(exchange, approvedExchange, rejectedExchange));
 
 		ExchangeFindCondition condition = new ExchangeFindCondition(REJECTED);
 
@@ -272,8 +272,8 @@ class ExchangeServiceTest {
 		Exchange exchangeAsSender = createExchange(mine, userbook);
 		Exchange exchangeAsReceiver = createExchange(userbook, mine);
 		Exchange completedExchange = createExchange(mine, userbook);
-		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 		completedExchange.respond(APPROVED);
+		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 
 		given(userHelper.findCurrentUser()).willReturn(me);
 
@@ -306,8 +306,8 @@ class ExchangeServiceTest {
 		Exchange exchangeAsSender = createExchange(mine, userbook);
 		Exchange exchangeAsReceiver = createExchange(userbook, mine);
 		Exchange completedExchange = createExchange(mine, userbook);
-		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 		completedExchange.respond(APPROVED);
+		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 
 		given(userHelper.findCurrentUser()).willReturn(me);
 
@@ -340,8 +340,8 @@ class ExchangeServiceTest {
 		Exchange exchangeAsSender = createExchange(mine, userbook);
 		Exchange exchangeAsReceiver = createExchange(userbook, mine);
 		Exchange completedExchange = createExchange(mine, userbook);
-		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 		completedExchange.respond(APPROVED);
+		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 
 		given(userHelper.findCurrentUser()).willReturn(me);
 

@@ -1,22 +1,30 @@
 package com.e207.woojoobook.api.rental;
 
-import com.e207.woojoobook.api.user.UserPersonalFacade;
-import com.e207.woojoobook.api.user.event.PointEvent;
-import com.e207.woojoobook.domain.user.point.PointHistory;
-import com.e207.woojoobook.domain.userbook.event.UserBookTradeStatusUpdateEvent;
+import static com.e207.woojoobook.domain.rental.RentalStatus.*;
+
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.e207.woojoobook.api.rental.event.RentalOfferEvent;
+import com.e207.woojoobook.api.rental.request.RentalFindCondition;
 import com.e207.woojoobook.api.rental.request.RentalOfferRespondRequest;
 import com.e207.woojoobook.api.rental.response.RentalOfferResponse;
+import com.e207.woojoobook.api.rental.response.RentalResponse;
+import com.e207.woojoobook.api.user.UserPersonalFacade;
+import com.e207.woojoobook.api.user.event.PointEvent;
 import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.rental.RentalRepository;
+import com.e207.woojoobook.domain.rental.RentalStatus;
+import com.e207.woojoobook.domain.rental.RentalUserCondition;
 import com.e207.woojoobook.domain.user.User;
+import com.e207.woojoobook.domain.user.point.PointHistory;
 import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
+import com.e207.woojoobook.domain.userbook.event.UserBookTradeStatusUpdateEvent;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 import lombok.RequiredArgsConstructor;
@@ -39,12 +47,22 @@ public class RentalService {
 		checkIsNotOwner(userbook, currentUser);
 
 		Rental rental = Rental.builder()
-				.user(currentUser)
-				.userbook(userbook)
-				.build();
+			.user(currentUser)
+			.userbook(userbook)
+			.rentalStatus(OFFERING)
+			.build();
 		Rental savedRental = this.rentalRepository.save(rental);
 
 		return new RentalOfferResponse(savedRental.getId());
+	}
+
+	@Transactional
+	public Page<RentalResponse> findRentalOffer(RentalFindCondition conditionForFind, Pageable pageable) {
+		Long userId = userHelper.findCurrentUser().getId();
+		RentalUserCondition userCondition = conditionForFind.userCondition();
+		RentalStatus rentalStatus = conditionForFind.rentalStatus();
+		return rentalRepository.findByStatusAndUserCondition(userId, rentalStatus, userCondition, pageable)
+			.map(RentalResponse::of);
 	}
 
 	@Transactional
@@ -87,7 +105,7 @@ public class RentalService {
 		userbook.updateTradeStatus(tradeStatus);
 
 		this.eventPublisher.publishEvent(new UserBookTradeStatusUpdateEvent
-				(userbook, tradeStatus));
+			(userbook, tradeStatus));
 	}
 
 	private User validateCanRentalAndFindCurrentUser() {
@@ -100,12 +118,12 @@ public class RentalService {
 
 	private Rental validateAndFindRental(Long rentalId) {
 		return this.rentalRepository.findById(rentalId)
-				.orElseThrow(() -> new RuntimeException("존재하지 않는 대여 신청입니다"));
+			.orElseThrow(() -> new RuntimeException("존재하지 않는 대여 신청입니다"));
 	}
 
 	private Userbook validateAndFindUserbook(Long userbooksId) {
 		Userbook userbook = this.userbookRepository.findById(userbooksId)
-				.orElseThrow(() -> new RuntimeException("존재하지 않는 도서입니다."));
+			.orElseThrow(() -> new RuntimeException("존재하지 않는 도서입니다."));
 		if (!userbook.isAvailable()) {
 			throw new RuntimeException("접근이 불가능한 도서 상태입니다.");
 		}

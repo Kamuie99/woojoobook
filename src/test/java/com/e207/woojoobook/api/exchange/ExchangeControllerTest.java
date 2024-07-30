@@ -1,6 +1,7 @@
 package com.e207.woojoobook.api.exchange;
 
 import static com.e207.woojoobook.domain.exchange.ExchangeStatus.*;
+import static com.e207.woojoobook.domain.exchange.ExchangeUserCondition.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.e207.woojoobook.api.exchange.request.ExchangeCreateRequest;
 import com.e207.woojoobook.api.exchange.request.ExchangeFindCondition;
+import com.e207.woojoobook.api.exchange.request.ExchangeOfferFindCondition;
 import com.e207.woojoobook.api.exchange.request.ExchangeOfferRespondRequest;
 import com.e207.woojoobook.global.security.SecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -77,7 +79,7 @@ class ExchangeControllerTest {
 	@Test
 	void findExchangeOffer() throws Exception {
 		// given
-		ExchangeFindCondition request = new ExchangeFindCondition(APPROVED);
+		ExchangeOfferFindCondition request = new ExchangeOfferFindCondition(SENDER_RECEIVER);
 		String requestJson = objectMapper.writeValueAsString(request);
 
 		// expected
