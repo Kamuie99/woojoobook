@@ -82,16 +82,16 @@ const Chatting = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
   
-
+  const brokerURL = import.meta.env.VITE_APP_STOMP_BROKER_URL;
   const connect = () => {
     client.current = new StompJs.Client({
-      brokerURL: 'ws://localhost:8080/ws',
+      brokerURL,
       connectHeaders: {
         'Authorization': `Bearer ${token}`
       },
-      debug: function (str) {
-        console.log(str);
-      },
+      // debug: function (str) {
+      //   console.log(str);
+      // },
       onConnect: () => {
         console.log('웹소켓 연결 성공');
       },
