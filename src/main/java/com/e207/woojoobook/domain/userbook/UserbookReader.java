@@ -36,7 +36,8 @@ public class UserbookReader {
 	}
 
 	public Userbook findDomain(Long id) {
-		return userbookRepository.findFetchById(id).orElseThrow(() -> new RuntimeException("userbook not found"));
+		return userbookRepository.findByIdWithUserAndBook(id)
+			.orElseThrow(() -> new RuntimeException("userbook not found"));
 	}
 
 	public Userbook createUserbook(User user, Book book, RegisterType registerType, QualityStatus quality) {

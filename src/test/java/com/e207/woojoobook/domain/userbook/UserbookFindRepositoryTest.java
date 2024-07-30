@@ -139,6 +139,12 @@ class UserbookFindRepositoryTest {
 			.allMatch(tradeStatus -> tradeStatus.equals(TradeStatus.RENTAL_AVAILABLE));
 	}
 
+	@DisplayName("사용자 등록 도서 조회 시, 사용자와 책 정보도 함께 조회한다.")
+	@Test
+	void findByIdWithUserAndBookSuccess() {
+		// TODO <jhl221123> 테스트
+	}
+
 	private User createUserByAreaCode(String areaCode) {
 		return User.builder()
 			.email(RandomString.make())

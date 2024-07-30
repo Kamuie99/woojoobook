@@ -37,7 +37,8 @@ public class User {
 	private List<Experience> experiences = new ArrayList<>();
 
 	@Builder
-	private User(String email, String password, String nickname, String areaCode) {
+	private User(Long id, String email, String password, String nickname, String areaCode) {
+		this.id = id;
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;

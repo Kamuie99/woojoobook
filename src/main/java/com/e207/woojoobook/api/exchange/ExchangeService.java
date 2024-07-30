@@ -1,19 +1,24 @@
 package com.e207.woojoobook.api.exchange;
 
+import static com.e207.woojoobook.domain.exchange.ExchangeStatus.*;
 import static com.e207.woojoobook.domain.userbook.TradeStatus.*;
 
-import java.time.LocalDateTime;
-
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.e207.woojoobook.api.exchange.event.ExchangeRespondEvent;
 import com.e207.woojoobook.api.exchange.request.ExchangeCreateRequest;
+import com.e207.woojoobook.api.exchange.request.ExchangeFindCondition;
+import com.e207.woojoobook.api.exchange.request.ExchangeOfferFindCondition;
 import com.e207.woojoobook.api.exchange.request.ExchangeOfferRespondRequest;
 import com.e207.woojoobook.api.exchange.response.ExchangeResponse;
+import com.e207.woojoobook.api.userbook.UserbookService;
 import com.e207.woojoobook.domain.exchange.Exchange;
 import com.e207.woojoobook.domain.exchange.ExchangeRepository;
+import com.e207.woojoobook.domain.exchange.ExchangeUserCondition;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookReader;
@@ -26,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class ExchangeService {
 
 	private final ExchangeRepository exchangeRepository;
+	private final UserbookService userbookService;
 	private final UserbookReader userbookReader;
 	private final ApplicationEventPublisher eventPublisher;
 	private final UserHelper userHelper;
@@ -50,16 +56,31 @@ public class ExchangeService {
 	}
 
 	public Exchange findDomain(Long id) {
-		return exchangeRepository.findFetchById(id).orElseThrow(() -> new RuntimeException("Exchange not found"));
+		return exchangeRepository.findByIdWithUserbookAndUser(id)
+			.orElseThrow(() -> new RuntimeException("Exchange not found"));
+	}
+
+	// TODO <jhl221123> 수락, 거절 한 번에 조회할 수 있도록 수정 필요
+	public Page<ExchangeResponse> findCompletedExchange(ExchangeFindCondition condition, Pageable pageable) {
+		return exchangeRepository.findAllByExchangeStatus(condition.exchangeStatus(), pageable)
+			.map(ExchangeResponse::of);
+	}
+
+	@Transactional
+	public Page<ExchangeResponse> findExchangeOffer(ExchangeOfferFindCondition condition, Pageable pageable) {
+		Long userId = userHelper.findCurrentUser().getId();
+		ExchangeUserCondition userCond = condition.userCondition();
+		return exchangeRepository.findAllWithUserConditionAndExchangeStatus(userId, userCond, IN_PROGRESS, pageable)
+			.map(ExchangeResponse::of);
 	}
 
 	@Transactional
 	public void offerRespond(Long id, ExchangeOfferRespondRequest request) {
 		Exchange exchange = findDomain(id);
 		validateBookOwner(exchange);
-		exchange.respond(request.isApproved());
-		updateUserbookStatus(request, exchange);
-		eventPublisher.publishEvent(new ExchangeRespondEvent(exchange, request.isApproved()));
+		exchange.respond(request.status());
+		updateUserbookStatus(exchange);
+		eventPublisher.publishEvent(new ExchangeRespondEvent(exchange));
 	}
 
 	public void delete(Long id) {
@@ -67,12 +88,11 @@ public class ExchangeService {
 		exchangeRepository.deleteById(id);
 	}
 
-	private void updateUserbookStatus(ExchangeOfferRespondRequest request, Exchange exchange) {
-		if (request.isApproved()) {
+	private void updateUserbookStatus(Exchange exchange) {
+		if (APPROVED.equals(exchange.getExchangeStatus())) {
 			Userbook senderBook = exchange.getSenderBook();
 			Userbook receiverBook = exchange.getReceiverBook();
 			validateExchangeable(senderBook, receiverBook);
-			exchange.registerExchangeDate(LocalDateTime.now());
 			senderBook.updateTradeStatus(EXCHANGED);
 			receiverBook.updateTradeStatus(EXCHANGED);
 		}
@@ -81,15 +101,16 @@ public class ExchangeService {
 	private void validateExchangeable(Userbook senderBook, Userbook receiverBook) {
 		if (!senderBook.isAvailable() || !receiverBook.isAvailable()) {
 			throw new RuntimeException( // TODO <jhl221123> 대여 상태 검증 필요
-				"대여가 불가능한 도서 상태입니다. status " + "= 신청자 도서: " + senderBook.isAvailable() + ", 수신자 도서: "
-					+ receiverBook.isAvailable());
+				"대여가 불가능한 도서 상태입니다. status "
+					+ "= 신청자 도서: " + senderBook.isAvailable()
+					+ ", 수신자 도서: " + receiverBook.isAvailable());
 		}
 	}
 
 	private void validateBookOwner(Exchange exchange) {
-		User receiver = exchange.getReceiverBook().getUser();
+		User receiver = exchange.getReceiver();
 		User sessionUser = userHelper.findCurrentUser();
-		if (sessionUser.getId() != receiver.getId())  // TODO <jhl221123> receiver.getId() 호출 시, N+1 쿼리
+		if (!sessionUser.getId().equals(receiver.getId()))
 			throw new RuntimeException("You are not allowed to respond to this exchange.");
 	}
 
@@ -97,11 +118,16 @@ public class ExchangeService {
 		Exchange exchange = exchangeRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("Exchange not found"));
 		User sessionUser = userHelper.findCurrentUser();
-		if (sessionUser.getId() != exchange.getSenderBook().getUser().getId())  // TODO <jhl221123> 교환 -> 사용자 참조 필요
+		if (!sessionUser.getId().equals(exchange.getSender().getId()))
 			throw new RuntimeException("You are not allowed to delete to this exchange.");
 	}
 
 	private Exchange createExchange(Userbook senderBook, Userbook receiverBook) {
-		return Exchange.builder().senderBook(senderBook).receiverBook(receiverBook).build();
+		return Exchange.builder()
+			.sender(senderBook.getUser())
+			.receiver(receiverBook.getUser())
+			.senderBook(senderBook)
+			.receiverBook(receiverBook)
+			.build();
 	}
 }

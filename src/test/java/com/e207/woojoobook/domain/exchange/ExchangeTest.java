@@ -1,10 +1,7 @@
 package com.e207.woojoobook.domain.exchange;
 
 import static com.e207.woojoobook.domain.exchange.ExchangeStatus.*;
-import static java.lang.Boolean.*;
 import static org.assertj.core.api.Assertions.*;
-
-import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,50 +13,34 @@ class ExchangeTest {
 
 	@Test
 	@DisplayName("교환을 수락하면 날짜가 입력되고 교환이 완료된다.")
-	void changeExchangeStatusApprove() {
+	void respondApprove() {
 		// given
 		Userbook senderUserBook = createUserBook();
 		Userbook receiverUserBook = createUserBook();
 		Exchange exchange = createExchange(senderUserBook, receiverUserBook);
 
 		// when
-		exchange.respond(TRUE);
+		exchange.respond(APPROVED);
 
 		//then
 		assertThat(exchange.getExchangeDate()).isNotNull();
-		assertThat(exchange.getExchangeStatus()).isEqualTo(COMPLETED);
+		assertThat(exchange.getExchangeStatus()).isEqualTo(APPROVED);
 	}
 
 	@Test
 	@DisplayName("교환을 거절하면 날짜가 입력되지 않고, 상태만 변경된다.")
-	void changeExchangeStatusReject() {
+	void respondReject() {
 		// given
 		Userbook senderUserBook = createUserBook();
 		Userbook receiverUserBook = createUserBook();
 		Exchange exchange = createExchange(senderUserBook, receiverUserBook);
 
 		// when
-		exchange.respond(FALSE);
+		exchange.respond(REJECTED);
 
 		//then
 		assertThat(exchange.getExchangeDate()).isNull();
 		assertThat(exchange.getExchangeStatus()).isEqualTo(REJECTED);
-	}
-
-	@Test
-	@DisplayName("교환 날짜를 등록한다.")
-	void registerExchangeDate() {
-		// given
-		Userbook senderUserBook = createUserBook();
-		Userbook receiverUserBook = createUserBook();
-		Exchange exchange = createExchange(senderUserBook, receiverUserBook);
-		LocalDateTime exchangeDate = LocalDateTime.of(2024, 7, 22, 9, 10);
-
-		// when
-		exchange.registerExchangeDate(exchangeDate);
-
-		//then
-		assertThat(exchange.getExchangeDate()).isEqualTo(exchangeDate);
 	}
 
 	private Exchange createExchange(Userbook senderUserBook, Userbook receiverUserBook) {

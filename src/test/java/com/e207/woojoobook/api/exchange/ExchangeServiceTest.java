@@ -1,14 +1,15 @@
 package com.e207.woojoobook.api.exchange;
 
 import static com.e207.woojoobook.domain.exchange.ExchangeStatus.*;
+import static com.e207.woojoobook.domain.exchange.ExchangeUserCondition.*;
 import static com.e207.woojoobook.domain.userbook.QualityStatus.*;
 import static com.e207.woojoobook.domain.userbook.RegisterType.*;
 import static com.e207.woojoobook.domain.userbook.TradeStatus.*;
-import static java.lang.Boolean.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
@@ -20,21 +21,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.e207.woojoobook.api.book.response.BookResponse;
 import com.e207.woojoobook.api.exchange.request.ExchangeCreateRequest;
+import com.e207.woojoobook.api.exchange.request.ExchangeFindCondition;
+import com.e207.woojoobook.api.exchange.request.ExchangeOfferFindCondition;
 import com.e207.woojoobook.api.exchange.request.ExchangeOfferRespondRequest;
 import com.e207.woojoobook.api.exchange.response.ExchangeResponse;
+import com.e207.woojoobook.api.userbook.response.UserbookResponse;
 import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.book.BookRepository;
 import com.e207.woojoobook.domain.exchange.Exchange;
 import com.e207.woojoobook.domain.exchange.ExchangeRepository;
+import com.e207.woojoobook.domain.exchange.ExchangeStatus;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
-import com.e207.woojoobook.domain.userbook.QualityStatus;
-import com.e207.woojoobook.domain.userbook.RegisterType;
-import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
 import com.e207.woojoobook.global.helper.UserHelper;
@@ -73,53 +77,37 @@ class ExchangeServiceTest {
 	@Test
 	void createSuccessWithUserbookInfo() {
 		// given
-		User sender = createUser("sender");
-		User receiver = createUser("receiver");
-		userRepository.save(sender);
-		userRepository.save(receiver);
+		User me = createUser("me");
+		User user = createUser("someone");
+		userRepository.saveAll(List.of(me, user));
 
-		LocalDate publicationDate = LocalDate.of(2024, 7, 22);
-		Book book1 = createBook("001", "title1", "author1", "publisher1", publicationDate, "thumbnail1", "desc1");
-		Book book2 = createBook("002", "title2", "author2", "publisher2", publicationDate, "thumbnail2", "desc2");
-		bookRepository.save(book1);
-		bookRepository.save(book2);
+		Userbook mine = createUserbook(me, "001");
+		Userbook userbook = createUserbook(user, "002");
+		userbookRepository.saveAll(List.of(mine, userbook));
 
-		Userbook senderBook = createUserbook(book1, sender, GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		Userbook receiverBook = createUserbook(book2, receiver, GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		userbookRepository.save(senderBook);
-		userbookRepository.save(receiverBook);
-
-		ExchangeCreateRequest request = createRequest(senderBook.getId(), receiverBook.getId());
+		ExchangeCreateRequest request = createRequest(mine.getId(), userbook.getId());
 
 		// when
 		ExchangeResponse result = exchangeService.create(request);
 
 		//then
-		assertThat(result.senderBook()).extracting("id").isEqualTo(senderBook.getId());
-		assertThat(result.receiverBook()).extracting("id").isEqualTo(receiverBook.getId());
+		assertThat(result.senderBook()).extracting("id").isEqualTo(mine.getId());
+		assertThat(result.receiverBook()).extracting("id").isEqualTo(userbook.getId());
 	}
 
 	@DisplayName("교환 신청 시, 교환 날짜는 입력되지 않는다.")
 	@Test
 	void createSuccessWithoutExchangeDate() {
 		// given
-		User sender = createUser("sender");
-		User receiver = createUser("receiver");
-		userRepository.save(sender);
-		userRepository.save(receiver);
+		User me = createUser("me");
+		User user = createUser("someone");
+		userRepository.saveAll(List.of(me, user));
 
-		LocalDate publicationDate = LocalDate.of(2024, 7, 22);
-		Book book1 = createBook("001", "title1", "author1", "publisher1", publicationDate, "thumbnail1", "desc1");
-		Book book2 = createBook("002", "title2", "author2", "publisher2", publicationDate, "thumbnail2", "desc2");
-		bookRepository.save(book1);
-		bookRepository.save(book2);
+		Userbook mine = createUserbook(me, "001");
+		Userbook userbook = createUserbook(user, "002");
+		userbookRepository.saveAll(List.of(mine, userbook));
 
-		Userbook senderBook = createUserbook(book1, sender, GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		Userbook receiverBook = createUserbook(book2, receiver, GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		userbookRepository.save(senderBook);
-		userbookRepository.save(receiverBook);
-
-		ExchangeCreateRequest request = createRequest(senderBook.getId(), receiverBook.getId());
+		ExchangeCreateRequest request = createRequest(mine.getId(), userbook.getId());
 
 		// when
 		ExchangeResponse result = exchangeService.create(request);
@@ -132,23 +120,15 @@ class ExchangeServiceTest {
 	@Test
 	void createSuccessWithoutExchangeStatus() {
 		// given
-		User sender = createUser("sender");
-		User receiver = createUser("receiver");
-		userRepository.save(sender);
-		userRepository.save(receiver);
+		User me = createUser("me");
+		User user = createUser("someone");
+		userRepository.saveAll(List.of(me, user));
 
-		LocalDate publicationDate = LocalDate.of(2024, 7, 22);
-		Book book1 = createBook("001", "title1", "author1", "publisher1", publicationDate, "thumbnail1", "desc1");
-		Book book2 = createBook("002", "title2", "author2", "publisher2", publicationDate, "thumbnail2", "desc2");
-		bookRepository.save(book1);
-		bookRepository.save(book2);
+		Userbook mine = createUserbook(me, "001");
+		Userbook userbook = createUserbook(user, "002");
+		userbookRepository.saveAll(List.of(mine, userbook));
 
-		Userbook senderBook = createUserbook(book1, sender, GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		Userbook receiverBook = createUserbook(book2, receiver, GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		userbookRepository.save(senderBook);
-		userbookRepository.save(receiverBook);
-
-		ExchangeCreateRequest request = createRequest(senderBook.getId(), receiverBook.getId());
+		ExchangeCreateRequest request = createRequest(mine.getId(), userbook.getId());
 
 		// when
 		ExchangeResponse result = exchangeService.create(request);
@@ -161,80 +141,52 @@ class ExchangeServiceTest {
 	@Test
 	void findByIdSuccess() {
 		// given
-		User sender = createUser("sender");
-		User receiver = createUser("receiver");
-		userRepository.save(sender);
-		userRepository.save(receiver);
+		User me = createUser("me");
+		User user = createUser("someone");
+		userRepository.saveAll(List.of(me, user));
 
-		LocalDate publicationDate = LocalDate.of(2024, 7, 22);
-		Book book1 = createBook("001", "title1", "author1", "publisher1", publicationDate, "thumbnail1", "desc1");
-		Book book2 = createBook("002", "title2", "author2", "publisher2", publicationDate, "thumbnail2", "desc2");
-		bookRepository.save(book1);
-		bookRepository.save(book2);
+		Userbook mine = createUserbook(me, "001");
+		Userbook userbook = createUserbook(user, "002");
+		userbookRepository.saveAll(List.of(mine, userbook));
 
-		Userbook senderBook = createUserbook(book1, sender, GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		Userbook receiverBook = createUserbook(book2, receiver, GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		userbookRepository.save(senderBook);
-		userbookRepository.save(receiverBook);
-
-		Exchange exchange = createExchange(senderBook, receiverBook);
+		Exchange exchange = createExchange(mine, userbook);
 		exchangeRepository.save(exchange);
 
 		// when
 		ExchangeResponse result = exchangeService.findById(exchange.getId());
 
 		//then
-		assertThat(result.senderBook())
-			.extracting("id", "qualityStatus", "registerType", "tradeStatus")
-			.containsExactlyInAnyOrder(senderBook.getId(), GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		assertThat(result.receiverBook())
-			.extracting("id", "qualityStatus", "registerType", "tradeStatus")
-			.containsExactlyInAnyOrder(receiverBook.getId(), GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
+		assertThatUserbookMatchExactly(result.senderBook(), mine);
+		assertThatUserbookMatchExactly(result.receiverBook(), userbook);
 
 		BookResponse senderBookInfo = result.senderBook().bookInfo();
 		BookResponse receiverBookInfo = result.receiverBook().bookInfo();
-		assertThat(senderBookInfo)
-			.extracting("isbn", "title", "author", "publisher", "publicationDate", "thumbnail", "description")
-			.containsExactly("001", "title1", "author1", "publisher1", publicationDate, "thumbnail1", "desc1");
-		assertThat(receiverBookInfo)
-			.extracting("isbn", "title", "author", "publisher", "publicationDate", "thumbnail", "description")
-			.containsExactly("002", "title2", "author2", "publisher2", publicationDate, "thumbnail2", "desc2");
+		assertThatBookMatchExactly(senderBookInfo, mine.getBook());
+		assertThatBookMatchExactly(receiverBookInfo, userbook.getBook());
 	}
 
 	@Transactional
-	@DisplayName("사용자 등록 도서와 함께 교환 도메인을 조회한다.")
+	@DisplayName("교환 도메인 조회 시, 사용자 등록 도서 정보도 함께 조회된다.")
 	@Test
 	void findDomainSuccess() {
 		// given
-		User sender = createUser("sender");
-		User receiver = createUser("receiver");
-		userRepository.save(sender);
-		userRepository.save(receiver);
+		User me = createUser("me");
+		User user = createUser("someone");
+		userRepository.saveAll(List.of(me, user));
 
-		LocalDate publicationDate = LocalDate.of(2024, 7, 22);
-		Book book1 = createBook("001", "title1", "author1", "publisher1", publicationDate, "thumbnail1", "desc1");
-		Book book2 = createBook("002", "title2", "author2", "publisher2", publicationDate, "thumbnail2", "desc2");
-		bookRepository.save(book1);
-		bookRepository.save(book2);
+		Userbook mine = createUserbook(me, "001");
+		Userbook userbook = createUserbook(user, "002");
+		userbookRepository.saveAll(List.of(mine, userbook));
 
-		Userbook senderBook = createUserbook(book1, sender, GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		Userbook receiverBook = createUserbook(book2, receiver, GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		userbookRepository.save(senderBook);
-		userbookRepository.save(receiverBook);
-
-		Exchange exchange = createExchange(senderBook, receiverBook);
+		Exchange exchange = createExchange(mine, userbook);
 		exchangeRepository.save(exchange);
 
 		// when
 		Exchange result = exchangeService.findDomain(exchange.getId());
 
 		//then
-		assertThat(result.getSenderBook())
-			.extracting("id", "qualityStatus", "registerType", "tradeStatus")
-			.containsExactlyInAnyOrder(senderBook.getId(), GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		assertThat(result.getReceiverBook())
-			.extracting("id", "qualityStatus", "registerType", "tradeStatus")
-			.containsExactlyInAnyOrder(receiverBook.getId(), GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
+		assertThatUserbookMatchExactly(UserbookResponse.of(result.getSenderBook()), mine);
+		assertThatUserbookMatchExactly(UserbookResponse.of(result.getReceiverBook()), userbook);
 	}
 
 	@DisplayName("존재하지 않는 교환 도메인 조회 시, 예외가 발생한다.")
@@ -245,33 +197,184 @@ class ExchangeServiceTest {
 	}
 
 	@Transactional
+	@DisplayName("수락된 교환 목록을 조회한다.")
+	@Test
+	void findCompletedExchangeWithAPPROVE() {
+		// given
+		User me = createUser("me");
+		User user = createUser("someone");
+		userRepository.saveAll(List.of(me, user));
+
+		Userbook mine = createUserbook(me, "001");
+		Userbook userbook = createUserbook(user, "002");
+		userbookRepository.saveAll(List.of(mine, userbook));
+
+		Exchange exchange = createExchange(mine, userbook);
+		Exchange approvedExchange = createExchange(mine, userbook);
+		Exchange rejectedExchange = createExchange(mine, userbook);
+		exchangeRepository.saveAll(List.of(exchange, approvedExchange, rejectedExchange));
+		approvedExchange.respond(APPROVED);
+		rejectedExchange.respond(REJECTED);
+
+		ExchangeFindCondition condition = new ExchangeFindCondition(APPROVED);
+
+		// when
+		Page<ExchangeResponse> result = exchangeService.findCompletedExchange(condition, PageRequest.of(0, 10));
+
+		///then
+		List<ExchangeResponse> exchangeResponses = result.getContent();
+		assertExchangeStatus(exchangeResponses, 1, APPROVED);
+	}
+
+	@Transactional
+	@DisplayName("거절된 교환 목록을 조회한다.")
+	@Test
+	void findCompletedExchangeWithREJECT() {
+		// given
+		User me = createUser("me");
+		User user = createUser("someone");
+		userRepository.saveAll(List.of(me, user));
+
+		Userbook mine = createUserbook(me, "001");
+		Userbook userbook = createUserbook(user, "002");
+		userbookRepository.saveAll(List.of(mine, userbook));
+
+		Exchange exchange = createExchange(mine, userbook);
+		Exchange approvedExchange = createExchange(mine, userbook);
+		Exchange rejectedExchange = createExchange(mine, userbook);
+		exchangeRepository.saveAll(List.of(exchange, approvedExchange, rejectedExchange));
+		approvedExchange.respond(APPROVED);
+		rejectedExchange.respond(REJECTED);
+
+		ExchangeFindCondition condition = new ExchangeFindCondition(REJECTED);
+
+		// when
+		Page<ExchangeResponse> result = exchangeService.findCompletedExchange(condition, PageRequest.of(0, 10));
+
+		///then
+		List<ExchangeResponse> exchangeResponses = result.getContent();
+		assertExchangeStatus(exchangeResponses, 1, REJECTED);
+	}
+
+	@Transactional
+	@DisplayName("교환 신청한 목록을 조회한다.")
+	@Test
+	void findExchangeOfferAsSenderSuccess() {
+		// given
+		User me = createUser("me");
+		User user = createUser("someone");
+		userRepository.saveAll(List.of(me, user));
+
+		Userbook mine = createUserbook(me, "001");
+		Userbook userbook = createUserbook(user, "002");
+		userbookRepository.saveAll(List.of(mine, userbook));
+
+		Exchange exchangeAsSender = createExchange(mine, userbook);
+		Exchange exchangeAsReceiver = createExchange(userbook, mine);
+		Exchange completedExchange = createExchange(mine, userbook);
+		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
+		completedExchange.respond(APPROVED);
+
+		given(userHelper.findCurrentUser()).willReturn(me);
+
+		ExchangeOfferFindCondition condition = new ExchangeOfferFindCondition(SENDER);
+
+		// when
+		Page<ExchangeResponse> result = exchangeService.findExchangeOffer(condition, PageRequest.of(0, 10));
+
+		// then
+		List<ExchangeResponse> exchangeResponses = result.getContent();
+		assertExchangeStatus(exchangeResponses, 1, IN_PROGRESS);
+
+		UserbookResponse senderBook = exchangeResponses.get(0).senderBook();
+		assertThatUserbookMatchExactly(senderBook, mine);
+	}
+
+	@Transactional
+	@DisplayName("교환 신청을 받은 목록을 조회한다.")
+	@Test
+	void findExchangeOfferAsReceiverSuccess() {
+		// given
+		User me = createUser("me");
+		User user = createUser("someone");
+		userRepository.saveAll(List.of(me, user));
+
+		Userbook mine = createUserbook(me, "001");
+		Userbook userbook = createUserbook(user, "002");
+		userbookRepository.saveAll(List.of(mine, userbook));
+
+		Exchange exchangeAsSender = createExchange(mine, userbook);
+		Exchange exchangeAsReceiver = createExchange(userbook, mine);
+		Exchange completedExchange = createExchange(mine, userbook);
+		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
+		completedExchange.respond(APPROVED);
+
+		given(userHelper.findCurrentUser()).willReturn(me);
+
+		ExchangeOfferFindCondition condition = new ExchangeOfferFindCondition(RECEIVER);
+
+		// when
+		Page<ExchangeResponse> result = exchangeService.findExchangeOffer(condition, PageRequest.of(0, 10));
+
+		///then
+		List<ExchangeResponse> exchangeResponses = result.getContent();
+		assertExchangeStatus(exchangeResponses, 1, IN_PROGRESS);
+
+		UserbookResponse receiverBook = exchangeResponses.get(0).receiverBook();
+		assertThatUserbookMatchExactly(receiverBook, mine);
+	}
+
+	@Transactional
+	@DisplayName("모든 교환 신청 목록을 조회한다.")
+	@Test
+	void findExchangeOfferAllSuccess() {
+		// given
+		User me = createUser("me");
+		User user = createUser("someone");
+		userRepository.saveAll(List.of(me, user));
+
+		Userbook mine = createUserbook(me, "001");
+		Userbook userbook = createUserbook(user, "002");
+		userbookRepository.saveAll(List.of(mine, userbook));
+
+		Exchange exchangeAsSender = createExchange(mine, userbook);
+		Exchange exchangeAsReceiver = createExchange(userbook, mine);
+		Exchange completedExchange = createExchange(mine, userbook);
+		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
+		completedExchange.respond(APPROVED);
+
+		given(userHelper.findCurrentUser()).willReturn(me);
+
+		ExchangeOfferFindCondition condition = new ExchangeOfferFindCondition(SENDER_RECEIVER);
+
+		// when
+		Page<ExchangeResponse> result = exchangeService.findExchangeOffer(condition, PageRequest.of(0, 10));
+
+		///then
+		List<ExchangeResponse> exchangeResponses = result.getContent();
+		assertExchangeStatus(exchangeResponses, 2, IN_PROGRESS);
+	}
+
+	// TODO <jhl221123> 추후 예외 케이스 추가 필요
+	@Transactional
 	@DisplayName("교환 신청을 수락하면, 책 상태가 변경되고 이벤트를 발행한다.")
 	@Test
-		// TODO <jhl221123> 예외 케이스 추후 추가 필요
 	void offerRespondSuccess() {
 		// given
-		User sender = createUser("sender");
-		User receiver = createUser("receiver");
-		userRepository.save(sender);
-		userRepository.save(receiver);
+		User me = createUser("me");
+		User user = createUser("someone");
+		userRepository.saveAll(List.of(me, user));
 
-		LocalDate publicationDate = LocalDate.of(2024, 7, 22);
-		Book book1 = createBook("001", "title1", "author1", "publisher1", publicationDate, "thumbnail1", "desc1");
-		Book book2 = createBook("002", "title2", "author2", "publisher2", publicationDate, "thumbnail2", "desc2");
-		bookRepository.save(book1);
-		bookRepository.save(book2);
+		Userbook mine = createUserbook(me, "001");
+		Userbook userbook = createUserbook(user, "002");
+		userbookRepository.saveAll(List.of(mine, userbook));
 
-		Userbook senderBook = createUserbook(book1, sender, GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		Userbook receiverBook = createUserbook(book2, receiver, GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		userbookRepository.save(senderBook);
-		userbookRepository.save(receiverBook);
-
-		Exchange exchange = createExchange(senderBook, receiverBook);
+		Exchange exchange = createExchange(userbook, mine);
 		exchangeRepository.save(exchange);
 
-		ExchangeOfferRespondRequest respondRequest = new ExchangeOfferRespondRequest(TRUE);
+		ExchangeOfferRespondRequest respondRequest = new ExchangeOfferRespondRequest(APPROVED);
 
-		given(userHelper.findCurrentUser()).willReturn(receiver);
+		given(userHelper.findCurrentUser()).willReturn(me);
 
 		// when
 		exchangeService.offerRespond(exchange.getId(), respondRequest);
@@ -287,26 +390,18 @@ class ExchangeServiceTest {
 	@Test
 	void deleteSuccess() {
 		// given
-		User sender = createUser("sender");
-		User receiver = createUser("receiver");
-		userRepository.save(sender);
-		userRepository.save(receiver);
+		User me = createUser("me");
+		User user = createUser("someone");
+		userRepository.saveAll(List.of(me, user));
 
-		LocalDate publicationDate = LocalDate.of(2024, 7, 22);
-		Book book1 = createBook("001", "title1", "author1", "publisher1", publicationDate, "thumbnail1", "desc1");
-		Book book2 = createBook("002", "title2", "author2", "publisher2", publicationDate, "thumbnail2", "desc2");
-		bookRepository.save(book1);
-		bookRepository.save(book2);
+		Userbook mine = createUserbook(me, "001");
+		Userbook userbook = createUserbook(user, "002");
+		userbookRepository.saveAll(List.of(mine, userbook));
 
-		Userbook senderBook = createUserbook(book1, sender, GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		Userbook receiverBook = createUserbook(book2, receiver, GOOD, EXCHANGE, EXCHANGE_AVAILABLE);
-		userbookRepository.save(senderBook);
-		userbookRepository.save(receiverBook);
-
-		Exchange exchange = createExchange(senderBook, receiverBook);
+		Exchange exchange = createExchange(mine, userbook);
 		exchangeRepository.save(exchange);
 
-		given(userHelper.findCurrentUser()).willReturn(sender);
+		given(userHelper.findCurrentUser()).willReturn(me);
 
 		// when
 		exchangeService.delete(exchange.getId());
@@ -318,6 +413,8 @@ class ExchangeServiceTest {
 
 	private Exchange createExchange(Userbook senderBook, Userbook receiverBook) {
 		return Exchange.builder()
+			.sender(senderBook.getUser())
+			.receiver(receiverBook.getUser())
 			.senderBook(senderBook)
 			.receiverBook(receiverBook)
 			.build();
@@ -339,27 +436,49 @@ class ExchangeServiceTest {
 			.build();
 	}
 
-	private Userbook createUserbook(Book book, User user, QualityStatus qualityStatus, RegisterType registerType,
-		TradeStatus tradeStatus) {
+	private Userbook createUserbook(User user, String isbn) {
+		LocalDate publicationDate = LocalDate.of(2024, 7, 22);
+		Book book = createBook(isbn, "title", publicationDate);
+		bookRepository.save(book);
+
 		return Userbook.builder()
 			.book(book)
 			.user(user)
-			.qualityStatus(qualityStatus)
-			.registerType(registerType)
-			.tradeStatus(tradeStatus)
+			.qualityStatus(NORMAL)
+			.registerType(EXCHANGE)
+			.tradeStatus(EXCHANGE_AVAILABLE)
 			.build();
 	}
 
-	private Book createBook(String isbn, String title, String author, String publisher, LocalDate publicationDate,
-		String thumbnail, String description) {
+	private Book createBook(String isbn, String title, LocalDate publicationDate) {
 		return Book.builder()
 			.isbn(isbn)
 			.title(title)
-			.author(author)
-			.publisher(publisher)
+			.author("author")
+			.publisher("publisher")
 			.publicationDate(publicationDate)
-			.thumbnail(thumbnail)
-			.description(description)
+			.thumbnail("thumbnail")
+			.description("description")
 			.build();
+	}
+
+	private void assertExchangeStatus(List<ExchangeResponse> resultContent, int size, ExchangeStatus exchangeStatus) {
+		assertThat(resultContent)
+			.hasSize(size)
+			.extracting("exchangeStatus").contains(exchangeStatus);
+	}
+
+	private void assertThatUserbookMatchExactly(UserbookResponse target, Userbook pair) {
+		assertThat(target)
+			.extracting("id", "qualityStatus", "registerType", "tradeStatus")
+			.containsExactlyInAnyOrder(pair.getId(), pair.getQualityStatus(), pair.getRegisterType(),
+				pair.getTradeStatus());
+	}
+
+	private void assertThatBookMatchExactly(BookResponse target, Book pair) {
+		assertThat(target)
+			.extracting("isbn", "title", "author", "publisher", "publicationDate", "thumbnail", "description")
+			.containsExactly(pair.getIsbn(), pair.getTitle(), pair.getAuthor(), pair.getPublisher(),
+				pair.getPublicationDate(), pair.getThumbnail(), pair.getDescription());
 	}
 }

@@ -2,14 +2,19 @@ package com.e207.woojoobook.api.exchange;
 
 import static org.springframework.http.HttpStatus.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.e207.woojoobook.api.exchange.request.ExchangeCreateRequest;
+import com.e207.woojoobook.api.exchange.request.ExchangeFindCondition;
+import com.e207.woojoobook.api.exchange.request.ExchangeOfferFindCondition;
 import com.e207.woojoobook.api.exchange.request.ExchangeOfferRespondRequest;
 import com.e207.woojoobook.api.exchange.response.ExchangeResponse;
 
@@ -33,6 +38,20 @@ public class ExchangeController {
 		@RequestBody ExchangeOfferRespondRequest request) {
 		exchangeService.offerRespond(id, request);
 		return ResponseEntity.status(CREATED).build();
+	}
+
+	@GetMapping("/exchanges")
+	public ResponseEntity<Page<ExchangeResponse>> findCompletedExchange(@RequestBody ExchangeFindCondition condition
+		, Pageable pageable) {
+		Page<ExchangeResponse> response = exchangeService.findCompletedExchange(condition, pageable);
+		return ResponseEntity.status(OK).body(response);
+	}
+
+	@GetMapping("/exchanges/offer")
+	public ResponseEntity<Page<ExchangeResponse>> findExchangeOffer(@RequestBody ExchangeOfferFindCondition condition
+		, Pageable pageable) {
+		Page<ExchangeResponse> response = exchangeService.findExchangeOffer(condition, pageable);
+		return ResponseEntity.status(OK).body(response);
 	}
 
 	@DeleteMapping("/exchanges/offer/{id}")

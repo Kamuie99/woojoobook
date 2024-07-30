@@ -1,5 +1,7 @@
 package com.e207.woojoobook.domain.userbook;
 
+import static com.e207.woojoobook.domain.exchange.ExchangeStatus.*;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
@@ -52,8 +54,8 @@ public class UserbookStateManager {
 			exchangeRepository.findAllByReceiverBook(userbook)
 				.stream()
 				.filter(Exchange::isOffering)
-				.peek(exchange -> exchange.respond(false))
-				.map(exchange -> new ExchangeRespondEvent(exchange, false))
+				.peek(exchange -> exchange.respond(REJECTED))
+				.map(ExchangeRespondEvent::new)
 				.forEach(eventPublisher::publishEvent);
 		}
 	}

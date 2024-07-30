@@ -1,5 +1,6 @@
 package com.e207.woojoobook.api.exchange;
 
+import static com.e207.woojoobook.domain.exchange.ExchangeStatus.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -16,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.e207.woojoobook.api.exchange.request.ExchangeCreateRequest;
+import com.e207.woojoobook.api.exchange.request.ExchangeFindCondition;
 import com.e207.woojoobook.api.exchange.request.ExchangeOfferRespondRequest;
 import com.e207.woojoobook.global.security.SecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,11 +57,43 @@ class ExchangeControllerTest {
 			.andExpect(status().isCreated());
 	}
 
+	@DisplayName("교환 내역을 조회한다.")
+	@Test
+	void findExchangesSuccess() throws Exception {
+		// given
+		ExchangeFindCondition request = new ExchangeFindCondition(APPROVED);
+		String requestJson = objectMapper.writeValueAsString(request);
+
+		// expected
+		mockMvc.perform(get("/exchanges")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestJson)
+			)
+			.andDo(print())
+			.andExpect(status().isOk());
+	}
+
+	@DisplayName("교환 신청 내역을 조회한다.")
+	@Test
+	void findExchangeOffer() throws Exception {
+		// given
+		ExchangeFindCondition request = new ExchangeFindCondition(APPROVED);
+		String requestJson = objectMapper.writeValueAsString(request);
+
+		// expected
+		mockMvc.perform(get("/exchanges/offer")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestJson)
+			)
+			.andDo(print())
+			.andExpect(status().isOk());
+	}
+
 	@DisplayName("교환 신청에 응답한다.")
 	@Test
 	void offerRespondSuccess() throws Exception {
 		// given
-		ExchangeOfferRespondRequest request = new ExchangeOfferRespondRequest(true);
+		ExchangeOfferRespondRequest request = new ExchangeOfferRespondRequest(APPROVED);
 		String requestJson = objectMapper.writeValueAsString(request);
 
 		// expected
