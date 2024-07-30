@@ -63,20 +63,24 @@ public class UserbookFindRepositoryImpl implements UserbookFindRepository {
 	}
 
 	private BooleanExpression canExecuteTrade(RegisterType registerType) {
+		BooleanExpression expression;
+		BooleanExpression defaultEx = userbook.tradeStatus.eq(TradeStatus.RENTAL_EXCHANGE_AVAILABLE);
 		if (Objects.isNull(registerType)) {
-			return userbook.tradeStatus.eq(TradeStatus.RENTAL_AVAILABLE)
+			expression = userbook.tradeStatus.eq(TradeStatus.RENTAL_AVAILABLE)
 				.or(userbook.tradeStatus.eq(TradeStatus.EXCHANGE_AVAILABLE));
+		} else {
+			expression = switch (registerType) {
+				case RENTAL -> userbook.tradeStatus.eq(TradeStatus.RENTAL_AVAILABLE);
+				case EXCHANGE -> userbook.tradeStatus.eq(TradeStatus.EXCHANGE_AVAILABLE);
+				default -> userbook.tradeStatus.eq(TradeStatus.RENTAL_AVAILABLE)
+					.or(userbook.tradeStatus.eq(TradeStatus.EXCHANGE_AVAILABLE));
+			};
 		}
-
-		return switch (registerType) {
-			case RENTAL -> userbook.tradeStatus.eq(TradeStatus.RENTAL_AVAILABLE);
-			case EXCHANGE -> userbook.tradeStatus.eq(TradeStatus.EXCHANGE_AVAILABLE);
-			default -> userbook.tradeStatus.eq(TradeStatus.RENTAL_AVAILABLE)
-				.or(userbook.tradeStatus.eq(TradeStatus.EXCHANGE_AVAILABLE));
-		};
+		return expression.or(defaultEx);
 	}
 
 	private BooleanExpression hasRegisterType(RegisterType registerType) {
-		return Objects.isNull(registerType) ? null : userbook.registerType.eq(registerType);
+		return Objects.isNull(registerType) ? null :
+			userbook.registerType.eq(registerType).or(userbook.registerType.eq(RegisterType.RENTAL_EXCHANGE));
 	}
 }

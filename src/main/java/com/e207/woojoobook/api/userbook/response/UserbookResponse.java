@@ -11,7 +11,7 @@ import lombok.Builder;
 
 @Builder
 public record UserbookResponse(Long id, BookResponse bookInfo, UserResponse ownerInfo, RegisterType registerType,
-							   TradeStatus tradeStatus, QualityStatus qualityStatus) {
+							   TradeStatus tradeStatus, QualityStatus qualityStatus, String areaCode) {
 
 	public static UserbookResponse of(Userbook userbook) {
 		return UserbookResponse.builder()
@@ -21,6 +21,7 @@ public record UserbookResponse(Long id, BookResponse bookInfo, UserResponse owne
 			.registerType(userbook.getRegisterType())
 			.tradeStatus(userbook.getTradeStatus())
 			.qualityStatus(userbook.getQualityStatus())
+			.areaCode(userbook.getAreaCode())
 			.build();
 	}
 }

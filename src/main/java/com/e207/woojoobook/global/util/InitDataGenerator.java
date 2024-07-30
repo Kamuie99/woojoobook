@@ -1,5 +1,6 @@
 package com.e207.woojoobook.global.util;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -13,6 +14,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Profile("local")
 @Component
 public class InitDataGenerator {
 	private final UserRepository userRepository;
