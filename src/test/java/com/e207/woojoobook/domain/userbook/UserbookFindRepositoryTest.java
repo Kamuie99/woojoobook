@@ -3,6 +3,7 @@ package com.e207.woojoobook.domain.userbook;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -100,8 +101,11 @@ class UserbookFindRepositoryTest {
 	@Test
 	void findUserbookPageListByRegisterType() {
 		// given
-		RegisterType expectedRegisterType = RegisterType.RENTAL;
-		UserbookFindCondition condition = new UserbookFindCondition(null, List.of(), expectedRegisterType);
+		RegisterType registerRental = RegisterType.RENTAL;
+		Set<RegisterType> expectedRegisterTypes = Set.of(RegisterType.RENTAL, RegisterType.RENTAL_EXCHANGE);
+		Set<TradeStatus> expectedTradeStatus = Set.of(TradeStatus.RENTAL_AVAILABLE,
+			TradeStatus.RENTAL_EXCHANGE_AVAILABLE);
+		UserbookFindCondition condition = new UserbookFindCondition(null, List.of(), registerRental);
 
 		List<Book> bookList = Stream.generate(this::createRandomBook).limit(6).toList();
 		bookList.forEach(em::persist);
@@ -109,7 +113,6 @@ class UserbookFindRepositoryTest {
 		List<User> userList = Stream.generate(this::createRandomUser).limit(6).toList();
 		userList.forEach(em::persist);
 
-		RegisterType registerRental = RegisterType.RENTAL;
 		RegisterType registerExchange = RegisterType.EXCHANGE;
 		RegisterType registerRentalAndExchange = RegisterType.RENTAL_EXCHANGE;
 
@@ -134,9 +137,9 @@ class UserbookFindRepositoryTest {
 		// then
 		assertThat(result).isNotEmpty();
 		assertThat(result).map(Userbook::getRegisterType)
-			.allMatch(registerTypes -> registerTypes.equals(expectedRegisterType));
+			.allMatch(registerTypes -> expectedRegisterTypes.contains(registerTypes));
 		assertThat(result).map(Userbook::getTradeStatus)
-			.allMatch(tradeStatus -> tradeStatus.equals(TradeStatus.RENTAL_AVAILABLE));
+			.allMatch(tradeStatus -> expectedTradeStatus.contains(tradeStatus));
 	}
 
 	@DisplayName("사용자 등록 도서 조회 시, 사용자와 책 정보도 함께 조회한다.")
