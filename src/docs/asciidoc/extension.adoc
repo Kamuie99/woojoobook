@@ -1,0 +1,13 @@
+== extension API
+
+=== 대여한 도서의 연장 신청
+
+operation::extension-controller-test/extension[snippets="http-request,http-response"]
+
+=== 연장요청에 대해 응답
+
+operation::extension-controller-test/extension-respond[snippets="http-request,http-response"]
+
+=== 연장 신청 취소
+
+operation::extension-controller-test/extension-delete[snippets="http-request,http-response"]

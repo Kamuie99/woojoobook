@@ -10,32 +10,26 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.e207.woojoobook.api.book.request.BookFindRequest;
 import com.e207.woojoobook.api.book.response.BookListResponse;
 import com.e207.woojoobook.api.book.response.BookResponse;
 import com.e207.woojoobook.global.security.SecurityConfig;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.e207.woojoobook.restdocs.AbstractRestDocsTest;
 
 @WebMvcTest(controllers = BookController.class,
 	excludeAutoConfiguration = SecurityAutoConfiguration.class,
 	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class))
-class BookControllerTest {
+class BookControllerTest extends AbstractRestDocsTest {
 
 	@MockBean
 	private BookService bookService;
-	@Autowired
-	private MockMvc mockMvc;
-	@Autowired
-	private ObjectMapper objectMapper;
 
 	@DisplayName("도서 제목을 검색한다")
 	@Test

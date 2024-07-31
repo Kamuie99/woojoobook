@@ -1,8 +1,11 @@
 package com.e207.woojoobook.api.chat;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.e207.woojoobook.api.chat.request.ChatCreateRequest;
 import com.e207.woojoobook.api.chat.response.ChatResponse;
@@ -23,11 +26,13 @@ public class ChatService {
 	private final ChatRoomService chatRoomService;
 	private final UserService userService;
 
+	@Transactional
 	public ChatResponse create(ChatCreateRequest request) {
 		ChatRoom chatRoom = chatRoomService.findDomainById(request.chatRoomId());
 		User sender = userService.findDomainById(request.senderId());
 		Chat chat = request.toEntity(chatRoom, sender);
 		Chat savedChat = chatRepository.save(chat);
+		chatRoom.changeModifiedAt(LocalDateTime.now());
 		return ChatResponse.of(savedChat);
 	}
 

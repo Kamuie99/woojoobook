@@ -2,12 +2,15 @@ package com.e207.woojoobook.api.chat;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.e207.woojoobook.api.chat.request.ChatCreateRequest;
 import com.e207.woojoobook.api.chat.response.ChatResponse;
@@ -55,6 +58,30 @@ class ChatServiceTest {
 		assertThat(result).extracting("id", "chatRoomId", "senderId", "content")
 			.containsExactly(createdChat.getId(), chatRoom.getId(), sender.getId(), "chat content");
 
+	}
+
+	@Transactional
+	@DisplayName("채팅 등록 시, 채팅룸 수정 시간이 최신화된다.")
+	@Test
+	void createWithChatroomUpdateSuccess() {
+		// given
+		User sender = createUser("sender");
+		User receiver = createUser("receiver");
+		userRepository.save(sender);
+		userRepository.save(receiver);
+
+		ChatRoom chatRoom = createChatRoom(sender, receiver);
+		chatRoomRepository.save(chatRoom);
+		LocalDateTime beforeDateTime = chatRoom.getModifiedAt();
+
+		ChatCreateRequest request = createChatRequest(chatRoom, sender, "chat content");
+
+		// when
+		chatService.create(request);
+
+		//then
+		LocalDateTime afterDateTime = chatRoom.getModifiedAt();
+		assertThat(afterDateTime).isAfter(beforeDateTime);
 	}
 
 	@DisplayName("채팅룸에 존재하는 채팅 목록을 페이지로 조회한다.")

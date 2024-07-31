@@ -1,0 +1,5 @@
+== userbook API
+
+=== 검색어로 도서 목록 조회
+
+operation::book-controller-test/find_book-list[snippets="http-request,http-response"]

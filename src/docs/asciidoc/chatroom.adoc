@@ -1,0 +1,17 @@
+== chat room API
+
+=== 채팅방 생성
+
+operation::chat-room-controller-test/create-success[snippets="http-request,http-response"]
+
+=== 채팅방 존재 확인
+
+operation::chat-room-controller-test/check-exist-success[snippets="http-request,http-response"]
+
+=== 채팅방 단건 조회
+
+operation::chat-room-controller-test/find-success[snippets="http-request,http-response"]
+
+=== 채팅방 목록 조회
+
+operation::chat-room-controller-test/find-rooms-success[snippets="http-request,http-response"]

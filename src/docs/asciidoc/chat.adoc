@@ -1,0 +1,5 @@
+== chat API
+
+=== 채팅방에 존재하는 채팅 목록 조회
+
+operation::chat-controller-test/find-page-by-chat-room-id-success[snippets="http-request,http-response"]

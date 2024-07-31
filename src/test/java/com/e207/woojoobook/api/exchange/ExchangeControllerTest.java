@@ -2,40 +2,33 @@ package com.e207.woojoobook.api.exchange;
 
 import static com.e207.woojoobook.domain.exchange.ExchangeStatus.*;
 import static com.e207.woojoobook.domain.exchange.ExchangeUserCondition.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 import com.e207.woojoobook.api.exchange.request.ExchangeCreateRequest;
 import com.e207.woojoobook.api.exchange.request.ExchangeFindCondition;
 import com.e207.woojoobook.api.exchange.request.ExchangeOfferFindCondition;
 import com.e207.woojoobook.api.exchange.request.ExchangeOfferRespondRequest;
 import com.e207.woojoobook.global.security.SecurityConfig;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.e207.woojoobook.restdocs.AbstractRestDocsTest;
 
 @WebMvcTest(
 	controllers = ExchangeController.class,
 	excludeAutoConfiguration = SecurityAutoConfiguration.class,
 	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)
 )
-class ExchangeControllerTest {
-
-	@Autowired
-	MockMvc mockMvc;
-
-	@Autowired
-	ObjectMapper objectMapper;
+class ExchangeControllerTest extends AbstractRestDocsTest {
 
 	@MockBean
 	ExchangeService exchangeService;
@@ -55,7 +48,6 @@ class ExchangeControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestJson)
 			)
-			.andDo(print())
 			.andExpect(status().isCreated());
 	}
 
@@ -71,7 +63,6 @@ class ExchangeControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestJson)
 			)
-			.andDo(print())
 			.andExpect(status().isOk());
 	}
 
@@ -87,7 +78,6 @@ class ExchangeControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestJson)
 			)
-			.andDo(print())
 			.andExpect(status().isOk());
 	}
 
@@ -103,8 +93,12 @@ class ExchangeControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestJson)
 			)
-			.andDo(print())
-			.andExpect(status().isCreated());
+			.andExpect(status().isOk())
+			.andDo(document("exchange-controller-test/offer-respond-success",
+				requestFields(
+					fieldWithPath("status").description("APPROVED or REJECTED")
+				) // TODO <jhl221123> 내역 조회 메서드 수정 후, 하나의 테스트로 통합 필요
+			));
 	}
 
 	@DisplayName("교환 신청을 취소한다.")
@@ -114,7 +108,6 @@ class ExchangeControllerTest {
 		mockMvc.perform(delete("/exchanges/offer/{id}", 1L)
 				.contentType(MediaType.APPLICATION_JSON)
 			)
-			.andDo(print())
 			.andExpect(status().isNoContent());
 	}
 }

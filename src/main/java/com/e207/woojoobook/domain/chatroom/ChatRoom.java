@@ -1,5 +1,7 @@
 package com.e207.woojoobook.domain.chatroom;
 
+import java.time.LocalDateTime;
+
 import com.e207.woojoobook.domain.user.User;
 
 import jakarta.persistence.Entity;
@@ -28,10 +30,17 @@ public class ChatRoom {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private User receiver;
 
+	private LocalDateTime modifiedAt;
+
 	@Builder
 	private ChatRoom(Long id, User sender, User receiver) {
 		this.id = id;
 		this.sender = sender;
 		this.receiver = receiver;
+		this.modifiedAt = LocalDateTime.now();
+	}
+
+	public void changeModifiedAt(LocalDateTime modifiedAt) {
+		this.modifiedAt = modifiedAt;
 	}
 }

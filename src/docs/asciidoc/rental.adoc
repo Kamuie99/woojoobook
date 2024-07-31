@@ -1,0 +1,22 @@
+== rental API
+
+=== 대여 신청
+
+operation::rental-controller-test/create-rental-request[snippets="http-request,http-response"]
+
+=== 대여 정보 조회
+
+operation::rental-controller-test/find-rental-offer[snippets="http-request,http-response"]
+
+=== 대여 승인/거절
+
+operation::rental-controller-test/respond-rental-offer[snippets="http-request,http-response"]
+
+=== 대여 신청 취소
+
+operation::rental-controller-test/delete-rental-offer[snippets="http-request,http-response"]
+
+=== 도서 반납
+
+operation::rental-controller-test/return-success[snippets="http-request,http-response"]
+

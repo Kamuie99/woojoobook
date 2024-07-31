@@ -2,7 +2,6 @@ package com.e207.woojoobook.api.chatroom;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
@@ -20,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -27,6 +27,7 @@ import com.e207.woojoobook.api.chatroom.request.ChatRoomRequest;
 import com.e207.woojoobook.api.chatroom.response.ChatRoomCheckResponse;
 import com.e207.woojoobook.api.chatroom.response.ChatRoomResponse;
 import com.e207.woojoobook.global.security.SecurityConfig;
+import com.e207.woojoobook.restdocs.AbstractRestDocsTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(
@@ -34,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 	excludeAutoConfiguration = SecurityAutoConfiguration.class,
 	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)
 )
-class ChatRoomControllerTest {
+class ChatRoomControllerTest extends AbstractRestDocsTest {
 
 	@Autowired
 	MockMvc mockMvc;
@@ -61,7 +62,6 @@ class ChatRoomControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestJson)
 			)
-			.andDo(print())
 			.andExpect(status().isCreated())
 			.andExpect(content().json(responseJson));
 	}
@@ -81,7 +81,6 @@ class ChatRoomControllerTest {
 				.queryParam("senderId", "1")
 				.queryParam("receiverId", "2")
 			)
-			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().json(responseJson));
 	}
@@ -99,7 +98,6 @@ class ChatRoomControllerTest {
 		mockMvc.perform(get("/chatrooms/{senderId}/{receiverId}", 1L, 2L)
 				.contentType(MediaType.APPLICATION_JSON)
 			)
-			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().json(responseJson));
 	}
@@ -110,7 +108,7 @@ class ChatRoomControllerTest {
 		//given
 		ChatRoomResponse response1 = createChatRoomResponse(1L, 1L, 2L);
 		ChatRoomResponse response2 = createChatRoomResponse(2L, 3L, 1L);
-		Page<ChatRoomResponse> responsePage = new PageImpl<>(List.of(response1, response2), PageRequest.of(0, 10), 10);
+		Page<ChatRoomResponse> responsePage = new PageImpl<>(List.of(response2, response1), PageRequest.of(0, 10), 10);
 		String responseJson = objectMapper.writeValueAsString(responsePage);
 
 		BDDMockito.given(chatRoomService.findPageByUserId(eq(1L), any(Pageable.class))).willReturn(responsePage);
@@ -119,8 +117,9 @@ class ChatRoomControllerTest {
 		mockMvc.perform(get("/chatrooms")
 				.contentType(MediaType.APPLICATION_JSON)
 				.queryParam("userId", "1")
+				.queryParam("sort", "modifiedAt")
+				.queryParam("direction", Sort.Direction.DESC.name())
 			)
-			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().json(responseJson));
 	}

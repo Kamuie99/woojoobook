@@ -9,13 +9,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.e207.woojoobook.api.rental.request.RentalFindCondition;
@@ -23,16 +21,12 @@ import com.e207.woojoobook.api.rental.request.RentalOfferRespondRequest;
 import com.e207.woojoobook.api.rental.response.RentalOfferResponse;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.global.security.SecurityConfig;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.e207.woojoobook.restdocs.AbstractRestDocsTest;
 
 @Import({SecurityConfig.class})
 @WebMvcTest(controllers = RentalController.class)
-class RentalControllerTest {
+class RentalControllerTest extends AbstractRestDocsTest {
 
-	@Autowired
-	private MockMvc mockMvc;
-	@Autowired
-	private ObjectMapper objectMapper;
 	@MockBean
 	private RentalService rentalService;
 	@MockBean
@@ -108,7 +102,7 @@ class RentalControllerTest {
 	@WithMockUser
 	@DisplayName("도서 소유자가 반납완료를 한다")
 	@Test
-	void checkReturnRental() throws Exception {
+	void returnSuccess() throws Exception {
 		// given
 		Long rentalId = 1L;
 

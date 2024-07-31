@@ -1,0 +1,18 @@
+ifndef::snippets[]
+:snippets: build/generated-snippets
+endif::[]
+= Woojoobook API
+:doctype: book
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:seclinks:
+include::user.adoc[]
+include::book.adoc[]
+include::userbook.adoc[]
+include::rental.adoc[]
+include::exchange.adoc[]
+include::extension.adoc[]
+include::chat.adoc[]
+include::chatroom.adoc[]
+include::library.adoc[]

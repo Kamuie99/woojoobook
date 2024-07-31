@@ -9,14 +9,12 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -27,19 +25,15 @@ import com.e207.woojoobook.api.library.response.LibraryResponse;
 import com.e207.woojoobook.domain.library.Library;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.global.security.SecurityConfig;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.e207.woojoobook.restdocs.AbstractRestDocsTest;
 
 @WebMvcTest(controllers = LibraryController.class,
 	excludeAutoConfiguration = SecurityAutoConfiguration.class,
 	excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class))
-class LibraryControllerTest {
+class LibraryControllerTest extends AbstractRestDocsTest {
 
 	@MockBean
 	private LibraryService libraryService;
-	@Autowired
-	private MockMvc mockMvc;
-	@Autowired
-	private ObjectMapper objectMapper;
 
 	@DisplayName("나의 서재에서 카테고리 전체 목록을 조회한다")
 	@Test

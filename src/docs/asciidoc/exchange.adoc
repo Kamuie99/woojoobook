@@ -1,0 +1,21 @@
+== exchange API
+
+=== 교환 생성
+
+operation::exchange-controller-test/create-success[snippets="http-request,http-response"]
+
+=== 교환 신청 응답
+
+operation::exchange-controller-test/offer-respond-success[snippets="http-request,request-fields,http-response"]
+
+=== 교환 신청 정보 조회
+
+operation::exchange-controller-test/find-exchange-offer[snippets="http-request,http-response"]
+
+=== 교환 내역 조회
+
+operation::exchange-controller-test/find-exchanges-success[snippets="http-request,http-response"]
+
+=== 교환 삭제
+
+operation::exchange-controller-test/delete-success[snippets="http-request,http-response"]

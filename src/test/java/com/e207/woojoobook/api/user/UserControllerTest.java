@@ -2,18 +2,15 @@ package com.e207.woojoobook.api.user;
 
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -28,11 +25,11 @@ import com.e207.woojoobook.api.user.validator.UserValidator;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.global.security.SecurityConfig;
 import com.e207.woojoobook.global.security.jwt.JwtProvider;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.e207.woojoobook.restdocs.AbstractRestDocsTest;
 
 @Import({SecurityConfig.class, UserValidator.class})
 @WebMvcTest(UserController.class)
-class UserControllerTest {
+class UserControllerTest extends AbstractRestDocsTest {
 
 	@MockBean
 	private JwtProvider jwtProvider;
@@ -40,10 +37,6 @@ class UserControllerTest {
 	private UserService userService;
 	@MockBean
 	private UserRepository userRepository;
-	@Autowired
-	private MockMvc mockMvc;
-	@Autowired
-	private ObjectMapper objectMapper;
 
 	@DisplayName("인증이 완료된 회원이 회원가입을 한다")
 	@Test
@@ -63,8 +56,7 @@ class UserControllerTest {
 			.content(this.objectMapper.writeValueAsString(userCreateRequest)));
 
 		// then
-		resultActions.andExpect(status().isCreated())
-			.andDo(print());
+		resultActions.andExpect(status().isCreated());
 	}
 
 	@DisplayName("비밀번호가 일치하지 않다면 회원가입은 실패한다")
@@ -83,8 +75,7 @@ class UserControllerTest {
 			.content(this.objectMapper.writeValueAsString(userCreateRequest)));
 
 		// then
-		resultActions.andExpect(status().is4xxClientError())
-			.andDo(print());
+		resultActions.andExpect(status().is4xxClientError());
 	}
 
 	@DisplayName("이메일 인증코드를 발송한다")
