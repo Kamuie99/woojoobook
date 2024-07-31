@@ -21,11 +21,16 @@ public class BookService {
 		String keyword = request.keyword().trim();
 		int page = request.page();
 		int size = 20;
+		int startPage = startPage(size, page);
 
 		if (keyword.isEmpty()) {
 			return new BookListResponse(0, List.of());
 		}
 
-		return bookSearchClient.findBookByKeyword(keyword, page, size);
+		return bookSearchClient.findBookByKeyword(keyword, startPage, size);
+	}
+
+	private Integer startPage(Integer size, Integer page) {
+		return size * (page - 1) + 1;
 	}
 }
