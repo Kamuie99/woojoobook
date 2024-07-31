@@ -13,6 +13,7 @@ import PasswordChange from './pages/PasswordChange';
 import ProtectedRoute from './util/ProtectedRoute';
 import Chatting from './components/Chatting';
 import BookList from './pages/BookList/BookList';
+import TestPage from './pages/TestPage';
 
 
 // 1. "/": home 페이지
@@ -38,6 +39,7 @@ function App() {
           <Route path='/user-update' element={<UserUpdate />} />
           <Route path='/password-change' element={<PasswordChange />} />
           <Route path='/booklist' element={<BookList />} />
+          <Route path='/test' element={<TestPage />} />
         </Route>
           
         <Route path="*" element={<Notfound />} />

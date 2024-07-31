@@ -1,7 +1,16 @@
 import { FaAngleRight } from "react-icons/fa6";
+import { useState } from 'react';
+import AreaSelector from "../../components/AreaSelector";
 
 // eslint-disable-next-line react/prop-types
-const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm, nickname, setNickname, areaCode, setAreaCode, handleFinalSubmit }) => {
+const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm, nickname, setNickname, setAreaCode, handleFinalSubmit }) => {
+  const [selectedAreaName, setSelectedAreaName] = useState('');
+
+  const handleAreaSelected = (selectedAreaCode, selectedAreaName) => {
+    setAreaCode(selectedAreaCode);
+    setSelectedAreaName(selectedAreaName);
+  };
+  
   return (
     <form onSubmit={handleFinalSubmit}>
       <div className='titleBox'>
@@ -21,9 +30,12 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
           <label>닉네임</label>
           <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} required />
         </div>
-        <div>
-          <label>행정코드</label>
-          <input type="text" value={areaCode} onChange={(e) => setAreaCode(e.target.value)} />
+        <div className="chooseAreaContainer">
+          <div className="AreaContainerInner">
+            <label>지역</label>
+            <AreaSelector onAreaSelected={handleAreaSelected} />
+          </div>
+          {selectedAreaName && <div style={{ marginTop: '20px' }}>선택된 지역: {selectedAreaName}</div>}
         </div>
         <button className='emailButton2' type="submit"><FaAngleRight color='white' size='25px'/></button>
       </div>

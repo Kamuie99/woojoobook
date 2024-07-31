@@ -11,10 +11,9 @@ const SearchBox = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (inputValue.trim()) {
-      setSearchTerm(inputValue);
-      navigate('/booklist');
-    }
+    setSearchTerm(inputValue.trim());
+    navigate('/booklist');
+
   };
 
   return (
