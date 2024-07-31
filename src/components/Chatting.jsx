@@ -2,24 +2,27 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { Modal, Box, Fab, TextField, List, ListItem, ListItemText, Divider, IconButton, Typography, Button } from '@mui/material';
-import { IoChatbox } from "react-icons/io5";
+import { IoChatbox, IoWifi, IoChatbubblesOutline } from "react-icons/io5";
 import { IoMdCloseCircleOutline } from "react-icons/io";
-import { MdKeyboardArrowLeft } from "react-icons/md";
+import { MdKeyboardArrowLeft, MdBatteryCharging90 } from "react-icons/md";
 import { BsArrowReturnLeft } from "react-icons/bs";
+import { FaExchangeAlt } from "react-icons/fa";
+import { TbStatusChange } from "react-icons/tb";
 import axiosInstance from '../util/axiosConfig';
-import * as StompJs from '@stomp/stompjs';
-import '../styles/Chatting.css';
+import styles from '../styles/Chatting.module.css';
+import LogoSmall from '../assets/LogoSmall.png';
 
 const Chatting = () => {
-  const { isLoggedIn, sub, token } = useContext(AuthContext);
+  const { isLoggedIn, sub, client } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [userId, setUserId] = useState('');
   const [receiverId, setReceiverId] = useState('');
   const [chatRooms, setChatRooms] = useState([]);
   const [chatRoomId, setChatRoomId] = useState('');
   const [messages, setMessages] = useState([]);
   const [chat, setChat] = useState('');
-  const client = useRef(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const receiverIdRef = useRef(null);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
@@ -44,14 +47,6 @@ const Chatting = () => {
   }, [receiverId]);
 
   useEffect(() => {
-    return () => {
-      if (client.current) {
-        client.current.deactivate();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     if (client.current && chatRoomId) {
       const destination = `/queue/chat/${userId}`;
       const subscription = client.current.subscribe(destination, (message) => {
@@ -63,53 +58,49 @@ const Chatting = () => {
     }
   }, [userId, chatRoomId]);
 
-  const handleOpen = () => {
-    setOpen(true);
-    connect();
-    fetchChatRooms();
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [])
+
+  const toggleOpen = () => {
+    setOpen(prev => {
+      const newState = !prev;
+      if (!newState) {
+        setMessages([]);
+        setChatRoomId('');
+      } else {
+        fetchChatRooms();
+      }
+      if (newState) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+      return newState;
+    });
+  }
 
   const handleClose = () => {
-    if (client.current) {
-      client.current.deactivate();
-    }
-    setOpen(false);
     setMessages([]);
     setChatRoomId('');
+    setReceiverId('');
+    setIsClosing(true);
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const handleAnimationEnd = () => {
+    if (isClosing) {
+      setTimeout(() => {
+        setIsClosing(false);
+        setOpen(false);
+      }, 900);
+    }
   };
   
-  const brokerURL = import.meta.env.VITE_APP_STOMP_BROKER_URL;
-  const connect = () => {
-    client.current = new StompJs.Client({
-      brokerURL,
-      connectHeaders: {
-        'Authorization': `Bearer ${token}`
-      },
-      // debug: function (str) {
-      //   console.log(str);
-      // },
-      onConnect: () => {
-        console.log('웹소켓 연결 성공');
-      },
-      onStompError: (frame) => {
-        console.error('Broker reported error: ' + frame.headers['message']);
-        console.error('Additional details: ' + frame.body);
-      },
-    });
-
-    client.current.onWebSocketClose = (event) => {
-      console.log('WebSocket closed: ', event);
-    };
-
-    client.current.onWebSocketError = (event) => {
-      console.error('WebSocket error: ', event);
-    };
-
-    client.current.activate();
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const fetchChatRooms = async () => {
@@ -118,7 +109,6 @@ const Chatting = () => {
         params: { userId },
       });
       const data = await response.data;
-      console.log(data.content);
       setChatRooms(Array.isArray(data.content) ? data.content : []);
     } catch (error) {
       console.error('채팅 룸 목록 조회 중 오류 발생:', error);
@@ -196,11 +186,11 @@ const Chatting = () => {
   };
 
   const renderChatList = () => (
-    <div class="message-list">
+    <div className={styles.chat_list}>
       <List>
         {chatRooms.map((room) => (
           <React.Fragment key={room.id}>
-            <ListItem button onClick={() => { 
+            <ListItem onClick={() => { 
               let otherUserId = room.receiverId;
               if (otherUserId == userId) {
                 otherUserId = room.senderId;
@@ -210,7 +200,10 @@ const Chatting = () => {
               setChatRoomId(room.id);
               fetchChatMessages(room.id);
             }}>
-              <ListItemText primary={`${userId == room.receiverId ? room.senderId : room.receiverId } 님과의 채팅방`} />
+              <ListItemText primary=
+                {`${userId == room.receiverId ?
+                  room.senderId : room.receiverId } 님과의 채팅방`}
+              />
             </ListItem>
             <Divider />
           </React.Fragment>
@@ -229,26 +222,26 @@ const Chatting = () => {
   );
 
   const renderChatRoom = () => (
-    <div class="message-list">
-      <div className="message-container" ref={messagesContainerRef}>
+    <div className={styles.message_list}>
+      <div className={styles.message_container} ref={messagesContainerRef}>
         {messages.map((message, index) => (
-          <div key={index} className={`message ${message.senderId == userId ? 'sent' : 'received'}`}>
+          <div key={index} className={`${styles.message} ${message.senderId == userId ? styles.sent : styles.received}`}>
             <p>{message.content}</p>
           </div>
         ))}
         <div ref={messagesEndRef}/>
       </div>
-      <div class="message-input-container">
+      <div className={styles.message_input_container}>
         <TextField
           value={chat}
           onChange={(e) => setChat(e.target.value)}
           onKeyDown={handleSendMessage}
           placeholder="메시지 입력"
           fullWidth
-          className="message-input"
+          className={styles.message_input}
         />
-        <div class="message-input-button">
-          <Button onClick={handleSendMessageClick} className="input-button">
+        <div className={styles.message_input_button}>
+          <Button onClick={handleSendMessageClick} className={styles.input_button}>
             <BsArrowReturnLeft />
           </Button>
         </div>
@@ -262,8 +255,8 @@ const Chatting = () => {
         <Fab
           color="primary"
           aria-label="chat"
-          onClick={handleOpen}
-          className="chat-button"
+          onClick={toggleOpen}
+          className={styles.chat_button}
         >
           <IoChatbox size={30} />
         </Fab>
@@ -271,33 +264,71 @@ const Chatting = () => {
       <Modal
         open={open}
         onClose={handleClose}
-        aria-labelledby="chat-modal-title"
-        aria-describedby="chat-modal-description"
+        aria-labelledby={styles.chat_modal_title}
+        aria-describedby={styles.chat_modal_description}
       >
-        <Box className="chat-modal">
-          <div class="modal-header">
-            <div class="modal-title">
-              <p>
-                { chatRoomId ? `${chatRoomId} 님과의 채팅` : "채팅 목록" }
-              </p>
+        <Box
+          className={`
+            ${styles.chat_modal}
+            ${open ?styles.chat_modal_open : ''}
+            ${isClosing ? styles.chat_modal_close : ''}
+          `}
+          onAnimationEnd={handleAnimationEnd}
+        >
+          <div className={styles.phone_top_bar}>
+            <div className={styles.current_time}>
+            {currentTime.toLocaleTimeString([], {
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+              hourCycle: 'h12'
+            })}
             </div>
-            {
-              chatRoomId ?
+            <div className={styles.top_bar_right}>
+              <IoWifi />
+              <p>75%</p>
+              <MdBatteryCharging90 />
+            </div>
+            <div className={styles.camera}></div>
+          </div>
+          <div className={styles.modal_header}>
+            {chatRoomId ?
               <IconButton
                 aria-label="back"
                 onClick={() => setChatRoomId('')}
               >
                 <MdKeyboardArrowLeft size={30} />
               </IconButton> :
-              <IconButton
-              aria-label="close"
-              onClick={handleClose}
-              >
-                <IoMdCloseCircleOutline size={30} />
-              </IconButton>
+              <img src={LogoSmall} width="40px" />
             }
+            <div className={styles.modal_title}>
+              <p>{ chatRoomId ? `${receiverId} 님과의 채팅` : "전체 채팅 목록" }</p>
+            </div>
           </div>
           {chatRoomId ? renderChatRoom() : renderChatList()}
+          <div className={styles.modal_footer}>
+            <IconButton
+              onClick={(handleClose)}
+            >
+              <IoChatbubblesOutline size={30} />
+            </IconButton>
+            <IconButton
+              onClick={(handleClose)}
+            >
+              <TbStatusChange size={30} />
+            </IconButton>
+            <IconButton
+              onClick={(handleClose)}
+            >
+              <FaExchangeAlt size={25} />
+            </IconButton>
+            <IconButton
+              aria-label="close"
+              onClick={handleClose}
+            >
+              <IoMdCloseCircleOutline size={30} />
+            </IconButton>
+          </div>
         </Box>
       </Modal>
     </div>
