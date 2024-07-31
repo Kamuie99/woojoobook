@@ -14,7 +14,7 @@ import com.e207.woojoobook.api.rental.request.RentalOfferRespondRequest;
 import com.e207.woojoobook.api.rental.response.RentalOfferResponse;
 import com.e207.woojoobook.api.rental.response.RentalResponse;
 import com.e207.woojoobook.api.user.UserPersonalFacade;
-import com.e207.woojoobook.api.user.event.PointEvent;
+import com.e207.woojoobook.api.userbook.event.PointEvent;
 import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.rental.RentalRepository;
 import com.e207.woojoobook.domain.rental.RentalStatus;

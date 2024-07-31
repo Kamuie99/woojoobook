@@ -54,7 +54,6 @@ public class JwtProvider {
             .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
         return Jwts.builder()
                 .subject(authentication.getName())
-                .claim("nickname", user.getNickname())
                 .claim("authorities", getAuthorities(authentication))
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expirationTime))

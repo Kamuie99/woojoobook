@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 
 import com.e207.woojoobook.api.user.request.UserDeleteRequest;
+import com.e207.woojoobook.api.user.response.UserInfoResponse;
 import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.rental.RentalRepository;
 import com.e207.woojoobook.domain.user.User;
@@ -110,7 +111,39 @@ class UserServiceTest {
 
 		// then
 		assertEquals(amount, expectedPoints);
+	}
 
+	@DisplayName("회원의 기본 정보를 조회한다.")
+	@Test
+	void findUserInfo() {
+		// given
+		String email = "test@test.com";
+		String nickname = "nickname";
+		String area = "area";
+		User user = cretaeInfoUser(email, nickname, area);
+		User save = this.userRepository.save(user);
+
+		given(this.userHelper.findCurrentUser()).willReturn(save);
+
+		// when
+		UserInfoResponse userInfo = this.userService.findUserInfo();
+
+		// then
+		assertNotNull(userInfo);
+		assertEquals(userInfo.email(), email);
+		assertEquals(userInfo.nickname(), nickname);
+		assertEquals(userInfo.areaCode(), area);
+
+	}
+
+	private static User cretaeInfoUser(String email, String nickname, String area) {
+		User user = User.builder()
+			.email(email)
+			.password("test")
+			.nickname(nickname)
+			.areaCode(area)
+			.build();
+		return user;
 	}
 
 	private static Rental createRental(Userbook userbook, User user) {

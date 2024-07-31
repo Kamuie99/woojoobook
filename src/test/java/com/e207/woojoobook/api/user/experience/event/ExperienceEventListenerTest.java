@@ -1,6 +1,6 @@
 package com.e207.woojoobook.api.user.experience.event;
 
-import com.e207.woojoobook.api.user.event.ExperienceEvent;
+import com.e207.woojoobook.api.userbook.event.ExperienceEvent;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.domain.user.experience.ExperienceHistory;

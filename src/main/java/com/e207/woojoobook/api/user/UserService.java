@@ -10,7 +10,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.e207.woojoobook.api.user.event.UserDeleteEvent;
 import com.e207.woojoobook.api.user.request.EmailCodeCreateRequest;
 import com.e207.woojoobook.api.user.request.LoginRequest;
 import com.e207.woojoobook.api.user.request.PasswordUpdateRequest;
@@ -18,6 +17,8 @@ import com.e207.woojoobook.api.user.request.UserCreateRequest;
 import com.e207.woojoobook.api.user.request.UserDeleteRequest;
 import com.e207.woojoobook.api.user.request.UserUpdateRequest;
 import com.e207.woojoobook.api.user.request.VerificationMail;
+import com.e207.woojoobook.api.user.response.UserInfoResponse;
+import com.e207.woojoobook.api.userbook.event.UserDeleteEvent;
 import com.e207.woojoobook.api.verification.VerificationService;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
@@ -37,6 +38,19 @@ public class UserService {
 	private final UserPersonalFacade userPersonalFacade;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final ApplicationEventPublisher eventPublisher;
+
+
+	@Transactional(readOnly = false)
+	public UserInfoResponse findUserInfo() {
+		User currentUser = this.userHelper.findCurrentUser();
+
+		return UserInfoResponse.builder()
+			.id(currentUser.getId())
+			.email(currentUser.getEmail())
+			.nickname(currentUser.getNickname())
+			.areaCode(currentUser.getAreaCode())
+			.build();
+	}
 
 	@Transactional
 	public void join(UserCreateRequest userCreateRequest) {

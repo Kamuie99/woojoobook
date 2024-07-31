@@ -1,10 +1,7 @@
-package com.e207.woojoobook.api.user.event;
+package com.e207.woojoobook.api.userbook.event;
 
-import com.e207.woojoobook.domain.user.experience.Experience;
 import com.e207.woojoobook.domain.user.point.Point;
 import com.e207.woojoobook.domain.user.point.PointRepository;
-import com.e207.woojoobook.domain.user.point.PointView;
-import com.e207.woojoobook.domain.user.point.PointViewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

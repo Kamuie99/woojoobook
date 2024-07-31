@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
 	private static final String[] AUTH_WHITELIST = {
-		"/users/emails/**", "/auth"
+		"/users/emails/**", "/auth", "/area/**"
 	};
 
 	private final UserRepository userRepository;

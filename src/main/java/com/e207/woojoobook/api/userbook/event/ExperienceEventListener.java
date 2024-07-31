@@ -1,8 +1,7 @@
-package com.e207.woojoobook.api.user.event;
+package com.e207.woojoobook.api.userbook.event;
 
 import com.e207.woojoobook.domain.user.experience.Experience;
 import com.e207.woojoobook.domain.user.experience.ExperienceRepository;
-import com.e207.woojoobook.domain.user.experience.ExperienceViewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

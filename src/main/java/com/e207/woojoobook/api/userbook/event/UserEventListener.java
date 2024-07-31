@@ -1,4 +1,4 @@
-package com.e207.woojoobook.api.user.event;
+package com.e207.woojoobook.api.userbook.event;
 
 import java.util.List;
 

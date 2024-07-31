@@ -21,6 +21,7 @@ import com.e207.woojoobook.api.user.request.UserCreateRequest;
 import com.e207.woojoobook.api.user.request.UserDeleteRequest;
 import com.e207.woojoobook.api.user.request.UserUpdateRequest;
 import com.e207.woojoobook.api.user.request.VerificationMail;
+import com.e207.woojoobook.api.user.response.UserInfoResponse;
 import com.e207.woojoobook.api.user.response.VerifyResponse;
 import com.e207.woojoobook.api.user.validator.UserValidator;
 import com.e207.woojoobook.global.security.SecurityUtil;
@@ -40,6 +41,12 @@ public class UserController {
 	private final UserService userService;
 	private final UserValidator userValidator;
 	private final JwtProvider jwtProvider;
+
+	@GetMapping("/users")
+	public ResponseEntity<UserInfoResponse> findUserInfo() {
+		UserInfoResponse userInfo = this.userService.findUserInfo();
+		return ResponseEntity.ok(userInfo);
+	}
 
 	@PostMapping("/users")
 	public ResponseEntity<?> createUser(@Valid @RequestBody UserCreateRequest userCreateRequest,
