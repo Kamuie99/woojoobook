@@ -4,9 +4,9 @@
 
 operation::rental-controller-test/create-rental-request[snippets="http-request,http-response"]
 
-=== 대여 정보 조회
+=== 대여 내역 조회
 
-operation::rental-controller-test/find-rental-offer[snippets="http-request,http-response"]
+operation::rental-controller-test/find-rental-by-condition[snippets="http-request,request-fields,http-response"]
 
 === 대여 승인/거절
 

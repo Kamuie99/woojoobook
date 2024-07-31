@@ -63,7 +63,7 @@ class ChatServiceTest {
 	@Transactional
 	@DisplayName("채팅 등록 시, 채팅룸 수정 시간이 최신화된다.")
 	@Test
-	void createWithChatroomUpdateSuccess() {
+	void createWithChatroomUpdateSuccess() throws InterruptedException {
 		// given
 		User sender = createUser("sender");
 		User receiver = createUser("receiver");
@@ -77,6 +77,7 @@ class ChatServiceTest {
 		ChatCreateRequest request = createChatRequest(chatRoom, sender, "chat content");
 
 		// when
+		Thread.sleep(50);
 		chatService.create(request);
 
 		//then

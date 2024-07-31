@@ -23,14 +23,14 @@ public class ExchangeRepositoryCustomImpl implements ExchangeRepositoryCustom {
 	}
 
 	@Override
-	public Page<Exchange> findAllWithUserConditionAndExchangeStatus(Long userId, ExchangeUserCondition condition,
-		ExchangeStatus exchangeStatus, Pageable pageable) {
+	public Page<Exchange> findByStatusAndUserCondition(Long userId, ExchangeStatus exchangeStatus,
+		ExchangeUserCondition condition, Pageable pageable) {
 
 		List<Exchange> content = queryFactory
 			.selectFrom(exchange)
 			.where(
-				checkExchangeOfferCondition(userId, condition),
-				exchange.exchangeStatus.eq(exchangeStatus)
+				exchange.exchangeStatus.eq(exchangeStatus),
+				checkUserCondition(userId, condition)
 			)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -39,14 +39,14 @@ public class ExchangeRepositoryCustomImpl implements ExchangeRepositoryCustom {
 		JPAQuery<Exchange> countQuery = queryFactory
 			.selectFrom(exchange)
 			.where(
-				checkExchangeOfferCondition(userId, condition),
-				exchange.exchangeStatus.eq(exchangeStatus)
+				exchange.exchangeStatus.eq(exchangeStatus),
+				checkUserCondition(userId, condition)
 			);
 
 		return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
 	}
 
-	private BooleanExpression checkExchangeOfferCondition(Long userId, ExchangeUserCondition condition) {
+	private BooleanExpression checkUserCondition(Long userId, ExchangeUserCondition condition) {
 		return switch (condition) {
 			case SENDER -> exchange.sender.id.eq(userId);
 			case RECEIVER -> exchange.receiver.id.eq(userId);

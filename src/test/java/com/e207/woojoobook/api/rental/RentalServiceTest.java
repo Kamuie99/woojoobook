@@ -301,7 +301,7 @@ class RentalServiceTest {
 		RentalFindCondition condition = new RentalFindCondition(RECEIVER, OFFERING);
 
 		// when
-		Page<RentalResponse> result = rentalService.findRentalOffer(condition, PageRequest.of(0, 10));
+		Page<RentalResponse> result = rentalService.findByCondition(condition, PageRequest.of(0, 10));
 
 		///then
 		List<RentalResponse> rentals = result.getContent();

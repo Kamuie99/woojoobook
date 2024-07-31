@@ -20,6 +20,7 @@ public interface ExchangeRepository extends JpaRepository<Exchange, Long>, Excha
 		+ " where e.id = :id")
 	Optional<Exchange> findByIdWithUserbookAndUser(Long id);
 
+	// TODO <jhl221123> 의존성이 있는 곳 모두 동적 쿼리로 변경 후 삭제 필요
 	List<Exchange> findAllByReceiverBook(Userbook receiverBook);
 
 	Page<Exchange> findAllByExchangeStatus(ExchangeStatus exchangeStatus, Pageable pageable);

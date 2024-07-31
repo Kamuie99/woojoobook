@@ -38,10 +38,10 @@ public class RentalController {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/rentals/offer")
+	@GetMapping("/rentals")
 	public ResponseEntity<Page<RentalResponse>> findExchangeOffer(@RequestBody RentalFindCondition condition
 		, Pageable pageable) {
-		Page<RentalResponse> response = rentalService.findRentalOffer(condition, pageable);
+		Page<RentalResponse> response = rentalService.findByCondition(condition, pageable);
 		return ResponseEntity.status(OK).body(response);
 	}
 

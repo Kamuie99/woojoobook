@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.e207.woojoobook.api.exchange.request.ExchangeCreateRequest;
 import com.e207.woojoobook.api.exchange.request.ExchangeFindCondition;
-import com.e207.woojoobook.api.exchange.request.ExchangeOfferFindCondition;
 import com.e207.woojoobook.api.exchange.request.ExchangeOfferRespondRequest;
 import com.e207.woojoobook.api.exchange.response.ExchangeResponse;
 
@@ -41,16 +40,9 @@ public class ExchangeController {
 	}
 
 	@GetMapping("/exchanges")
-	public ResponseEntity<Page<ExchangeResponse>> findCompletedExchange(@RequestBody ExchangeFindCondition condition
+	public ResponseEntity<Page<ExchangeResponse>> findExchangeOffer(@RequestBody ExchangeFindCondition condition
 		, Pageable pageable) {
-		Page<ExchangeResponse> response = exchangeService.findCompletedExchange(condition, pageable);
-		return ResponseEntity.status(OK).body(response);
-	}
-
-	@GetMapping("/exchanges/offer")
-	public ResponseEntity<Page<ExchangeResponse>> findExchangeOffer(@RequestBody ExchangeOfferFindCondition condition
-		, Pageable pageable) {
-		Page<ExchangeResponse> response = exchangeService.findExchangeOffer(condition, pageable);
+		Page<ExchangeResponse> response = exchangeService.findByCondition(condition, pageable);
 		return ResponseEntity.status(OK).body(response);
 	}
 

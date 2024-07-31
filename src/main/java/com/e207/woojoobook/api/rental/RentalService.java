@@ -57,7 +57,7 @@ public class RentalService {
 	}
 
 	@Transactional
-	public Page<RentalResponse> findRentalOffer(RentalFindCondition conditionForFind, Pageable pageable) {
+	public Page<RentalResponse> findByCondition(RentalFindCondition conditionForFind, Pageable pageable) {
 		Long userId = userHelper.findCurrentUser().getId();
 		RentalUserCondition userCondition = conditionForFind.userCondition();
 		RentalStatus rentalStatus = conditionForFind.rentalStatus();

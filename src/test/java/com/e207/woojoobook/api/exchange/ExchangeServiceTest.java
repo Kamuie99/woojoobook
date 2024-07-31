@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.e207.woojoobook.api.book.response.BookResponse;
 import com.e207.woojoobook.api.exchange.request.ExchangeCreateRequest;
 import com.e207.woojoobook.api.exchange.request.ExchangeFindCondition;
-import com.e207.woojoobook.api.exchange.request.ExchangeOfferFindCondition;
 import com.e207.woojoobook.api.exchange.request.ExchangeOfferRespondRequest;
 import com.e207.woojoobook.api.exchange.response.ExchangeResponse;
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
@@ -197,69 +196,9 @@ class ExchangeServiceTest {
 	}
 
 	@Transactional
-	@DisplayName("수락된 교환 목록을 조회한다.")
+	@DisplayName("조건에 해당하는 교환 내역을 조회한다.")
 	@Test
-	void findCompletedExchangeWithAPPROVE() {
-		// given
-		User me = createUser("me");
-		User user = createUser("someone");
-		userRepository.saveAll(List.of(me, user));
-
-		Userbook mine = createUserbook(me, "001");
-		Userbook userbook = createUserbook(user, "002");
-		userbookRepository.saveAll(List.of(mine, userbook));
-
-		Exchange exchange = createExchange(mine, userbook);
-		Exchange approvedExchange = createExchange(mine, userbook);
-		Exchange rejectedExchange = createExchange(mine, userbook);
-		approvedExchange.respond(APPROVED);
-		rejectedExchange.respond(REJECTED);
-		exchangeRepository.saveAll(List.of(exchange, approvedExchange, rejectedExchange));
-
-		ExchangeFindCondition condition = new ExchangeFindCondition(APPROVED);
-
-		// when
-		Page<ExchangeResponse> result = exchangeService.findCompletedExchange(condition, PageRequest.of(0, 10));
-
-		///then
-		List<ExchangeResponse> exchangeResponses = result.getContent();
-		assertExchangeStatus(exchangeResponses, 1, APPROVED);
-	}
-
-	@Transactional
-	@DisplayName("거절된 교환 목록을 조회한다.")
-	@Test
-	void findCompletedExchangeWithREJECT() {
-		// given
-		User me = createUser("me");
-		User user = createUser("someone");
-		userRepository.saveAll(List.of(me, user));
-
-		Userbook mine = createUserbook(me, "001");
-		Userbook userbook = createUserbook(user, "002");
-		userbookRepository.saveAll(List.of(mine, userbook));
-
-		Exchange exchange = createExchange(mine, userbook);
-		Exchange approvedExchange = createExchange(mine, userbook);
-		Exchange rejectedExchange = createExchange(mine, userbook);
-		approvedExchange.respond(APPROVED);
-		rejectedExchange.respond(REJECTED);
-		exchangeRepository.saveAll(List.of(exchange, approvedExchange, rejectedExchange));
-
-		ExchangeFindCondition condition = new ExchangeFindCondition(REJECTED);
-
-		// when
-		Page<ExchangeResponse> result = exchangeService.findCompletedExchange(condition, PageRequest.of(0, 10));
-
-		///then
-		List<ExchangeResponse> exchangeResponses = result.getContent();
-		assertExchangeStatus(exchangeResponses, 1, REJECTED);
-	}
-
-	@Transactional
-	@DisplayName("교환 신청한 목록을 조회한다.")
-	@Test
-	void findExchangeOfferAsSenderSuccess() {
+	void findByConditionSuccess() {
 		// given
 		User me = createUser("me");
 		User user = createUser("someone");
@@ -277,78 +216,10 @@ class ExchangeServiceTest {
 
 		given(userHelper.findCurrentUser()).willReturn(me);
 
-		ExchangeOfferFindCondition condition = new ExchangeOfferFindCondition(SENDER);
+		ExchangeFindCondition condition = new ExchangeFindCondition(SENDER_RECEIVER, IN_PROGRESS);
 
 		// when
-		Page<ExchangeResponse> result = exchangeService.findExchangeOffer(condition, PageRequest.of(0, 10));
-
-		// then
-		List<ExchangeResponse> exchangeResponses = result.getContent();
-		assertExchangeStatus(exchangeResponses, 1, IN_PROGRESS);
-
-		UserbookResponse senderBook = exchangeResponses.get(0).senderBook();
-		assertThatUserbookMatchExactly(senderBook, mine);
-	}
-
-	@Transactional
-	@DisplayName("교환 신청을 받은 목록을 조회한다.")
-	@Test
-	void findExchangeOfferAsReceiverSuccess() {
-		// given
-		User me = createUser("me");
-		User user = createUser("someone");
-		userRepository.saveAll(List.of(me, user));
-
-		Userbook mine = createUserbook(me, "001");
-		Userbook userbook = createUserbook(user, "002");
-		userbookRepository.saveAll(List.of(mine, userbook));
-
-		Exchange exchangeAsSender = createExchange(mine, userbook);
-		Exchange exchangeAsReceiver = createExchange(userbook, mine);
-		Exchange completedExchange = createExchange(mine, userbook);
-		completedExchange.respond(APPROVED);
-		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
-
-		given(userHelper.findCurrentUser()).willReturn(me);
-
-		ExchangeOfferFindCondition condition = new ExchangeOfferFindCondition(RECEIVER);
-
-		// when
-		Page<ExchangeResponse> result = exchangeService.findExchangeOffer(condition, PageRequest.of(0, 10));
-
-		///then
-		List<ExchangeResponse> exchangeResponses = result.getContent();
-		assertExchangeStatus(exchangeResponses, 1, IN_PROGRESS);
-
-		UserbookResponse receiverBook = exchangeResponses.get(0).receiverBook();
-		assertThatUserbookMatchExactly(receiverBook, mine);
-	}
-
-	@Transactional
-	@DisplayName("모든 교환 신청 목록을 조회한다.")
-	@Test
-	void findExchangeOfferAllSuccess() {
-		// given
-		User me = createUser("me");
-		User user = createUser("someone");
-		userRepository.saveAll(List.of(me, user));
-
-		Userbook mine = createUserbook(me, "001");
-		Userbook userbook = createUserbook(user, "002");
-		userbookRepository.saveAll(List.of(mine, userbook));
-
-		Exchange exchangeAsSender = createExchange(mine, userbook);
-		Exchange exchangeAsReceiver = createExchange(userbook, mine);
-		Exchange completedExchange = createExchange(mine, userbook);
-		completedExchange.respond(APPROVED);
-		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
-
-		given(userHelper.findCurrentUser()).willReturn(me);
-
-		ExchangeOfferFindCondition condition = new ExchangeOfferFindCondition(SENDER_RECEIVER);
-
-		// when
-		Page<ExchangeResponse> result = exchangeService.findExchangeOffer(condition, PageRequest.of(0, 10));
+		Page<ExchangeResponse> result = exchangeService.findByCondition(condition, PageRequest.of(0, 10));
 
 		///then
 		List<ExchangeResponse> exchangeResponses = result.getContent();

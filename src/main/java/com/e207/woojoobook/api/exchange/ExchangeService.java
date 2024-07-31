@@ -12,12 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.e207.woojoobook.api.exchange.event.ExchangeRespondEvent;
 import com.e207.woojoobook.api.exchange.request.ExchangeCreateRequest;
 import com.e207.woojoobook.api.exchange.request.ExchangeFindCondition;
-import com.e207.woojoobook.api.exchange.request.ExchangeOfferFindCondition;
 import com.e207.woojoobook.api.exchange.request.ExchangeOfferRespondRequest;
 import com.e207.woojoobook.api.exchange.response.ExchangeResponse;
 import com.e207.woojoobook.api.userbook.UserbookService;
 import com.e207.woojoobook.domain.exchange.Exchange;
 import com.e207.woojoobook.domain.exchange.ExchangeRepository;
+import com.e207.woojoobook.domain.exchange.ExchangeStatus;
 import com.e207.woojoobook.domain.exchange.ExchangeUserCondition;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.userbook.Userbook;
@@ -55,22 +55,18 @@ public class ExchangeService {
 		return ExchangeResponse.of(exchange);
 	}
 
+	@Transactional(readOnly = true)
 	public Exchange findDomain(Long id) {
 		return exchangeRepository.findByIdWithUserbookAndUser(id)
 			.orElseThrow(() -> new RuntimeException("Exchange not found"));
 	}
 
-	// TODO <jhl221123> 수락, 거절 한 번에 조회할 수 있도록 수정 필요
-	public Page<ExchangeResponse> findCompletedExchange(ExchangeFindCondition condition, Pageable pageable) {
-		return exchangeRepository.findAllByExchangeStatus(condition.exchangeStatus(), pageable)
-			.map(ExchangeResponse::of);
-	}
-
-	@Transactional
-	public Page<ExchangeResponse> findExchangeOffer(ExchangeOfferFindCondition offerCondition, Pageable pageable) {
+	@Transactional(readOnly = true)
+	public Page<ExchangeResponse> findByCondition(ExchangeFindCondition condition, Pageable pageable) {
 		Long userId = userHelper.findCurrentUser().getId();
-		ExchangeUserCondition userCond = offerCondition.userCondition();
-		return exchangeRepository.findAllWithUserConditionAndExchangeStatus(userId, userCond, IN_PROGRESS, pageable)
+		ExchangeUserCondition userCondition = condition.userCondition();
+		ExchangeStatus exchangeStatus = condition.exchangeStatus();
+		return exchangeRepository.findByStatusAndUserCondition(userId, exchangeStatus, userCondition, pageable)
 			.map(ExchangeResponse::of);
 	}
 

@@ -140,8 +140,8 @@ class ExchangeRepositoryTest {
 		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 
 		// when
-		Page<Exchange> result = exchangeRepository.findAllWithUserConditionAndExchangeStatus(me.getId(), SENDER,
-			IN_PROGRESS, PageRequest.of(0, 10));
+		Page<Exchange> result = exchangeRepository.findByStatusAndUserCondition(me.getId(), IN_PROGRESS, SENDER,
+			PageRequest.of(0, 10));
 
 		///then
 		List<Exchange> exchanges = result.getContent();
@@ -170,8 +170,8 @@ class ExchangeRepositoryTest {
 		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 
 		// when
-		Page<Exchange> result = exchangeRepository.findAllWithUserConditionAndExchangeStatus(me.getId(), RECEIVER,
-			IN_PROGRESS, PageRequest.of(0, 10));
+		Page<Exchange> result = exchangeRepository.findByStatusAndUserCondition(me.getId(), IN_PROGRESS,
+			RECEIVER, PageRequest.of(0, 10));
 
 		List<Exchange> exchanges = result.getContent();
 		assertExchangeStatus(exchanges, 1, IN_PROGRESS);
@@ -199,8 +199,8 @@ class ExchangeRepositoryTest {
 		exchangeRepository.saveAll(List.of(exchangeAsSender, exchangeAsReceiver, completedExchange));
 
 		// when
-		Page<Exchange> result = exchangeRepository.findAllWithUserConditionAndExchangeStatus(me.getId(),
-			SENDER_RECEIVER, IN_PROGRESS, PageRequest.of(0, 10));
+		Page<Exchange> result = exchangeRepository.findByStatusAndUserCondition(me.getId(), IN_PROGRESS,
+			SENDER_RECEIVER, PageRequest.of(0, 10));
 
 		///then
 		List<Exchange> exchanges = result.getContent();

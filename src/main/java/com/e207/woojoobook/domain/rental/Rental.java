@@ -32,7 +32,7 @@ public class Rental {
 	private int extensionCount;
 
 	@Builder
-	public Rental(User user, Userbook userbook, RentalStatus rentalStatus) {
+	public Rental(Long id, User user, Userbook userbook, RentalStatus rentalStatus) {
 		this.user = user;
 		this.userbook = userbook;
 		this.rentalStatus = rentalStatus;
