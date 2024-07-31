@@ -1,0 +1,101 @@
+.categoryItem {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.categoryItem:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.categoryName {
+  font-size: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.buttonGroup {
+  display: flex;
+}
+
+.button {
+  padding: 5px 10px;
+  margin-right: 10px;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: var(--accent-sub-color);
+}
+
+.bookList {
+  flex-grow: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  overflow: hidden;
+}
+
+.book {
+  width: calc(20% - 12px);
+  text-align: center;
+  overflow: hidden;
+}
+
+.bookThumbnail {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.bookTitle {
+  font-weight: bold;
+  margin-bottom: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bookAuthor {
+  font-size: 14px;
+  color: #666;
+}
+
+.emptyBox {
+  height: 80%;
+  width: calc(20% - 12px);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+}
+
+.emptyBox span {
+  font-size: 24px;
+  color: var(--accent-color);
+}

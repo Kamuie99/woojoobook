@@ -6,7 +6,7 @@ import Notfound from './pages/Notfound';
 import BookRegister from './pages/BookRegister/BookRegister';
 import Policy from './pages/Policy';
 import MyActivity from './pages/MyActivity';
-import MyLibrary from './pages/MyLibrary';
+import MyLibrary from './pages/MyLibrary/MyLibrary';
 import Register from './pages/Register/Register';
 import UserUpdate from './pages/UserUpdate';
 import PasswordChange from './pages/PasswordChange';
@@ -35,7 +35,7 @@ function App() {
           <Route path='/bookregister' element={<BookRegister />} />
           <Route path='/policy' element={<Policy/>} />
           <Route path='/myactivity' element={<MyActivity />} />
-          <Route path='/mylibrary' element={<MyLibrary />} />
+          <Route path='/:userId/mylibrary' element={<MyLibrary />} />
           <Route path='/user-update' element={<UserUpdate />} />
           <Route path='/password-change' element={<PasswordChange />} />
           <Route path='/booklist' element={<BookList />} />

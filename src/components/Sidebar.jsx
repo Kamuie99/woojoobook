@@ -11,7 +11,7 @@ import '../styles/Sidebar.css';
 
 // eslint-disable-next-line react/prop-types
 const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles }) => {
-  const { isLoggedIn, logout, nickname } = useContext(AuthContext);
+  const { isLoggedIn, logout, nickname, sub } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -61,7 +61,7 @@ const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles 
             <MenuItem component={<Link to='/myactivity' />}> 신청한 내역 </MenuItem>
             <MenuItem component={<Link to='/myactivity' />}> 신청 받은 내역 </MenuItem>
           </SubMenu>
-          <MenuItem component={<Link to='/mylibrary' />}> 내 서재로 이동 </MenuItem>
+          <MenuItem component={<Link to={`/${sub}/mylibrary`} />}> 내 서재로 이동 </MenuItem>
           <MenuItem component={<Link to='/policy' />}> 이용 안내/정책 </MenuItem>
         </Menu>
       </ProSidebar>

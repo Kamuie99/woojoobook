@@ -4,8 +4,12 @@ import { LuBookPlus } from "react-icons/lu";
 import { FaBook } from "react-icons/fa";
 import { IoLibraryOutline } from "react-icons/io5";
 import { GoLaw } from "react-icons/go";
+import { useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
 
 const LinkList = () => {
+  const { sub } = useContext(AuthContext)
+
   return (
     <div className="LinkList">
       <LinkItem icon={<LuBookPlus color='black' size='40' />} 
@@ -18,7 +22,7 @@ const LinkList = () => {
       />
       <LinkItem icon={<IoLibraryOutline color='black' size='40' />} 
         text={'내 서재로 이동'}
-        to='/mylibrary'
+        to={`/${sub}/mylibrary`}
       />
       <LinkItem icon={<GoLaw color='black' size='40'/>} 
         text={'이용 안내/정책'} 
