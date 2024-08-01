@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,7 +40,7 @@ public class RentalController {
 	}
 
 	@GetMapping("/rentals")
-	public ResponseEntity<Page<RentalResponse>> findExchangeOffer(@RequestBody RentalFindCondition condition
+	public ResponseEntity<Page<RentalResponse>> findExchangeOffer(@ModelAttribute RentalFindCondition condition
 		, Pageable pageable) {
 		Page<RentalResponse> response = rentalService.findByCondition(condition, pageable);
 		return ResponseEntity.status(OK).body(response);
