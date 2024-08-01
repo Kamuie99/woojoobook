@@ -1,6 +1,6 @@
 import Button from '../components/Button';
 import Swal from "sweetalert2";
-import { Sidebar as ProSidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+import { Sidebar as ProSidebar, Menu, MenuItem } from 'react-pro-sidebar';
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { IoMenu } from "react-icons/io5";
@@ -40,8 +40,8 @@ const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles 
               {isLoggedIn ? (
                 <>
                   <button className='logout_button' onClick={handleLogout}>로그아웃<IoIosLogOut /></button>
-                  <Link to='/user-update'>
-                    <button className='update_button'>내정보 수정</button>
+                  <Link to={`/${sub}/mypage`}>
+                    <button className='mypage_button'>마이페이지</button>
                   </Link>
                 </>
               ) : (
@@ -57,11 +57,9 @@ const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles 
             </div>
           </div>
           <MenuItem component={<Link to='/bookregister' />}> 내 책 등록하기 </MenuItem>
-          <SubMenu label="신청내역">
-            <MenuItem component={<Link to='/myactivity' />}> 신청한 내역 </MenuItem>
-            <MenuItem component={<Link to='/myactivity' />}> 신청 받은 내역 </MenuItem>
-          </SubMenu>
+          <MenuItem component={<Link to={`/${sub}/myactivity`} />}> 내 활동으로 이동 </MenuItem>
           <MenuItem component={<Link to={`/${sub}/mylibrary`} />}> 내 서재로 이동 </MenuItem>
+          <MenuItem component={<Link to={`/${sub}/mybook`} />}> 내 책 관리하기 </MenuItem>
           <MenuItem component={<Link to='/policy' />}> 이용 안내/정책 </MenuItem>
         </Menu>
       </ProSidebar>

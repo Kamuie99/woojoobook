@@ -17,16 +17,16 @@ const LinkList = () => {
         to='/bookregister'
       />
       <LinkItem icon={<FaBook color='black' size='40'/>} 
-        text={'대여 중인 책'}
-        to='/myactivity'
+        text={'내 활동으로 이동'}
+        to={`/${sub}/myactivity`}
       />
       <LinkItem icon={<IoLibraryOutline color='black' size='40' />} 
         text={'내 서재로 이동'}
         to={`/${sub}/mylibrary`}
       />
       <LinkItem icon={<GoLaw color='black' size='40'/>} 
-        text={'이용 안내/정책'} 
-        to='/policy'
+        text={'내 책 관리하기'} 
+        to={`/${sub}/mybook`}
       />
     </div>
   )

@@ -5,9 +5,11 @@ import Login from './pages/Login';
 import Notfound from './pages/Notfound';
 import BookRegister from './pages/BookRegister/BookRegister';
 import Policy from './pages/Policy';
+import MyBook from './pages/MyBook';
 import MyActivity from './pages/MyActivity';
 import MyLibrary from './pages/MyLibrary/MyLibrary';
 import Register from './pages/Register/Register';
+import MyPage from './pages/MyPage'
 import UserUpdate from './pages/UserUpdate';
 import PasswordChange from './pages/PasswordChange';
 import ProtectedRoute from './util/ProtectedRoute';
@@ -34,8 +36,10 @@ function App() {
         <Route element={<ProtectedRoute />}>        
           <Route path='/bookregister' element={<BookRegister />} />
           <Route path='/policy' element={<Policy/>} />
-          <Route path='/myactivity' element={<MyActivity />} />
+          <Route path='/:userId/mybook' element={<MyBook/>} />
+          <Route path='/:userId/myactivity' element={<MyActivity />} />
           <Route path='/:userId/mylibrary' element={<MyLibrary />} />
+          <Route path='/:userId/mypage' element={<MyPage />} />
           <Route path='/user-update' element={<UserUpdate />} />
           <Route path='/password-change' element={<PasswordChange />} />
           <Route path='/booklist' element={<BookList />} />
