@@ -49,14 +49,25 @@ public class VerificationService {
 
 	@Transactional
 	public boolean verifyEmail(VerificationMail verificationMail) {
-		UserVerification userVerification = (UserVerification) this.redisTemplate.opsForHash().get("user;", verificationMail.getEmail());
-		if(userVerification == null) {
-			throw new ErrorException(ErrorCode.NotFound);
-		}
+		UserVerification userVerification = validateAndFindVerification(
+			verificationMail.getEmail());
 		userVerification.verify(verificationMail.getVerificationCode());
 		this.redisTemplate.opsForHash().put("user;", verificationMail.getEmail(), userVerification);
 		UserVerification saved = (UserVerification) this.redisTemplate.opsForHash().get("user;", verificationMail.getEmail());
+
+		if(saved == null) {
+			throw new ErrorException(ErrorCode.NotFound);
+		}
 		return saved.isVerified();
+	}
+
+	private UserVerification validateAndFindVerification(String verificationMail) {
+		UserVerification userVerification = (UserVerification)this.redisTemplate.opsForHash()
+			.get("user;", verificationMail);
+		if (userVerification == null) {
+			throw new ErrorException(ErrorCode.NotFound);
+		}
+		return userVerification;
 	}
 
 	@Transactional
@@ -69,6 +80,9 @@ public class VerificationService {
 
 		this.redisTemplate.opsForHash().put("user;", email, userVerification);
 		UserVerification verification = (UserVerification) this.redisTemplate.opsForHash().get("user;", email);
+		if(userVerification == null) {
+			throw new ErrorException(ErrorCode.NotFound);
+		}
 		return verification.getVerificationCode();
 	}
 }

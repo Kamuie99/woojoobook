@@ -32,19 +32,20 @@ public class User {
 	private String password;
 	private String nickname;
 	private String areaCode;
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
 	private List<Point> points = new ArrayList<>();
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
 	private List<Experience> experiences = new ArrayList<>();
 	private LocalDate lastLoginDate;
 
 	@Builder
-	private User(Long id, String email, String password, String nickname, String areaCode) {
+	private User(Long id, String email, String password, String nickname, String areaCode, LocalDate lastLoginDate) {
 		this.id = id;
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;
 		this.areaCode = areaCode;
+		this.lastLoginDate = lastLoginDate;
 	}
 
 	public void update(String nickname, String areaCode) {

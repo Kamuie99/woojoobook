@@ -23,6 +23,7 @@ import com.e207.woojoobook.api.user.request.UserDeleteRequest;
 import com.e207.woojoobook.api.user.request.UserUpdateRequest;
 import com.e207.woojoobook.api.user.request.VerificationMail;
 import com.e207.woojoobook.api.user.response.UserInfoResponse;
+import com.e207.woojoobook.api.user.response.UserPersonalResponse;
 import com.e207.woojoobook.api.user.response.VerifyResponse;
 import com.e207.woojoobook.api.user.validator.UserValidator;
 import com.e207.woojoobook.global.security.SecurityUtil;
@@ -145,6 +146,12 @@ public class UserController {
 		}
 		this.userService.deleteUser(userDeleteRequest);
 		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@GetMapping("/users/personal")
+	public ResponseEntity<UserPersonalResponse> findUserPersonal() {
+		UserPersonalResponse userPersonal = this.userService.findUserPersonal();
+		return ResponseEntity.ok(userPersonal);
 	}
 
 	private HttpHeaders createTokenFromAuthentication() {

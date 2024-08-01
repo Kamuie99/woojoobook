@@ -19,6 +19,7 @@ import com.e207.woojoobook.api.user.request.UserDeleteRequest;
 import com.e207.woojoobook.api.user.request.UserUpdateRequest;
 import com.e207.woojoobook.api.user.request.VerificationMail;
 import com.e207.woojoobook.api.user.response.UserInfoResponse;
+import com.e207.woojoobook.api.user.response.UserPersonalResponse;
 import com.e207.woojoobook.api.userbook.event.ExperienceEvent;
 import com.e207.woojoobook.api.userbook.event.PointEvent;
 import com.e207.woojoobook.api.userbook.event.UserDeleteEvent;
@@ -138,12 +139,21 @@ public class UserService {
 		return this.userPersonalFacade.getUserPoints(user.getId());
 	}
 
+	@Transactional(readOnly = true)
+	public UserPersonalResponse findUserPersonal() {
+		User user = this.userHelper.findCurrentUser();
+		int userPoints = this.userPersonalFacade.getUserPoints(user.getId());
+		int userExperience = this.userPersonalFacade.getUserExperience(user.getId());
+		return new UserPersonalResponse(userPoints, userExperience);
+	}
+
 	public User findDomainById(Long id) {
 		return userRepository.findById(id).orElseThrow(() -> new ErrorException(ErrorCode.UserNotFound));
 	}
 
 	private Map<String, Boolean> checkIsFirstLogin(User user) {
-		if(user.getLastLoginDate().isBefore(LocalDate.now())){
+		LocalDate lastLoginDate = user.getLastLoginDate();
+		if(lastLoginDate == null || lastLoginDate.isBefore(LocalDate.now())){
 			user.updateLoginDate(LocalDate.now());
 			this.eventPublisher.publishEvent(new ExperienceEvent(user, ExperienceHistory.ATTENDANCE));
 			this.eventPublisher.publishEvent(new PointEvent(user, PointHistory.ATTENDANCE));

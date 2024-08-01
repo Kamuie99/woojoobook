@@ -36,7 +36,7 @@ public class Userbook {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private User user;
 
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "userbook")
 	private List<WishBook> wishBooks = new ArrayList<>();
 
 	@Enumerated(EnumType.STRING)
