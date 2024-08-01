@@ -20,8 +20,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/topic", "/queue");
-		config.setApplicationDestinationPrefixes("/app");
+		config
+			.setApplicationDestinationPrefixes("/app")
+			.enableStompBrokerRelay("/topic")
+			.setRelayHost("localhost") // rabbitmq server host
+			.setVirtualHost("/")
+			.setRelayPort(61613) // stomp plugin port
+			.setClientLogin("guest") // rabbitmq server 생성 시, 계정 추가 필요
+			.setClientPasscode("guest");
 	}
 
 	@Override

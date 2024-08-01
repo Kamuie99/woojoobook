@@ -1,5 +1,7 @@
 package com.e207.woojoobook.domain.chat;
 
+import java.time.LocalDateTime;
+
 import com.e207.woojoobook.domain.chatroom.ChatRoom;
 import com.e207.woojoobook.domain.user.User;
 
@@ -31,11 +33,14 @@ public class Chat {
 
 	private String content;
 
+	private LocalDateTime createdAt;
+
 	@Builder
 	private Chat(Long id, ChatRoom chatRoom, User sender, String content) {
 		this.id = id;
 		this.chatRoom = chatRoom;
 		this.sender = sender;
 		this.content = content;
+		this.createdAt = LocalDateTime.now();
 	}
 }
