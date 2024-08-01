@@ -1,7 +1,6 @@
 package com.e207.woojoobook.api.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -12,25 +11,17 @@ import com.e207.woojoobook.api.chatroom.interceptor.StompInterceptor;
 
 import lombok.RequiredArgsConstructor;
 
-// TODO : 수정
-@Profile("rabbitMQ")
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+public class LocalSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	private final StompInterceptor stompInterceptor;
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config
-			.setApplicationDestinationPrefixes("/app")
-			.enableStompBrokerRelay("/topic")
-			.setRelayHost("localhost") // rabbitmq server host
-			.setVirtualHost("/")
-			.setRelayPort(61613) // stomp plugin port
-			.setClientLogin("guest") // rabbitmq server 생성 시, 계정 추가 필요
-			.setClientPasscode("guest");
+		config.enableSimpleBroker("/topic", "/queue");
+		config.setApplicationDestinationPrefixes("/app");
 	}
 
 	@Override

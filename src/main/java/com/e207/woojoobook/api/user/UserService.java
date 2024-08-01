@@ -48,7 +48,7 @@ public class UserService {
 	private final ApplicationEventPublisher eventPublisher;
 
 
-	@Transactional(readOnly = false)
+	@Transactional(readOnly = true)
 	public UserInfoResponse findUserInfo() {
 		User currentUser = this.userHelper.findCurrentUser();
 
@@ -153,7 +153,7 @@ public class UserService {
 
 	private Map<String, Boolean> checkIsFirstLogin(User user) {
 		LocalDate lastLoginDate = user.getLastLoginDate();
-		if(lastLoginDate == null || lastLoginDate.isBefore(LocalDate.now())){
+		if (lastLoginDate == null || lastLoginDate.isBefore(LocalDate.now())) {
 			user.updateLoginDate(LocalDate.now());
 			this.eventPublisher.publishEvent(new ExperienceEvent(user, ExperienceHistory.ATTENDANCE));
 			this.eventPublisher.publishEvent(new PointEvent(user, PointHistory.ATTENDANCE));
