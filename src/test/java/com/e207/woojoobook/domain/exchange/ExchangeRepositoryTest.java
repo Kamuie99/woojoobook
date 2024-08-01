@@ -1,7 +1,7 @@
 package com.e207.woojoobook.domain.exchange;
 
 import static com.e207.woojoobook.domain.exchange.ExchangeStatus.*;
-import static com.e207.woojoobook.domain.exchange.ExchangeUserCondition.*;
+import static com.e207.woojoobook.domain.exchange.TradeUserCondition.*;
 import static com.e207.woojoobook.domain.userbook.QualityStatus.*;
 import static com.e207.woojoobook.domain.userbook.RegisterType.*;
 import static com.e207.woojoobook.domain.userbook.TradeStatus.*;
@@ -67,6 +67,7 @@ class ExchangeRepositoryTest {
 		assertThatBookMatchExactly(receiverBookInfo, userbook.getBook());
 	}
 
+	// TODO <jhl221123> 변경된 쿼리 테스트로 변경 필요
 	@DisplayName("수락된 교환 목록을 조회한다.")
 	@Test
 	void findCompletedExchangeSuccess() {

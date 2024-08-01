@@ -5,5 +5,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface ExchangeRepositoryCustom {
 	Page<Exchange> findByStatusAndUserCondition(Long userId, ExchangeStatus exchangeStatus,
-		ExchangeUserCondition condition, Pageable pageable);
+		TradeUserCondition condition, Pageable pageable);
 }

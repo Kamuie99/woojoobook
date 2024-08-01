@@ -1,6 +1,6 @@
-package com.e207.woojoobook.domain.exchange;
+package com.e207.woojoobook.domain.extension;
 
-import static com.e207.woojoobook.domain.exchange.QExchange.*;
+import static com.e207.woojoobook.domain.extension.QExtension.*;
 
 import java.util.List;
 
@@ -8,38 +8,39 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
+import com.e207.woojoobook.domain.exchange.TradeUserCondition;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
 
-public class ExchangeRepositoryCustomImpl implements ExchangeRepositoryCustom {
+public class ExtensionRepositoryCustomImpl implements ExtensionRepositoryCustom {
 
 	private final JPAQueryFactory queryFactory;
 
-	public ExchangeRepositoryCustomImpl(EntityManager em) {
+	public ExtensionRepositoryCustomImpl(EntityManager em) {
 		this.queryFactory = new JPAQueryFactory(em);
 	}
 
 	@Override
-	public Page<Exchange> findByStatusAndUserCondition(Long userId, ExchangeStatus exchangeStatus,
+	public Page<Extension> findByStatusAndUserCondition(Long userId, ExtensionStatus extensionStatus,
 		TradeUserCondition condition, Pageable pageable) {
 
-		List<Exchange> content = queryFactory
-			.selectFrom(exchange)
+		List<Extension> content = queryFactory
+			.selectFrom(extension)
 			.where(
-				exchange.exchangeStatus.eq(exchangeStatus),
+				extension.extensionStatus.eq(extensionStatus),
 				checkUserCondition(userId, condition)
 			)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
 
-		JPAQuery<Exchange> countQuery = queryFactory
-			.selectFrom(exchange)
+		JPAQuery<Extension> countQuery = queryFactory
+			.selectFrom(extension)
 			.where(
-				exchange.exchangeStatus.eq(exchangeStatus),
+				extension.extensionStatus.eq(extensionStatus),
 				checkUserCondition(userId, condition)
 			);
 
@@ -48,9 +49,10 @@ public class ExchangeRepositoryCustomImpl implements ExchangeRepositoryCustom {
 
 	private BooleanExpression checkUserCondition(Long userId, TradeUserCondition condition) {
 		return switch (condition) {
-			case SENDER -> exchange.sender.id.eq(userId);
-			case RECEIVER -> exchange.receiver.id.eq(userId);
-			case SENDER_RECEIVER -> exchange.sender.id.eq(userId).or(exchange.receiver.id.eq(userId));
+			case SENDER -> extension.rental.user.id.eq(userId);
+			case RECEIVER -> extension.rental.userbook.user.id.eq(userId);
+			case SENDER_RECEIVER ->
+				extension.rental.user.id.eq(userId).or(extension.rental.userbook.user.id.eq(userId));
 		};
 	}
 }

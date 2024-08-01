@@ -1,7 +1,7 @@
 package com.e207.woojoobook.api.exchange;
 
 import static com.e207.woojoobook.domain.exchange.ExchangeStatus.*;
-import static com.e207.woojoobook.domain.exchange.ExchangeUserCondition.*;
+import static com.e207.woojoobook.domain.exchange.TradeUserCondition.*;
 import static com.e207.woojoobook.domain.userbook.QualityStatus.*;
 import static com.e207.woojoobook.domain.userbook.RegisterType.*;
 import static com.e207.woojoobook.domain.userbook.TradeStatus.*;

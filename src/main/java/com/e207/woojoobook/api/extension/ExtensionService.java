@@ -1,10 +1,21 @@
 package com.e207.woojoobook.api.extension;
 
+import java.time.LocalDateTime;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.e207.woojoobook.api.extension.event.ExtensionEvent;
 import com.e207.woojoobook.api.extension.event.ExtensionResultEvent;
+import com.e207.woojoobook.api.extension.request.ExtensionFindCondition;
 import com.e207.woojoobook.api.extension.request.ExtensionRespondRequest;
+import com.e207.woojoobook.domain.exchange.TradeUserCondition;
 import com.e207.woojoobook.domain.extension.Extension;
 import com.e207.woojoobook.domain.extension.ExtensionRepository;
+import com.e207.woojoobook.domain.extension.ExtensionStatus;
 import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.rental.RentalRepository;
 import com.e207.woojoobook.domain.rental.RentalStatus;
@@ -14,12 +25,6 @@ import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Service
@@ -42,6 +47,15 @@ public class ExtensionService {
 		Extension save = this.extensionRepository.save(extension);
 		this.eventPublisher.publishEvent(new ExtensionEvent(rental));
 		return save.getId();
+	}
+
+	@Transactional
+	public Page<ExtensionResponse> findByCondition(ExtensionFindCondition conditionForFind, Pageable pageable) {
+		Long userId = userHelper.findCurrentUser().getId();
+		TradeUserCondition userCondition = conditionForFind.userCondition();
+		ExtensionStatus extensionStatus = conditionForFind.extensionStatus();
+		return extensionRepository.findByStatusAndUserCondition(userId, extensionStatus, userCondition, pageable)
+			.map(ExtensionResponse::of);
 	}
 
 	@Transactional

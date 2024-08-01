@@ -17,7 +17,7 @@ import com.e207.woojoobook.api.exchange.response.ExchangeResponse;
 import com.e207.woojoobook.domain.exchange.Exchange;
 import com.e207.woojoobook.domain.exchange.ExchangeRepository;
 import com.e207.woojoobook.domain.exchange.ExchangeStatus;
-import com.e207.woojoobook.domain.exchange.ExchangeUserCondition;
+import com.e207.woojoobook.domain.exchange.TradeUserCondition;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookReader;
@@ -64,7 +64,7 @@ public class ExchangeService {
 	@Transactional(readOnly = true)
 	public Page<ExchangeResponse> findByCondition(ExchangeFindCondition condition, Pageable pageable) {
 		Long userId = userHelper.findCurrentUser().getId();
-		ExchangeUserCondition userCondition = condition.userCondition();
+		TradeUserCondition userCondition = condition.userCondition();
 		ExchangeStatus exchangeStatus = condition.exchangeStatus();
 		return exchangeRepository.findByStatusAndUserCondition(userId, exchangeStatus, userCondition, pageable)
 			.map(ExchangeResponse::of);
