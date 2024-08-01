@@ -12,6 +12,8 @@ import com.e207.woojoobook.api.user.request.VerificationMail;
 import com.e207.woojoobook.domain.user.UserVerification;
 import com.e207.woojoobook.domain.user.UserVerificationRepository;
 import com.e207.woojoobook.domain.user.VerificationCodeUtil;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.mail.Mail;
 
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 public class VerificationService {
 
-	private final JavaMailSender mailSender;
+	private final MailSender mailSender;
 	private final UserVerificationRepository userVerificationRepository;
 	@Value("${spring.mail.username}")
 	private String from;
@@ -33,23 +35,20 @@ public class VerificationService {
 
 			this.mailSender.send(message);
 		} catch (MailException e) {
-			// TODO : 예외처리
-			throw new RuntimeException("잠시 후 다시 시도해주세요");
+			throw new ErrorException(ErrorCode.InternalServer);
 		}
 	}
 
-	// TODO : 예외처리
 	@Transactional(readOnly = true)
 	public UserVerification findByEmail(String email) {
 		return this.userVerificationRepository.findById(email)
-			.orElseThrow(() -> new RuntimeException("유효하지 않는 email입니다."));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
 
 	@Transactional
 	public boolean verifyEmail(VerificationMail verificationMail) {
-		// TODO : 예외처리
 		UserVerification userVerification = this.userVerificationRepository.findById(verificationMail.getEmail())
-			.orElseThrow(() -> new RuntimeException("존재하지 않는 email"));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 		userVerification.verify(verificationMail.getVerificationCode());
 
 		UserVerification save = this.userVerificationRepository.save(userVerification);

@@ -24,6 +24,7 @@ import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
 import com.e207.woojoobook.domain.userbook.WishBook;
 import com.e207.woojoobook.domain.userbook.WishBookRepository;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 @ExtendWith(MockitoExtension.class)
@@ -142,7 +143,6 @@ class WishBookServiceTest {
 		assertFalse(byId.isPresent());
 	}
 
-	// TODO : 예외처리
 	@DisplayName("존재하지 않는 도서는 관심등록 불가능")
 	@Test
 	void wishUpdate_doseNotExist_fail() {
@@ -152,12 +152,10 @@ class WishBookServiceTest {
 		String expectedMessage = "사용자 도서가 없습니다.";
 
 		// expected
-		Exception exception = assertThrows(RuntimeException.class,
+		assertThrows(ErrorException.class,
 			() -> this.wishBookService.updateWishBook(invalidUserbookId, false));
-		assertEquals(exception.getMessage(), expectedMessage);
 	}
 
-	// TODO : 예외처리
 	@DisplayName("이미 관심 등록된 책에 관심 등록 요청")
 	@Test
 	void wishUpdate_alreadyWished_fail() {
@@ -168,12 +166,10 @@ class WishBookServiceTest {
 		String expectedMessage = "이미 관심 목록에 추가된 책입니다.";
 
 		// expected
-		Exception exception = assertThrows(RuntimeException.class,
+		assertThrows(ErrorException.class,
 			() -> this.wishBookService.updateWishBook(userbookId, wished));
-		assertEquals(exception.getMessage(), expectedMessage);
 	}
 
-	// TODO : 예외처리
 	@DisplayName("관심 목록에 존재하지 않는 책에 관심 등록 취소 요청")
 	@Test
 	void wishUpdate_doseNotExistWishList_fail() {
@@ -184,8 +180,8 @@ class WishBookServiceTest {
 		String expectedMessage = "관심 목록에 존재하지 않는 책입니다.";
 
 		// expected
-		Exception exception = assertThrows(RuntimeException.class,
+		assertThrows(ErrorException.class,
 			() -> this.wishBookService.updateWishBook(userbookId, wished));
-		assertEquals(exception.getMessage(), expectedMessage);
+
 	}
 }

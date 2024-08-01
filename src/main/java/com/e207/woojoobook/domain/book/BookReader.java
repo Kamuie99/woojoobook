@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component;
 
 import com.e207.woojoobook.api.book.response.BookResponse;
 import com.e207.woojoobook.client.BookSearchClient;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 
 import lombok.AllArgsConstructor;
 
@@ -22,6 +24,6 @@ public class BookReader {
 		return bookSearchClient.findBookByIsbn(isbn)
 			.map(BookResponse::toEntity)
 			.map(bookRepository::save)
-			.orElseThrow(() -> new RuntimeException("검색한 책이 존재하지 않을 때 던지는 예외"));    // todo 예외 처리
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
 }

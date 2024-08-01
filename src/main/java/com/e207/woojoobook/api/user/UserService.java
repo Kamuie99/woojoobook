@@ -23,6 +23,8 @@ import com.e207.woojoobook.api.verification.VerificationService;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.domain.user.UserVerification;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 import com.e207.woojoobook.global.security.SecurityUtil;
 
@@ -89,19 +91,17 @@ public class UserService {
 		return this.userRepository.existsByNickname(nickname);
 	}
 
-	// TODO : 예외처리
 	@Transactional(readOnly = true)
 	public void login(LoginRequest loginRequest) {
 		var authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.email(),
 			loginRequest.password());
 		Authentication authenticate = this.authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 		if (!authenticate.isAuthenticated()) {
-			throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+			throw new ErrorException(ErrorCode.InvalidPassword);
 		}
 		SecurityUtil.setAuthentication(authenticate);
 	}
 
-	// TODO : 예외처리
 	@Transactional
 	public void update(UserUpdateRequest userUpdateRequest) {
 		User user = this.userHelper.findCurrentUser();
@@ -109,15 +109,11 @@ public class UserService {
 	}
 
 
-	// TODO : 예외처리
 	@Transactional
 	public void updatePassword(PasswordUpdateRequest passwordUpdateRequest) {
-		User user = this.userRepository.findById(Objects.requireNonNull(SecurityUtil.getCurrentUsername()))
-			.orElseThrow(() -> new RuntimeException("인증 정보가 없습니다."));
+		User user = this.userHelper.findCurrentUser();
 
-		if (!passwordEncoder.matches(passwordUpdateRequest.curPassword(), user.getPassword())) {
-			throw new RuntimeException("비밀번호가 일치하지 않습니다.");
-		}
+		checkPassword(user.getId(), passwordUpdateRequest.curPassword());
 		user.updatePassword(passwordEncoder.encode(passwordUpdateRequest.password()));
 	}
 
@@ -135,22 +131,21 @@ public class UserService {
 	}
 
 	public User findDomainById(Long id) {
-		return userRepository.findById(id).orElseThrow(() -> new RuntimeException("user not found"));
+		return userRepository.findById(id).orElseThrow(() -> new ErrorException(ErrorCode.UserNotFound));
 	}
 
-	// TODO : 예외처리
 	private void validateUserCreateRequest(UserCreateRequest userCreateRequest) {
 		UserVerification userVerification = this.verificationService.findByEmail(userCreateRequest.getEmail());
 		if (!userVerification.isVerified()) {
-			throw new RuntimeException("인증되지 않은 회원입니다.");
+			throw new ErrorException(ErrorCode.ForbiddenError);
 		}
 
 		if (checkDuplicateEmail(userCreateRequest.getEmail())) {
-			throw new RuntimeException("중복된 이메일은 허용되지 않습니다.");
+			throw new ErrorException(ErrorCode.NotAcceptDuplicate);
 		}
 
 		if (checkDuplicateNickname(userCreateRequest.getNickname())) {
-			throw new RuntimeException("중복된 닉네임은 허용되지 않습니다.");
+			throw new ErrorException(ErrorCode.NotAcceptDuplicate);
 		}
 	}
 
@@ -158,7 +153,7 @@ public class UserService {
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(id, password);
 		Authentication authenticate = this.authenticationManagerBuilder.getObject().authenticate(token);
 		if (!authenticate.isAuthenticated()) {
-			throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+			throw new ErrorException(ErrorCode.InvalidPassword);
 		}
 	}
 }

@@ -48,7 +48,6 @@ public class JwtProvider {
     }
 
     public String createToken(Authentication authentication) {
-        // TODO : 예외처리
         com.e207.woojoobook.domain.user.User user = this.userRepository.findById(
                 Long.valueOf(authentication.getName()))
             .orElseThrow(() -> new UsernameNotFoundException("Username not found"));

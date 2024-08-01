@@ -14,7 +14,6 @@ import com.e207.woojoobook.api.exchange.request.ExchangeCreateRequest;
 import com.e207.woojoobook.api.exchange.request.ExchangeFindCondition;
 import com.e207.woojoobook.api.exchange.request.ExchangeOfferRespondRequest;
 import com.e207.woojoobook.api.exchange.response.ExchangeResponse;
-import com.e207.woojoobook.api.userbook.UserbookService;
 import com.e207.woojoobook.domain.exchange.Exchange;
 import com.e207.woojoobook.domain.exchange.ExchangeRepository;
 import com.e207.woojoobook.domain.exchange.ExchangeStatus;
@@ -22,6 +21,8 @@ import com.e207.woojoobook.domain.exchange.ExchangeUserCondition;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookReader;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,6 @@ import lombok.RequiredArgsConstructor;
 public class ExchangeService {
 
 	private final ExchangeRepository exchangeRepository;
-	private final UserbookService userbookService;
 	private final UserbookReader userbookReader;
 	private final ApplicationEventPublisher eventPublisher;
 	private final UserHelper userHelper;
@@ -58,7 +58,7 @@ public class ExchangeService {
 	@Transactional(readOnly = true)
 	public Exchange findDomain(Long id) {
 		return exchangeRepository.findByIdWithUserbookAndUser(id)
-			.orElseThrow(() -> new RuntimeException("Exchange not found"));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
 
 	@Transactional(readOnly = true)
@@ -107,15 +107,15 @@ public class ExchangeService {
 		User receiver = exchange.getReceiver();
 		User sessionUser = userHelper.findCurrentUser();
 		if (!sessionUser.getId().equals(receiver.getId()))
-			throw new RuntimeException("You are not allowed to respond to this exchange.");
+			throw new ErrorException(ErrorCode.ForbiddenError);
 	}
 
 	private void validateExchangeSender(Long id) {
 		Exchange exchange = exchangeRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException("Exchange not found"));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 		User sessionUser = userHelper.findCurrentUser();
 		if (!sessionUser.getId().equals(exchange.getSender().getId()))
-			throw new RuntimeException("You are not allowed to delete to this exchange.");
+			throw new ErrorException(ErrorCode.ForbiddenError);
 	}
 
 	private Exchange createExchange(Userbook senderBook, Userbook receiverBook) {

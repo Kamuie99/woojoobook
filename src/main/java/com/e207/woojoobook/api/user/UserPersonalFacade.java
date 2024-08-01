@@ -26,6 +26,6 @@ public class UserPersonalFacade {
     public boolean checkPointToRental(Long userId) {
         int userPoints = this.pointService.getUserPoints(userId);
 
-        return userPoints >= PointHistory.USE_BOOK_RENTAL.getAmount();
+        return userPoints >= Math.abs(PointHistory.USE_BOOK_RENTAL.getAmount());
     }
 }

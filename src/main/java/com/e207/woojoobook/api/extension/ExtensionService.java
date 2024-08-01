@@ -9,6 +9,8 @@ import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.rental.RentalRepository;
 import com.e207.woojoobook.domain.rental.RentalStatus;
 import com.e207.woojoobook.domain.user.User;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 import lombok.RequiredArgsConstructor;
@@ -74,25 +76,25 @@ public class ExtensionService {
 
 	private Extension validateAndFindExtension(Long extensionId) {
 		Extension extension = this.extensionRepository.findById(extensionId)
-			.orElseThrow(() -> new RuntimeException("존재하지 않는 연장신청입니다."));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 		if (extension.getExtensionStatus() != null) {
-			throw new RuntimeException("처리된 연장신청에 대한 접근은 허용되지 않습니다.");
+			throw new ErrorException(ErrorCode.InvalidAccess);
 		}
 		return extension;
 	}
 
 	private static void validateIsOwner(User owner, User currentUser) {
 		if (owner.getId() != currentUser.getId()) {
-			throw new RuntimeException("권한이 없는 접근입니다.");
+			throw new ErrorException(ErrorCode.ForbiddenError);
 		}
 	}
 
 	private Rental validateAndFindRental(Long rentalId) {
 		Rental rental = this.rentalRepository.findById(rentalId)
-			.orElseThrow(() -> new RuntimeException("존재하지 않는 대여 정보입니다."));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 		User currentUser = this.userHelper.findCurrentUser();
 		if (currentUser.getId() != rental.getUser().getId()) {
-			throw new RuntimeException("대여 신청자만이 연장 신청을 할 수 있습니다.");
+			throw new ErrorException(ErrorCode.ForbiddenError);
 		}
 		validateRentalStatus(rental);
 		return rental;
@@ -100,7 +102,7 @@ public class ExtensionService {
 
 	private static void validateRentalStatus(Rental rental) {
 		if (rental.getRentalStatus() != RentalStatus.IN_PROGRESS) {
-			throw new RuntimeException("연장신청을 할 수 없는 대여 정보입니다.");
+			throw new ErrorException(ErrorCode.InvalidAccess);
 		}
 	}
 }

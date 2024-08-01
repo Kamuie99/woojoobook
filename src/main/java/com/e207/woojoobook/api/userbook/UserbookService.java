@@ -17,6 +17,8 @@ import com.e207.woojoobook.domain.userbook.RegisterType;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookReader;
 import com.e207.woojoobook.domain.userbook.UserbookStateManager;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 @Service
@@ -42,7 +44,7 @@ public class UserbookService {
 	@Transactional(readOnly = true)
 	public Page<UserbookResponse> findUserbookPageList(UserbookPageFindRequest request, Pageable pageable) {
 		if (request.areaCodeList().size() > MAX_AREA_CODE_SIZE) {
-			throw new RuntimeException("지역 선택이 초과 했을 때 던지는 에러");
+			throw new ErrorException(ErrorCode.IllegalArgument);
 		}
 
 		User user = userHelper.findCurrentUser();

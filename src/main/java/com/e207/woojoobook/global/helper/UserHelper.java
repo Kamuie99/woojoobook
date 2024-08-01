@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component;
 
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.security.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,6 @@ public class UserHelper {
 		Long currentUsername = SecurityUtil.getCurrentUsername();
 
 		return this.userRepository.findById(currentUsername)
-			.orElseThrow(() -> new RuntimeException("인증정보가 없습니다."));
+			.orElseThrow(() -> new ErrorException(ErrorCode.UserNotFound));
 	}
 }

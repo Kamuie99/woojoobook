@@ -2,10 +2,10 @@ package com.e207.woojoobook.api.userbook.event;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.e207.woojoobook.api.verification.MailSender;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
 import com.e207.woojoobook.domain.userbook.event.UserBookTradeStatusUpdateEvent;
@@ -19,7 +19,7 @@ public class WishBookMailSendEventListener {
 
 	@Value("${spring.mail.username}")
 	private String from;
-	private final JavaMailSender mailSender;
+	private final MailSender mailSender;
 	private final UserbookRepository userbookRepository;
 
 	@EventListener

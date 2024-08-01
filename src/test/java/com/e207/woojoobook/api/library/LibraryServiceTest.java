@@ -18,6 +18,7 @@ import com.e207.woojoobook.domain.library.Library;
 import com.e207.woojoobook.domain.library.LibraryRepository;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,8 +68,8 @@ class LibraryServiceTest {
 
 		// when & then
 		assertThatThrownBy(() -> libraryService.find(1L, user.getId()))
-			.isInstanceOf(RuntimeException.class)
-			.hasMessage("Category not found");
+			.isInstanceOf(ErrorException.class)
+			.hasMessage(null);
 	}
 
 	@DisplayName("새로운 카테고리를 생성한다")
@@ -136,8 +137,8 @@ class LibraryServiceTest {
 
 		// when & then
 		assertThatThrownBy(() -> libraryService.update(user.getId(), 1L, libraryUpdateRequest))
-			.isInstanceOf(RuntimeException.class)
-			.hasMessage("Category not found");
+			.isInstanceOf(ErrorException.class)
+			.hasMessage(null);
 	}
 
 	@DisplayName("등록된 카테고리를 삭제한다")
@@ -173,8 +174,8 @@ class LibraryServiceTest {
 
 		// when & then
 		assertThatThrownBy(() -> libraryService.delete(user.getId(), 1L))
-			.isInstanceOf(RuntimeException.class)
-			.hasMessage("Category not found");
+			.isInstanceOf(ErrorException.class)
+			.hasMessage(null);
 	}
 
 	@DisplayName("카테고리의 순서를 교환한다")

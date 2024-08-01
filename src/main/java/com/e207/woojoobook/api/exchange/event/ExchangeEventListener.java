@@ -6,13 +6,13 @@ import static com.e207.woojoobook.domain.userbook.TradeStatus.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.e207.woojoobook.api.exchange.ExchangeService;
+import com.e207.woojoobook.api.verification.MailSender;
 import com.e207.woojoobook.domain.exchange.Exchange;
 import com.e207.woojoobook.domain.exchange.ExchangeStatus;
 import com.e207.woojoobook.domain.userbook.event.UserBookTradeStatusUpdateEvent;
@@ -25,7 +25,7 @@ public class ExchangeEventListener {
 
 	@Value("${spring.mail.username}")
 	private String from;
-	private final JavaMailSender mailSender;
+	private final MailSender mailSender;
 	private final ApplicationEventPublisher eventPublisher;
 	private final ExchangeService exchangeService;
 

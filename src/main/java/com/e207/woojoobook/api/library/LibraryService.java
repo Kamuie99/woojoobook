@@ -13,6 +13,8 @@ import com.e207.woojoobook.api.library.response.LibraryResponse;
 import com.e207.woojoobook.domain.library.Library;
 import com.e207.woojoobook.domain.library.LibraryRepository;
 import com.e207.woojoobook.domain.user.User;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 import lombok.RequiredArgsConstructor;
@@ -26,12 +28,12 @@ public class LibraryService {
 
 	private Library findByIdAndUserId(Long categoryId, Long userId) {
 		return libraryRepository.findByIdAndUserId(categoryId, userId)
-			.orElseThrow(() -> new RuntimeException("Category not found"));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
 
 	private void verifyOwnership(Long userId, Long currentUserId) {
 		if (!userId.equals(currentUserId)) {
-			throw new RuntimeException("카테고리 접근 권한이 없을 때 던지는 예외");
+			throw new ErrorException(ErrorCode.ForbiddenError);
 		}
 	}
 

@@ -49,6 +49,7 @@ import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
 import com.e207.woojoobook.domain.userbook.WishBook;
 import com.e207.woojoobook.domain.userbook.WishBookRepository;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 import jakarta.mail.internet.MimeMessage;
@@ -103,6 +104,7 @@ class RentalServiceTest {
 			.areaCode("areaCode")
 			.build();
 		this.user = this.userRepository.save(user);
+
 		Point point = Point.builder()
 			.user(this.user)
 			.history(PointHistory.BOOK_RENTAL)
@@ -158,7 +160,6 @@ class RentalServiceTest {
 		assertEquals(createdRental.getUser().getId(), user.getId());
 	}
 
-	// TODO : 예외처리
 	@DisplayName("존재하지 않는 도서에 대해서는 대여 신청을 할 수 없다")
 	@Test
 	void rentalOffer_doseNotExist_fail() {
@@ -167,24 +168,20 @@ class RentalServiceTest {
 		String expectedMessage = "존재하지 않는 도서입니다.";
 
 		// expected
-		Exception exception = assertThrows(RuntimeException.class,
+		assertThrows(ErrorException.class,
 			() -> this.rentalService.rentalOffer(invalidUserbookId));
-		assertEquals(exception.getMessage(), expectedMessage);
 	}
 
-	// TODO : 예외처리
 	@DisplayName("대여 불가능한 도서에 대해서는 대여 신청을 할 수 없다")
 	@Test
 	void rentalOffer_tradeStatusUnavailable_fail() {
 		// given
 		userbook.inactivate();
 		userbook = this.userbookRepository.save(userbook);
-		String expectedMessage = "접근이 불가능한 도서 상태입니다.";
 
 		// expected
-		Exception exception = assertThrows(RuntimeException.class,
+		assertThrows(ErrorException.class,
 			() -> this.rentalService.rentalOffer(userbook.getId()));
-		assertEquals(exception.getMessage(), expectedMessage);
 	}
 
 	@DisplayName("회원이 대여신청을 수락한다")
@@ -309,6 +306,18 @@ class RentalServiceTest {
 
 		UserbookResponse receiverBook = rentals.get(0).userbook();
 		assertThatUserbookMatchExactly(receiverBook, mine);
+	}
+
+	@DisplayName("포인트가 없다면 도서 대여 신청을 할 수 없다")
+	@Test
+	void rejectRentalOffer(){
+		// given
+		User rentalUser = this.userRepository.save(createUser("test"));
+		given(this.userHelper.findCurrentUser()).willReturn(rentalUser);
+
+		// when
+
+
 	}
 
 	private User createUser(String nickname) {

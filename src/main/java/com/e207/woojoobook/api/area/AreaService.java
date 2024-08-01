@@ -17,6 +17,8 @@ import com.e207.woojoobook.domain.area.DongId;
 import com.e207.woojoobook.domain.area.GuArea;
 import com.e207.woojoobook.domain.area.GuId;
 import com.e207.woojoobook.domain.area.SiArea;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +51,7 @@ public class AreaService {
 	public AreaResponse findAreaByAreaCode(String areaCode) {
 		return areaRepository.findAreaByDongId(makeDongId(areaCode))
 			.map(AreaResponse::of)
-			.orElseThrow(() -> new RuntimeException("AreaCode가 존재하지 않을 때 던지는 예외"));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
 
 	private DongId makeDongId(String areaCode) {

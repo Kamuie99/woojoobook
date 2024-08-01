@@ -25,6 +25,8 @@ import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
 import com.e207.woojoobook.domain.userbook.event.UserBookTradeStatusUpdateEvent;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 import lombok.RequiredArgsConstructor;
@@ -111,34 +113,34 @@ public class RentalService {
 	private User validateCanRentalAndFindCurrentUser() {
 		User currentUser = this.userHelper.findCurrentUser();
 		if (!this.userPersonalFacade.checkPointToRental(currentUser.getId())) {
-			throw new RuntimeException("대여에 필요한 포인트가 부족합니다.");
+			throw new ErrorException(ErrorCode.NotEnoughPoint);
 		}
 		return currentUser;
 	}
 
 	private Rental validateAndFindRental(Long rentalId) {
 		return this.rentalRepository.findById(rentalId)
-			.orElseThrow(() -> new RuntimeException("존재하지 않는 대여 신청입니다"));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
 
 	private Userbook validateAndFindUserbook(Long userbooksId) {
 		Userbook userbook = this.userbookRepository.findById(userbooksId)
-			.orElseThrow(() -> new RuntimeException("존재하지 않는 도서입니다."));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 		if (!userbook.isAvailable()) {
-			throw new RuntimeException("접근이 불가능한 도서 상태입니다.");
+			throw new ErrorException(ErrorCode.InvalidAccess);
 		}
 		return userbook;
 	}
 
 	private void checkCurrentUserIsOwner(User owner, User currentUser) {
 		if (!owner.getId().equals(currentUser.getId())) {
-			throw new RuntimeException("권한이 없습니다.");
+			throw new ErrorException(ErrorCode.ForbiddenError);
 		}
 	}
 
 	private void checkIsNotOwner(Userbook userbook, User currentUser) {
 		if (userbook.getUser().equals(currentUser)) {
-			throw new RuntimeException("자신의 책은 대여 신청 대상이 아닙니다.");
+			throw new ErrorException(ErrorCode.BadRequest);
 		}
 	}
 
@@ -146,7 +148,7 @@ public class RentalService {
 		if (request.isApproved()) {
 			Userbook userbook = this.userbookRepository.findWithWishBookById(rental.getUserbook().getId());
 			if (!userbook.isAvailable()) {
-				throw new RuntimeException("대여가 불가능한 도서 상태입니다.");
+				throw new ErrorException(ErrorCode.InvalidAccess);
 			}
 			userbook.updateTradeStatus(TradeStatus.RENTED);
 		}

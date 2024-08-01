@@ -11,6 +11,8 @@ import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookReader;
 import com.e207.woojoobook.domain.userbook.WishBook;
 import com.e207.woojoobook.domain.userbook.WishBookRepository;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 import lombok.RequiredArgsConstructor;
@@ -31,13 +33,13 @@ public class WishBookService {
 
 		if (wished) {
 			WishBook wishBook = wishBookOptional.orElseThrow(
-				() -> new RuntimeException("관심 목록에 존재하지 않는 책입니다."));
+				() -> new ErrorException(ErrorCode.NotFound));
 			deleteWishBook(wishBook);
 			return new WishBookResponse(userbookId, false);
 		} else {
 			Userbook userbook = userbookReader.findUserbook(userbookId);
 			wishBookOptional.ifPresentOrElse(
-				wishBook -> { throw new RuntimeException("이미 관심 목록에 추가된 책입니다."); },
+				wishBook -> { throw new ErrorException(ErrorCode.NotAcceptDuplicate); },
 				() -> createWishBook(user, userbook)
 			);
 			return new WishBookResponse(userbookId, true);

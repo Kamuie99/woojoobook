@@ -2,12 +2,12 @@ package com.e207.woojoobook.api.extension.event;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.e207.woojoobook.api.verification.MailSender;
 import com.e207.woojoobook.domain.rental.Rental;
 
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class ExtensionEventListener {
 
 	@Value("${spring.mail.username}")
 	private String from;
-	private final JavaMailSender mailSender;
+	private final MailSender mailSender;
 
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleExtensionEvent(ExtensionEvent event) {

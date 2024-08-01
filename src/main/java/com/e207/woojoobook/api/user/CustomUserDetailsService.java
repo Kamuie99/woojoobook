@@ -7,6 +7,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.e207.woojoobook.domain.user.UserRepository;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,11 +18,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	private final UserRepository userRepository;
 
-	// TODO : 예외처리
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		com.e207.woojoobook.domain.user.User user = this.userRepository.findByEmail(username)
-			.orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 		return User.builder()
 			.username(String.valueOf(user.getId()))
 			.password(user.getPassword())

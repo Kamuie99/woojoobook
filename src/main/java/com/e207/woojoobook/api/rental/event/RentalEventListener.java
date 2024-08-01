@@ -3,12 +3,12 @@ package com.e207.woojoobook.api.rental.event;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.e207.woojoobook.api.verification.MailSender;
 import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.event.UserBookTradeStatusUpdateEvent;
@@ -21,7 +21,7 @@ public class RentalEventListener {
 
 	@Value("${spring.mail.username}")
 	private String from;
-	private final JavaMailSender mailSender;
+	private final MailSender mailSender;
 	private final ApplicationEventPublisher eventPublisher;
 
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)

@@ -14,6 +14,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import com.e207.woojoobook.api.exchange.ExchangeService;
+import com.e207.woojoobook.api.verification.MailSender;
 import com.e207.woojoobook.domain.exchange.Exchange;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.userbook.event.UserBookTradeStatusUpdateEvent;
@@ -25,7 +26,7 @@ class ExchangeEventListenerTest {
 	ExchangeEventListener exchangeEventListener;
 
 	@Mock
-	JavaMailSender javaMailSender;
+	MailSender javaMailSender;
 
 	@Mock
 	ApplicationEventPublisher applicationEventPublisher;

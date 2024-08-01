@@ -11,6 +11,8 @@ import com.e207.woojoobook.api.user.UserService;
 import com.e207.woojoobook.domain.chatroom.ChatRoom;
 import com.e207.woojoobook.domain.chatroom.ChatRoomRepository;
 import com.e207.woojoobook.domain.user.User;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +56,7 @@ public class ChatRoomService {
 
 	public ChatRoom findDomainById(Long id) {
 		return chatRoomRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException("채팅방이 존재하지 않습니다."));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
 
 	private ChatRoom createChatRoom(User sender, User receiver) {
@@ -66,12 +68,12 @@ public class ChatRoomService {
 
 	private ChatRoom findDomainBySenderAndReceiver(User sender, User receiver) {
 		return chatRoomRepository.findBySenderAndReceiver(sender, receiver)
-			.orElseThrow(() -> new RuntimeException("채팅방이 존재하지 않습니다."));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
 
 	private void checkIfUsersAreDifferent(User sender, User receiver) {
 		if (sender.getId() == receiver.getId()) {
-			throw new RuntimeException("수신자와 송신자는 다른 사람이어야 합니다.");
+			throw new ErrorException(ErrorCode.BadRequest);
 		}
 	}
 }

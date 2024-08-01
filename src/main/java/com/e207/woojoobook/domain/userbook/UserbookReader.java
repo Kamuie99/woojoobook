@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.user.User;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 
 import lombok.AllArgsConstructor;
 
@@ -24,12 +26,12 @@ public class UserbookReader {
 
 	public Userbook findOwnedUserbook(User user, Long userbookId) {
 		Userbook userbook = userbookRepository.findWithUserById(userbookId)
-			.orElseThrow(() -> new RuntimeException("사용자 도서가 존재하지 않을 때 던지는 예외"));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 		if (!userbook.getUser().equals(user)) {
-			throw new RuntimeException("도서에 대한 권한이 없을 때 던지는 예외");
+			throw new ErrorException(ErrorCode.ForbiddenError);
 		}
 		if (!userbook.isPossibleToChangeRegisterType()) {
-			throw new RuntimeException("도서의 등록 타입을 수정할 수 없을 때 던지는 예외");
+			throw new ErrorException(ErrorCode.InvalidAccess);
 		}
 
 		return userbook;
@@ -37,7 +39,7 @@ public class UserbookReader {
 
 	public Userbook findDomain(Long id) {
 		return userbookRepository.findByIdWithUserAndBook(id)
-			.orElseThrow(() -> new RuntimeException("userbook not found"));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
 
 	public Userbook createUserbook(User user, Book book, RegisterType registerType, QualityStatus quality) {
@@ -52,6 +54,6 @@ public class UserbookReader {
 	}
 
 	public Userbook findUserbook(Long id) {
-		return userbookRepository.findUserbookById(id).orElseThrow(() -> new RuntimeException("사용자 도서가 없습니다."));
+		return userbookRepository.findUserbookById(id).orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
 }
