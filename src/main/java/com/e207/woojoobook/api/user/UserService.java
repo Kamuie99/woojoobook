@@ -1,6 +1,7 @@
 package com.e207.woojoobook.api.user;
 
-import java.util.Objects;
+import java.time.LocalDate;
+import java.util.Map;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,11 +19,15 @@ import com.e207.woojoobook.api.user.request.UserDeleteRequest;
 import com.e207.woojoobook.api.user.request.UserUpdateRequest;
 import com.e207.woojoobook.api.user.request.VerificationMail;
 import com.e207.woojoobook.api.user.response.UserInfoResponse;
+import com.e207.woojoobook.api.userbook.event.ExperienceEvent;
+import com.e207.woojoobook.api.userbook.event.PointEvent;
 import com.e207.woojoobook.api.userbook.event.UserDeleteEvent;
 import com.e207.woojoobook.api.verification.VerificationService;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.domain.user.UserVerification;
+import com.e207.woojoobook.domain.user.experience.ExperienceHistory;
+import com.e207.woojoobook.domain.user.point.PointHistory;
 import com.e207.woojoobook.global.exception.ErrorCode;
 import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
@@ -92,7 +97,7 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = true)
-	public void login(LoginRequest loginRequest) {
+	public Map<String, Boolean> login(LoginRequest loginRequest) {
 		var authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.email(),
 			loginRequest.password());
 		Authentication authenticate = this.authenticationManagerBuilder.getObject().authenticate(authenticationToken);
@@ -100,6 +105,9 @@ public class UserService {
 			throw new ErrorException(ErrorCode.InvalidPassword);
 		}
 		SecurityUtil.setAuthentication(authenticate);
+
+		User currentUser = this.userHelper.findCurrentUser();
+		return checkIsFirstLogin(currentUser);
 	}
 
 	@Transactional
@@ -132,6 +140,16 @@ public class UserService {
 
 	public User findDomainById(Long id) {
 		return userRepository.findById(id).orElseThrow(() -> new ErrorException(ErrorCode.UserNotFound));
+	}
+
+	private Map<String, Boolean> checkIsFirstLogin(User user) {
+		if(user.getLastLoginDate().isBefore(LocalDate.now())){
+			user.updateLoginDate(LocalDate.now());
+			this.eventPublisher.publishEvent(new ExperienceEvent(user, ExperienceHistory.ATTENDANCE));
+			this.eventPublisher.publishEvent(new PointEvent(user, PointHistory.ATTENDANCE));
+			return Map.of("isFirstLogin", true);
+		}
+		return Map.of("isFirstLogin", false);
 	}
 
 	private void validateUserCreateRequest(UserCreateRequest userCreateRequest) {

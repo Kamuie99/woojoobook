@@ -14,12 +14,14 @@ import com.e207.woojoobook.api.rental.request.RentalOfferRespondRequest;
 import com.e207.woojoobook.api.rental.response.RentalOfferResponse;
 import com.e207.woojoobook.api.rental.response.RentalResponse;
 import com.e207.woojoobook.api.user.UserPersonalFacade;
+import com.e207.woojoobook.api.userbook.event.ExperienceEvent;
 import com.e207.woojoobook.api.userbook.event.PointEvent;
 import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.rental.RentalRepository;
 import com.e207.woojoobook.domain.rental.RentalStatus;
 import com.e207.woojoobook.domain.rental.RentalUserCondition;
 import com.e207.woojoobook.domain.user.User;
+import com.e207.woojoobook.domain.user.experience.ExperienceHistory;
 import com.e207.woojoobook.domain.user.point.PointHistory;
 import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.Userbook;
@@ -166,8 +168,12 @@ public class RentalService {
 	}
 
 	private void publishRentalApprovalEvents(Rental rental) {
+		User owner = rental.getUserbook().getUser();
 		this.eventPublisher.publishEvent(new RentalOfferEvent(rental, true));
+		this.eventPublisher.publishEvent(new PointEvent(owner, PointHistory.BOOK_RENTAL));
+		this.eventPublisher.publishEvent(new ExperienceEvent(owner, ExperienceHistory.BOOK_RENTAL));
 		this.eventPublisher.publishEvent(new PointEvent(rental.getUser(), PointHistory.USE_BOOK_RENTAL));
+		this.eventPublisher.publishEvent(new ExperienceEvent(rental.getUser(), ExperienceHistory.BOOK_RENTAL));
 		this.eventPublisher.publishEvent(new UserBookTradeStatusUpdateEvent(rental.getUserbook(), TradeStatus.RENTED));
 	}
 }

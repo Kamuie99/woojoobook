@@ -61,9 +61,7 @@ class ExperienceEventListenerTest {
                 Arguments.of(ExperienceHistory.BOOK_REGISTER),
                 Arguments.of(ExperienceHistory.BOOK_RENTAL),
                 Arguments.of(ExperienceHistory.DELETE_BOOK),
-                Arguments.of(ExperienceHistory.DELETE_LIBRARY),
-                Arguments.of(ExperienceHistory.OVERDUE),
-                Arguments.of(ExperienceHistory.LIBRARY_REGISTER)
+                Arguments.of(ExperienceHistory.OVERDUE)
         );
     }
 

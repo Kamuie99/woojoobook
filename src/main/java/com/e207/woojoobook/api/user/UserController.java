@@ -1,5 +1,6 @@
 package com.e207.woojoobook.api.user;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.springframework.http.HttpHeaders;
@@ -109,8 +110,8 @@ public class UserController {
 		if (errors.hasErrors()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("아이디와 비밀번호는 필수 입력값입니다.");
 		}
-		this.userService.login(loginRequest);
-		return ResponseEntity.status(HttpStatus.OK).headers(createTokenFromAuthentication()).build();
+		Map<String, Boolean> isFirstLogin = this.userService.login(loginRequest);
+		return ResponseEntity.status(HttpStatus.OK).headers(createTokenFromAuthentication()).body(isFirstLogin);
 	}
 
 	@PutMapping("/users")

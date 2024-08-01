@@ -1,5 +1,6 @@
 package com.e207.woojoobook.domain.user;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class User {
 	private List<Point> points = new ArrayList<>();
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Experience> experiences = new ArrayList<>();
+	private LocalDate lastLoginDate;
 
 	@Builder
 	private User(Long id, String email, String password, String nickname, String areaCode) {
@@ -52,5 +54,9 @@ public class User {
 
 	public void updatePassword(String password) {
 		this.password = password;
+	}
+
+	public void updateLoginDate(LocalDate localDate){
+		this.lastLoginDate = localDate;
 	}
 }

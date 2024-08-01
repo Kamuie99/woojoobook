@@ -3,6 +3,8 @@ package com.e207.woojoobook.api.user;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -15,12 +17,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 
+import com.e207.woojoobook.api.user.request.LoginRequest;
 import com.e207.woojoobook.api.user.request.UserDeleteRequest;
 import com.e207.woojoobook.api.user.response.UserInfoResponse;
 import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.rental.RentalRepository;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
+import com.e207.woojoobook.domain.user.experience.ExperienceHistory;
 import com.e207.woojoobook.domain.user.point.Point;
 import com.e207.woojoobook.domain.user.point.PointHistory;
 import com.e207.woojoobook.domain.user.point.PointRepository;
@@ -44,6 +48,8 @@ class UserServiceTest {
 	private UserRepository userRepository;
 	@Autowired
 	private UserbookRepository userbookRepository;
+	@Autowired
+	private UserPersonalFacade userPersonalFacade;
 	@Autowired
 	private EntityManager em;
 	@MockBean
@@ -133,7 +139,65 @@ class UserServiceTest {
 		assertEquals(userInfo.email(), email);
 		assertEquals(userInfo.nickname(), nickname);
 		assertEquals(userInfo.areaCode(), area);
+	}
 
+	@DisplayName("회원의 접속 날짜가 현재 날짜 이전이라면 포인트, 경험치가 증가한다")
+	@Test
+	void firstLogin() {
+		// given
+		String email = "test@test.com";
+		String password = "password";
+		User user = createUser(password);
+		LocalDate pastDate = LocalDate.of(2024, 01, 01);
+		user.updateLoginDate(pastDate);
+		User savedUser = this.userRepository.save(user);
+
+		given(authenticationManagerBuilder.getObject()).willReturn(authenticationManager);
+		given(authenticationManager.authenticate(any())).willReturn(authentication);
+		given(authentication.isAuthenticated()).willReturn(true);
+		given(this.userHelper.findCurrentUser()).willReturn(savedUser);
+
+		assertEquals(this.userPersonalFacade.getUserPoints(savedUser.getId()), 0);
+		assertEquals(this.userPersonalFacade.getUserExperience(savedUser.getId()), 0);
+
+		// when
+		Map<String, Boolean> result = this.userService.login(new LoginRequest(email, password));
+
+		// then
+		int pointAmount = PointHistory.ATTENDANCE.getAmount();
+		int experienceAmount = ExperienceHistory.ATTENDANCE.getAmount();
+
+		assertEquals(result.get("isFirstLogin"), true);
+		assertEquals(this.userPersonalFacade.getUserPoints(savedUser.getId()), pointAmount);
+		assertEquals(this.userPersonalFacade.getUserExperience(savedUser.getId()), experienceAmount);
+	}
+
+	@DisplayName("회원의 최근 접속 날짜가 현재 날짜라면 포인트, 경험치가 증가하지 않는다")
+	@Test
+	void notFirstLogin() {
+		// given
+		String email = "test@test.com";
+		String password = "password";
+		User user = createUser(password);
+		LocalDate currentDate = LocalDate.now();
+		user.updateLoginDate(currentDate);
+		User savedUser = this.userRepository.save(user);
+
+		given(authenticationManagerBuilder.getObject()).willReturn(authenticationManager);
+		given(authenticationManager.authenticate(any())).willReturn(authentication);
+		given(authentication.isAuthenticated()).willReturn(true);
+		given(this.userHelper.findCurrentUser()).willReturn(savedUser);
+
+		assertEquals(this.userPersonalFacade.getUserPoints(savedUser.getId()), 0);
+		assertEquals(this.userPersonalFacade.getUserExperience(savedUser.getId()), 0);
+
+		// when
+		Map<String, Boolean> result = this.userService.login(new LoginRequest(email, password));
+
+		// then
+		assertEquals(result.get("isFirstLogin"), false);
+		assertEquals(this.userPersonalFacade.getUserPoints(savedUser.getId()), 0);
+		assertEquals(this.userPersonalFacade.getUserExperience(savedUser.getId()), 0);
 	}
 
 	private static User cretaeInfoUser(String email, String nickname, String area) {

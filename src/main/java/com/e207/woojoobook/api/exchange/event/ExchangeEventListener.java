@@ -12,9 +12,13 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.e207.woojoobook.api.exchange.ExchangeService;
+import com.e207.woojoobook.api.userbook.event.ExperienceEvent;
+import com.e207.woojoobook.api.userbook.event.PointEvent;
 import com.e207.woojoobook.api.verification.MailSender;
 import com.e207.woojoobook.domain.exchange.Exchange;
 import com.e207.woojoobook.domain.exchange.ExchangeStatus;
+import com.e207.woojoobook.domain.user.experience.ExperienceHistory;
+import com.e207.woojoobook.domain.user.point.PointHistory;
 import com.e207.woojoobook.domain.userbook.event.UserBookTradeStatusUpdateEvent;
 
 import lombok.RequiredArgsConstructor;
@@ -36,6 +40,10 @@ public class ExchangeEventListener {
 		if (APPROVED.equals(exchange.getExchangeStatus())) {
 			eventPublisher.publishEvent(new UserBookTradeStatusUpdateEvent(exchange.getSenderBook(), EXCHANGED));
 			eventPublisher.publishEvent(new UserBookTradeStatusUpdateEvent(exchange.getReceiverBook(), EXCHANGED));
+			eventPublisher.publishEvent(new PointEvent(exchange.getSender(), PointHistory.BOOK_EXCHANGE));
+			eventPublisher.publishEvent(new PointEvent(exchange.getReceiver(), PointHistory.BOOK_EXCHANGE));
+			eventPublisher.publishEvent(new ExperienceEvent(exchange.getSender(), ExperienceHistory.BOOK_EXCHANGE));
+			eventPublisher.publishEvent(new ExperienceEvent(exchange.getReceiver(), ExperienceHistory.BOOK_EXCHANGE));
 		}
 	}
 

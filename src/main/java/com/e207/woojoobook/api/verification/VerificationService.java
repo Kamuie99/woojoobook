@@ -1,16 +1,15 @@
 package com.e207.woojoobook.api.verification;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.e207.woojoobook.api.user.request.VerificationMail;
 import com.e207.woojoobook.domain.user.UserVerification;
-import com.e207.woojoobook.domain.user.UserVerificationRepository;
 import com.e207.woojoobook.domain.user.VerificationCodeUtil;
 import com.e207.woojoobook.global.exception.ErrorCode;
 import com.e207.woojoobook.global.exception.ErrorException;
@@ -23,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class VerificationService {
 
 	private final MailSender mailSender;
-	private final UserVerificationRepository userVerificationRepository;
+	private final RedisTemplate<String, UserVerification> redisTemplate;
 	@Value("${spring.mail.username}")
 	private String from;
 
@@ -41,19 +40,23 @@ public class VerificationService {
 
 	@Transactional(readOnly = true)
 	public UserVerification findByEmail(String email) {
-		return this.userVerificationRepository.findById(email)
-			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
+		UserVerification userVerification = (UserVerification) this.redisTemplate.opsForHash().get("user;", email);
+		if(userVerification == null) {
+			throw new ErrorException(ErrorCode.NotFound);
+		}
+		return userVerification;
 	}
 
 	@Transactional
 	public boolean verifyEmail(VerificationMail verificationMail) {
-		UserVerification userVerification = this.userVerificationRepository.findById(verificationMail.getEmail())
-			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
+		UserVerification userVerification = (UserVerification) this.redisTemplate.opsForHash().get("user;", verificationMail.getEmail());
+		if(userVerification == null) {
+			throw new ErrorException(ErrorCode.NotFound);
+		}
 		userVerification.verify(verificationMail.getVerificationCode());
-
-		UserVerification save = this.userVerificationRepository.save(userVerification);
-
-		return save.isVerified();
+		this.redisTemplate.opsForHash().put("user;", verificationMail.getEmail(), userVerification);
+		UserVerification saved = (UserVerification) this.redisTemplate.opsForHash().get("user;", verificationMail.getEmail());
+		return saved.isVerified();
 	}
 
 	@Transactional
@@ -64,7 +67,9 @@ public class VerificationService {
 			.isVerified(false)
 			.build();
 
-		return this.userVerificationRepository.save(userVerification).getVerificationCode();
+		this.redisTemplate.opsForHash().put("user;", email, userVerification);
+		UserVerification verification = (UserVerification) this.redisTemplate.opsForHash().get("user;", email);
+		return verification.getVerificationCode();
 	}
 }
 
