@@ -97,7 +97,7 @@ public class UserService {
 		return this.userRepository.existsByNickname(nickname);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional
 	public Map<String, Boolean> login(LoginRequest loginRequest) {
 		var authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.email(),
 			loginRequest.password());
