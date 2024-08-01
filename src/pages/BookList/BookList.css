@@ -33,6 +33,7 @@
   justify-content: center;
   gap: 10px;
   width: 50%;
+  cursor: pointer;
 }
 
 .bookDescription > h3 {
@@ -121,4 +122,22 @@
   width: 30px;
   height: 30px;
   z-index: 1;
+}
+
+.areaSelectorContainer {
+  width: 100%;
+  height: 50px;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.areaSelectorContainer > div > select {
+  height: 100%;
+}
+
+.areaSelectorContainer > div {
+  display: flex;
+  gap: 5px;
 }

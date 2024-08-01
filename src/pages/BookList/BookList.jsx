@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Header from "../../components/Header"
 import { useSearch } from '../../contexts/SearchContext';
 import axiosInstance from './../../util/axiosConfig';
@@ -6,6 +6,8 @@ import './BookList.css';
 import { LuBookPlus } from "react-icons/lu";
 import { CiHeart } from "react-icons/ci";
 import { getEmotionImage } from '../../util/get-emotion-image';
+import AreaSelector from "../../components/AreaSelector";
+import BookModal from './BookModal';
 
 const BookList = () => {
   const { searchTerm: initialSearchTerm  } = useSearch();
@@ -15,28 +17,34 @@ const BookList = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [areaNames, setAreaNames] = useState({});
+  const [selectedAreaCode, setSelectedAreaCode] = useState('');
+
+  const [selectedBook, setSelectedBook] = useState(null);
+
+  const fetchBooks = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = { keyword: searchTerm };
+      if (selectedAreaCode) {
+        params.areaCodeList = selectedAreaCode;
+      }
+      console.log(selectedAreaCode)
+      const response = await axiosInstance.get('/userbooks', { params });
+      console.log("API 응답:", response.data.content);
+      setBooks(response.data.content);
+      fetchAreaNames(response.data.content);
+    } catch (err) {
+      setError('힝 실패했음...')
+      console.error('Error fetching Books: ', err)
+    } finally {
+      setLoading(false);
+    }
+  }, [searchTerm, selectedAreaCode]);
 
   useEffect(() => {
-    const fetchBooks = async() => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await axiosInstance.get('/userbooks', {
-          params: {keyword: searchTerm}
-        });
-        console.log("API 응답:", response.data.content);
-        setBooks(response.data.content);
-        fetchAreaNames(response.data.content);
-      } catch (err) {
-        setError('힝 실패했음...')
-        console.error('Error fetching Books: ', err)
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchBooks();
-  }, [searchTerm]);
+  }, [fetchBooks]);
 
   const fetchAreaNames = async (books) => {
     const areaPromises = books.map(book => 
@@ -69,6 +77,19 @@ const BookList = () => {
     }
   };
 
+  const handleAreaSelected = (areaCode) => {
+    setSelectedAreaCode(areaCode);
+    setBooks([]); // 지역이 변경되면 기존 책 목록을 초기화
+  };
+
+  const openModal = (book) => {
+    setSelectedBook(book);
+  };
+
+  const closeModal = () => {
+    setSelectedBook(null);
+  };
+
   const getQualityEmoticon = (qualityStatus) => {
     switch(qualityStatus) {
       case 'VERY_GOOD': return getEmotionImage(1);
@@ -79,14 +100,23 @@ const BookList = () => {
       default: return null;
     }
   };
+  // 저자 이름을 5글자로 제한하는 함수
+  const truncateAuthor = (author) => {
+    // '^'로 저자를 분리하고 첫 번째 저자만 선택
+    const firstAuthor = author.split('^')[0];
+    return firstAuthor;
+  };
 
   return (
     <>
       <Header />
       <div className="titleAndSearch">
         <div className="titleDiv">
-          <LuBookPlus /> 대여 가능한 책 목록
+          <LuBookPlus /> 우주 도서 목록
         </div>
+      </div>
+      <div className="areaSelectorContainer">
+        <AreaSelector onAreaSelected={handleAreaSelected} />
         <div className="bookSearchBox">
           <input
             type="text"
@@ -94,10 +124,10 @@ const BookList = () => {
             onChange={handleInputChange}
             onKeyPress={handleKeyPress}
             placeholder="책 제목 또는 저자를 검색"
-            style={{ marginRight: '10px', padding: '5px' }}
+            style={{ padding: '10px', borderRadius: '10px' }}
           />
           <button onClick={handleSearch} style={{ padding: '5px 10px' }}>검색</button>
-        </div>
+        </div>  
       </div>
       <main className="BookListMain">
         {loading && <p>로딩중...</p>}
@@ -119,10 +149,10 @@ const BookList = () => {
                       style={{ width: '100px' }} 
                     />
                   </div>
-                  <div className="bookDescription">
+                  <div className="bookDescription" onClick={() => openModal(book)}>
                     <h3>{book.bookInfo.title}</h3>
                     <div className="liInnerBox">
-                      <p><strong>저자 |</strong> {book.bookInfo.author}</p>
+                      <p><strong>저자 |</strong> {truncateAuthor(book.bookInfo.author)}</p>
                       <p><strong>책권자 |</strong> {book.ownerInfo.nickname}</p>
                     </div>
                     <div className="liInnerBox">
@@ -153,6 +183,7 @@ const BookList = () => {
           )
         )}
       </main>
+      {selectedBook && <BookModal book={selectedBook} onClose={closeModal} />}
     </>
   )
 }
