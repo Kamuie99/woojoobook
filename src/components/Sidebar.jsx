@@ -11,7 +11,7 @@ import '../styles/Sidebar.css';
 
 // eslint-disable-next-line react/prop-types
 const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles }) => {
-  const { isLoggedIn, logout, nickname, sub } = useContext(AuthContext);
+  const { isLoggedIn, logout, user, sub } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -34,7 +34,7 @@ const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles 
           </div>
           <div className='profile_box'>
             <div className='profile_nickname'>
-              <p>{isLoggedIn ? `${nickname}님, 환영합니다` : '로그인이 필요합니다'}</p>
+              <p>{isLoggedIn ? `${user?.nickname}님, 환영합니다` : '로그인이 필요합니다'}</p>
             </div>
             <div className='profile_buttons'>
               {isLoggedIn ? (

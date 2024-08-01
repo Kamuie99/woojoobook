@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import Header from "../../components/Header"
 import { useSearch } from '../../contexts/SearchContext';
 import axiosInstance from './../../util/axiosConfig';
@@ -8,6 +8,7 @@ import { CiHeart } from "react-icons/ci";
 import { getEmotionImage } from '../../util/get-emotion-image';
 import AreaSelector from "../../components/AreaSelector";
 import BookModal from './BookModal';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const BookList = () => {
   const { searchTerm: initialSearchTerm  } = useSearch();
@@ -18,6 +19,8 @@ const BookList = () => {
   const [error, setError] = useState(null);
   const [areaNames, setAreaNames] = useState({});
   const [selectedAreaCode, setSelectedAreaCode] = useState('');
+  const [userAreaName, setUserAreaName] = useState('');
+  const { user } = useContext(AuthContext);
 
   const [selectedBook, setSelectedBook] = useState(null);
 
@@ -33,7 +36,7 @@ const BookList = () => {
       const response = await axiosInstance.get('/userbooks', { params });
       console.log("API 응답:", response.data.content);
       setBooks(response.data.content);
-      fetchAreaNames(response.data.content);
+      return response.data.content;
     } catch (err) {
       setError('힝 실패했음...')
       console.error('Error fetching Books: ', err)
@@ -42,8 +45,33 @@ const BookList = () => {
     }
   }, [searchTerm, selectedAreaCode]);
 
+  const fetchAreaName = useCallback(async (areaCode) => {
+    if (areaCode) {
+      try {
+        const response = await axiosInstance.get('/area', { params: { areaCode } });
+        return response.data.dongName;
+      } catch (err) {
+        console.error('지역 이름 조회 중 에러 발생:', err);
+        return '알 수 없음';
+      }
+    }
+    return '';
+  }, []);
+
   useEffect(() => {
-    fetchBooks();
+    const updateUserAreaName = async () => {
+      const areaName = await fetchAreaName(user?.areaCode);
+      setUserAreaName(areaName);
+    };
+    updateUserAreaName();
+  }, [user?.areaCode, fetchAreaName]);
+
+  useEffect(() => {
+    fetchBooks().then(fetchedBooks => {
+      if (fetchedBooks) {
+        fetchAreaNames(fetchedBooks);
+      }
+    });
   }, [fetchBooks]);
 
   const fetchAreaNames = async (books) => {
@@ -77,9 +105,11 @@ const BookList = () => {
     }
   };
 
-  const handleAreaSelected = (areaCode) => {
+  const handleAreaSelected = async (areaCode) => {
     setSelectedAreaCode(areaCode);
     setBooks([]); // 지역이 변경되면 기존 책 목록을 초기화
+    const areaName = await fetchAreaName(areaCode);
+    setUserAreaName(areaName);
   };
 
   const openModal = (book) => {
@@ -100,9 +130,8 @@ const BookList = () => {
       default: return null;
     }
   };
-  // 저자 이름을 5글자로 제한하는 함수
+
   const truncateAuthor = (author) => {
-    // '^'로 저자를 분리하고 첫 번째 저자만 선택
     const firstAuthor = author.split('^')[0];
     return firstAuthor;
   };
@@ -112,11 +141,13 @@ const BookList = () => {
       <Header />
       <div className="titleAndSearch">
         <div className="titleDiv">
-          <LuBookPlus /> 우주 도서 목록
+          <LuBookPlus /> 우주 도서 목록 ({userAreaName || '지역 정보 로딩 중...'} )
         </div>
       </div>
       <div className="areaSelectorContainer">
-        <AreaSelector onAreaSelected={handleAreaSelected} />
+        <div>
+          <AreaSelector onAreaSelected={handleAreaSelected} />
+        </div>
         <div className="bookSearchBox">
           <input
             type="text"

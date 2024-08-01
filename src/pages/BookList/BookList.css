@@ -133,11 +133,16 @@
 }
 
 
-.areaSelectorContainer > div > select {
+.areaSelectorContainer > div select {
   height: 100%;
 }
 
 .areaSelectorContainer > div {
+  display: flex;
+  gap: 5px;
+}
+
+.areaSelectorContainer > div > div {
   display: flex;
   gap: 5px;
 }
