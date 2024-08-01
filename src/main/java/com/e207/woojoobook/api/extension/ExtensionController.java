@@ -32,7 +32,7 @@ public class ExtensionController {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/rentals")
+	@GetMapping("/extensions")
 	public ResponseEntity<Page<ExtensionResponse>> findPage(@ModelAttribute ExtensionFindCondition condition,
 		@PageableDefault(sort = "createdAt", direction = DESC) Pageable pageable) {
 		Page<ExtensionResponse> response = extensionService.findByCondition(condition, pageable);
