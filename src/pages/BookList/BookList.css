@@ -1,6 +1,6 @@
 .BookListMain {
   padding: 20px;
-  height: calc(100vh - 120px); /* 100vh에서 헤더의 높이를 뺀 값으로 설정 */
+  height: calc(100vh - 200px); /* 100vh에서 헤더의 높이를 뺀 값으로 설정 */
   overflow-y: auto; /* 세로 스크롤이 가능하도록 설정 */
 }
 
@@ -101,15 +101,6 @@
   justify-content: flex-end;
 }
 
-.bookStatusDong > button {
-  width: 80%;
-  height: 30px;
-  color: white;
-  background-color: var(--accent-sub-color);
-  border-radius: 5px;
-  border: none;
-}
-
 .bookImageContainer {
   position: relative;
   display: inline-block;
@@ -145,4 +136,18 @@
 .areaSelectorContainer > div > div {
   display: flex;
   gap: 5px;
+}
+
+.bookregion {
+  width: 90px; 
+  height: 30px;
+  color: white;
+  background-color: var(--accent-sub-color);
+  border-radius: 5px;
+  border: none;
+
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
 }

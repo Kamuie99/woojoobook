@@ -1,14 +1,15 @@
 import { useState, useEffect, useCallback, useContext } from "react";
-import Header from "../../components/Header"
 import { useSearch } from '../../contexts/SearchContext';
-import axiosInstance from './../../util/axiosConfig';
-import './BookList.css';
 import { LuBookPlus } from "react-icons/lu";
 import { CiHeart } from "react-icons/ci";
 import { getEmotionImage } from '../../util/get-emotion-image';
+import { AuthContext } from '../../contexts/AuthContext';
+import { FiMapPin } from "react-icons/fi";
+import Header from "../../components/Header"
+import axiosInstance from './../../util/axiosConfig';
 import AreaSelector from "../../components/AreaSelector";
 import BookModal from './BookModal';
-import { AuthContext } from '../../contexts/AuthContext';
+import './BookList.css';
 
 const BookList = () => {
   const { searchTerm: initialSearchTerm  } = useSearch();
@@ -118,6 +119,7 @@ const BookList = () => {
 
   const closeModal = () => {
     setSelectedBook(null);
+    fetchBooks(); // 모달이 닫힐 때 책 목록을 다시 불러옴
   };
 
   const getQualityEmoticon = (qualityStatus) => {
@@ -141,7 +143,7 @@ const BookList = () => {
       <Header />
       <div className="titleAndSearch">
         <div className="titleDiv">
-          <LuBookPlus /> 우주 도서 목록 ({userAreaName || '지역 정보 로딩 중...'} )
+          <LuBookPlus /> 우주 도서 ({userAreaName || '지역 정보 로딩 중...'})
         </div>
       </div>
       <div className="areaSelectorContainer">
@@ -185,6 +187,7 @@ const BookList = () => {
                     <div className="liInnerBox">
                       <p><strong>저자 |</strong> {truncateAuthor(book.bookInfo.author)}</p>
                       <p><strong>책권자 |</strong> {book.ownerInfo.nickname}</p>
+                      <p>책 ID {book.id}</p>
                     </div>
                     <div className="liInnerBox">
                       <p><strong>출판사 |</strong> {book.bookInfo.publisher}</p>
@@ -201,8 +204,8 @@ const BookList = () => {
                       <button><CiHeart size={'35px'}/></button>
                     </div>
                     <div className="bookStatusDong">
-                      <button>
-                        {areaNames[book.areaCode] || '로딩 중...'}
+                      <button className="bookregion">
+                        <FiMapPin  />{areaNames[book.areaCode] || '로딩 중...'}
                       </button>
                     </div>
                   </div>
