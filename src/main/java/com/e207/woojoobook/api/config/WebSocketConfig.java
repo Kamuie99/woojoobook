@@ -25,10 +25,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		config
 			.setApplicationDestinationPrefixes("/app")
 			.enableStompBrokerRelay("/topic")
-			.setRelayHost("rabbitmq") // rabbitmq server host
+			.setRelayHost("rabbitmq")
 			.setVirtualHost("/")
-			.setRelayPort(61613) // stomp plugin port
-			.setClientLogin("admin") // rabbitmq server 생성 시, 계정 추가 필요
+			.setRelayPort(61613)
+			.setSystemLogin("admin")
+			.setSystemPasscode("e207")
+			.setClientLogin("guest")
 			.setClientPasscode("e207");
 	}
 
