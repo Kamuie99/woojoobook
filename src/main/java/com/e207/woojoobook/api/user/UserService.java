@@ -47,7 +47,6 @@ public class UserService {
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final ApplicationEventPublisher eventPublisher;
 
-
 	@Transactional(readOnly = true)
 	public UserInfoResponse findUserInfo() {
 		User currentUser = this.userHelper.findCurrentUser();
@@ -117,19 +116,18 @@ public class UserService {
 		user.update(userUpdateRequest.nickname(), userUpdateRequest.areaCode());
 	}
 
-
 	@Transactional
 	public void updatePassword(PasswordUpdateRequest passwordUpdateRequest) {
 		User user = this.userHelper.findCurrentUser();
 
-		checkPassword(user.getId(), passwordUpdateRequest.curPassword());
+		checkPassword(user.getEmail(), passwordUpdateRequest.curPassword());
 		user.updatePassword(passwordEncoder.encode(passwordUpdateRequest.password()));
 	}
 
 	@Transactional
 	public void deleteUser(UserDeleteRequest userDeleteRequest) {
 		User user = this.userHelper.findCurrentUser();
-		checkPassword(user.getId(), userDeleteRequest.password());
+		checkPassword(user.getEmail(), userDeleteRequest.password());
 		this.eventPublisher.publishEvent(new UserDeleteEvent(user));
 	}
 
@@ -177,7 +175,7 @@ public class UserService {
 		}
 	}
 
-	private void checkPassword(Long id, String password) {
+	private void checkPassword(String id, String password) {
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(id, password);
 		Authentication authenticate = this.authenticationManagerBuilder.getObject().authenticate(token);
 		if (!authenticate.isAuthenticated()) {
