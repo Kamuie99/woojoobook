@@ -67,7 +67,8 @@ public class Userbook {
 	}
 
 	public boolean isAvailable() {
-		if (this.tradeStatus == TradeStatus.UNAVAILABLE || this.tradeStatus == TradeStatus.EXCHANGED) {
+		if (this.tradeStatus == TradeStatus.UNAVAILABLE || this.tradeStatus == TradeStatus.EXCHANGED
+			|| this.tradeStatus == TradeStatus.RENTED) {
 			return false;
 		}
 		return true;
