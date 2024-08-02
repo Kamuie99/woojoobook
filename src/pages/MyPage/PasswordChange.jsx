@@ -1,8 +1,8 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../util/axiosConfig';
-import Header from "../components/Header"
-import { AuthContext } from '../contexts/AuthContext';
+import axiosInstance from '../../util/axiosConfig';
+import Header from "../../components/Header"
+import { AuthContext } from '../../contexts/AuthContext';
 
 const PasswordChange = () => {
   const { isAuthenticated } = useContext(AuthContext);

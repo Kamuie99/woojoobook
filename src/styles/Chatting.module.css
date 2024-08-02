@@ -78,11 +78,11 @@
 }
 
 .chat_modal_open {
-  animation: foldOpen 1.5s ease forwards;
+  animation: foldOpen 0.5s ease forwards;
 }
 
 .chat_modal_close {
-  animation: foldClose 1.5s ease forwards;
+  animation: foldClose 0.5s ease forwards;
 }
 
 .phone_top_bar {
@@ -137,7 +137,6 @@
 }
 
 .chat_list_container {
-  /* padding: 60px; */
   overflow-y: auto;
 }
 

@@ -9,9 +9,9 @@ import MyBook from './pages/MyBook';
 import MyActivity from './pages/MyActivity';
 import MyLibrary from './pages/MyLibrary/MyLibrary';
 import Register from './pages/Register/Register';
-import MyPage from './pages/MyPage'
-import UserUpdate from './pages/UserUpdate';
-import PasswordChange from './pages/PasswordChange';
+import MyPage from './pages/MyPage/MyPage'
+import UserUpdate from './pages/MyPage/UserUpdate';
+import PasswordChange from './pages/MyPage/PasswordChange';
 import ProtectedRoute from './util/ProtectedRoute';
 import Chatting from './components/Chatting';
 import BookList from './pages/BookList/BookList';
@@ -40,8 +40,8 @@ function App() {
           <Route path='/:userId/myactivity' element={<MyActivity />} />
           <Route path='/:userId/mylibrary' element={<MyLibrary />} />
           <Route path='/:userId/mypage' element={<MyPage />} />
-          <Route path='/user-update' element={<UserUpdate />} />
-          <Route path='/password-change' element={<PasswordChange />} />
+          <Route path='/userupdate' element={<UserUpdate />} />
+          <Route path='/passwordchange' element={<PasswordChange />} />
           <Route path='/booklist' element={<BookList />} />
           <Route path='/test' element={<TestPage />} />
         </Route>

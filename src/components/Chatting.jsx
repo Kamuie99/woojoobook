@@ -48,11 +48,15 @@ const Chatting = () => {
 
   useEffect(() => {
     if (client.current && chatRoomId) {
-      const destination = `/queue/chat/${userId}`;
+      const destination = `/topic/user_${userId}`;
       const subscription = client.current.subscribe(destination, (message) => {
         console.log('수신된 메시지:', message.body);
         const messageBody = JSON.parse(message.body);
-        setMessages((prev) => [...prev, { senderId: messageBody.senderId, content: messageBody.content }]);
+        setMessages((prev) =>
+          [{
+            senderId: messageBody.senderId,
+            content: messageBody.content
+          }, ...prev]);
       });
       return () => subscription.unsubscribe();
     }
@@ -149,8 +153,10 @@ const Chatting = () => {
 
   const fetchChatMessages = async (chatRoomId) => {
     try {
-      const response = await axiosInstance.get(`chat/${chatRoomId}`);
-      console.log("id: " + chatRoomId);
+      console.log(localStorage.getItem('token'));
+      const response = await axiosInstance.get(`chat/${chatRoomId}`);  // 오류가 예상되는 부분
+      console.log(response) // response 값
+      console.log("chatRoomId: " + chatRoomId);
       const data = await response.data; // 응답으로 page를 전달 받는다!
       setMessages(data.content || []); // Page 객체의 content를 추출하여 상태 업데이트
     } catch (error) {
@@ -171,12 +177,25 @@ const Chatting = () => {
   }
 
   const sendMessage = () => {
-    client.current.publish({
-      destination: '/app/chat',
-      body: JSON.stringify({ content: chat, chatRoomId, senderId: userId, receiverId }),
-    });
-    setChat('');
-  }
+    console.log('Attempting to send message', client.current);
+    if (client.current && client.current.connected) {
+      console.log('WebSocket is connected');
+      const newMessage = {
+        content: chat,
+        chatRoomId,
+        senderId: userId,
+        receiverId,
+      }
+      client.current.publish({
+        destination: '/app/chat',
+        body: JSON.stringify(newMessage),
+      });
+      console.log('Message sent', newMessage);
+      setChat('');
+    } else {
+      console.error('WebSocket is not connected');
+    }
+  };
 
   const handleNewChatSubmit = (e) => {
     e.preventDefault();
@@ -224,7 +243,7 @@ const Chatting = () => {
   const renderChatRoom = () => (
     <div className={styles.message_list}>
       <div className={styles.message_container} ref={messagesContainerRef}>
-        {messages.map((message, index) => (
+        {[...messages].reverse().map((message, index) => (
           <div key={index} className={`${styles.message} ${message.senderId == userId ? styles.sent : styles.received}`}>
             <p>{message.content}</p>
           </div>
