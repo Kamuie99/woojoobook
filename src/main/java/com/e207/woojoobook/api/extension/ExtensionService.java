@@ -1,5 +1,7 @@
 package com.e207.woojoobook.api.extension;
 
+import static com.e207.woojoobook.domain.extension.ExtensionStatus.*;
+
 import java.time.LocalDateTime;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -91,7 +93,7 @@ public class ExtensionService {
 	private Extension validateAndFindExtension(Long extensionId) {
 		Extension extension = this.extensionRepository.findById(extensionId)
 			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
-		if (extension.getExtensionStatus() != null) {
+		if (extension.getExtensionStatus() != OFFERING) {
 			throw new ErrorException(ErrorCode.InvalidAccess);
 		}
 		return extension;

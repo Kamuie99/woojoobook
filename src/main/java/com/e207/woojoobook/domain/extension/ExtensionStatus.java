@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum ExtensionStatus {
-    REJECTED("거절"), APPROVED("승인");
+	OFFERING("신청"), REJECTED("거절"), APPROVED("승인");
 
-    private final String description;
+	private final String description;
 }
