@@ -25,7 +25,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import jakarta.persistence.EntityManagerFactory;
 
-@Profile("prod")
+@Profile({ "prod", "stress" })
 @Configuration
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
 @EnableConfigurationProperties(DataSourceProperties.class)

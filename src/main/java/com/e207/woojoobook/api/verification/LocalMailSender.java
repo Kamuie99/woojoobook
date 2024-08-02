@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
 
-@Profile("local")
+@Profile("!prod")
 @Component
 public class LocalMailSender implements MailSender {
 	@Override

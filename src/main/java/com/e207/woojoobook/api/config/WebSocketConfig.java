@@ -12,8 +12,7 @@ import com.e207.woojoobook.api.chatroom.interceptor.StompInterceptor;
 
 import lombok.RequiredArgsConstructor;
 
-// TODO : 수정
-@Profile("rabbitMQ")
+@Profile("prod")
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
@@ -26,11 +25,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		config
 			.setApplicationDestinationPrefixes("/app")
 			.enableStompBrokerRelay("/topic")
-			.setRelayHost("localhost") // rabbitmq server host
+			.setRelayHost("rabbitmq") // rabbitmq server host
 			.setVirtualHost("/")
 			.setRelayPort(61613) // stomp plugin port
-			.setClientLogin("guest") // rabbitmq server 생성 시, 계정 추가 필요
-			.setClientPasscode("guest");
+			.setClientLogin("admin") // rabbitmq server 생성 시, 계정 추가 필요
+			.setClientPasscode("e207");
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@Profile("!local")
+@Profile("prod")
 @Component
 public class GoogleMailSender implements MailSender{
 
