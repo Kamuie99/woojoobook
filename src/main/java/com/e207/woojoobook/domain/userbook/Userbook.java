@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.e207.woojoobook.domain.book.Book;
-import com.e207.woojoobook.domain.userbook.WishBook;
 import com.e207.woojoobook.domain.user.User;
 
 import jakarta.persistence.Entity;
@@ -37,7 +36,7 @@ public class Userbook {
 	private User user;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "userbook")
-	private List<WishBook> wishBooks = new ArrayList<>();
+	private List<Wishbook> wishbooks = new ArrayList<>();
 
 	@Enumerated(EnumType.STRING)
 	private RegisterType registerType;

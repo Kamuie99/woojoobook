@@ -47,8 +47,7 @@ import com.e207.woojoobook.domain.userbook.RegisterType;
 import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
-import com.e207.woojoobook.domain.userbook.WishBook;
-import com.e207.woojoobook.domain.userbook.WishBookRepository;
+import com.e207.woojoobook.domain.userbook.WishbookRepository;
 import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
@@ -69,7 +68,7 @@ class RentalServiceTest {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
-	private WishBookRepository wishBookRepository;
+	private WishbookRepository wishBookRepository;
 	@Autowired
 	private ExtensionService extensionService;
 	@Autowired
@@ -128,14 +127,6 @@ class RentalServiceTest {
 			.user(owner)
 			.build();
 		this.userbook = this.userbookRepository.save(build);
-
-		// 도서 관심
-		WishBook wishBook = WishBook.builder()
-			.user(wishBookUser)
-			.userbook(userbook)
-			.build();
-		WishBook save = this.wishBookRepository.save(wishBook);
-		userbook.getWishBooks().add(save);
 		this.userbook = this.userbookRepository.save(userbook);
 	}
 
@@ -310,13 +301,12 @@ class RentalServiceTest {
 
 	@DisplayName("포인트가 없다면 도서 대여 신청을 할 수 없다")
 	@Test
-	void rejectRentalOffer(){
+	void rejectRentalOffer() {
 		// given
 		User rentalUser = this.userRepository.save(createUser("test"));
 		given(this.userHelper.findCurrentUser()).willReturn(rentalUser);
 
 		// when
-
 
 	}
 

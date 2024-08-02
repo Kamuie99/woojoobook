@@ -10,8 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import com.e207.woojoobook.domain.user.User;
 
 public interface UserbookRepository extends JpaRepository<Userbook, Long>, UserbookFindRepository {
-	@EntityGraph(attributePaths = "wishBooks")
-	Userbook findWithWishBookById(Long id);
 
 	@EntityGraph(attributePaths = "user")
 	Optional<Userbook> findWithUserById(Long id);

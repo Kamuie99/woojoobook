@@ -148,7 +148,8 @@ public class RentalService {
 
 	private void updateUserbookIfApproved(RentalOfferRespondRequest request, Rental rental) {
 		if (request.isApproved()) {
-			Userbook userbook = this.userbookRepository.findWithWishBookById(rental.getUserbook().getId());
+			Userbook userbook = this.userbookRepository.findById(rental.getUserbook().getId())
+				.orElseThrow(() -> new RuntimeException("Userbook not found"));
 			if (!userbook.isAvailable()) {
 				throw new ErrorException(ErrorCode.InvalidAccess);
 			}

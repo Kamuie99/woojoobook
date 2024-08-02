@@ -15,30 +15,30 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import com.e207.woojoobook.api.userbook.response.WishBookResponse;
+import com.e207.woojoobook.api.userbook.response.WishbookResponse;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.domain.userbook.RegisterType;
 import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
-import com.e207.woojoobook.domain.userbook.WishBook;
-import com.e207.woojoobook.domain.userbook.WishBookRepository;
+import com.e207.woojoobook.domain.userbook.Wishbook;
+import com.e207.woojoobook.domain.userbook.WishbookRepository;
 import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
-class WishBookServiceTest {
+class WishbookServiceTest {
 
 	@Autowired
-	private WishBookService wishBookService;
+	private WishbookService wishBookService;
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
 	private UserbookRepository userbookRepository;
 	@Autowired
-	private WishBookRepository wishBookRepository;
+	private WishbookRepository wishBookRepository;
 	@MockBean
 	private JavaMailSender mailSender;
 	@MockBean
@@ -84,12 +84,12 @@ class WishBookServiceTest {
 			.build();
 		this.userbook = this.userbookRepository.save(build);
 
-		WishBook wishBook = WishBook.builder()
+		Wishbook wishBook = Wishbook.builder()
 			.user(wishUser)
 			.userbook(userbook)
 			.build();
-		WishBook save = this.wishBookRepository.save(wishBook);
-		userbook.getWishBooks().add(save);
+		Wishbook save = this.wishBookRepository.save(wishBook);
+		userbook.getWishbooks().add(save);
 		this.userbook = this.userbookRepository.save(userbook);
 	}
 
@@ -103,21 +103,21 @@ class WishBookServiceTest {
 		boolean wished = false;
 
 		// when
-		WishBookResponse wishBookResponse = this
-			.wishBookService.updateWishBook(userbookId, wished);
+		WishbookResponse wishBookResponse = this
+			.wishBookService.updateWishbook(userbookId, wished);
 
 		// then
 		assertNotNull(wishBookResponse);
 
 		assertTrue(wishBookResponse.wished());
 
-		Optional<WishBook> byId = this
+		Optional<Wishbook> byId = this
 			.wishBookRepository.findWithUserbookByUserIdAndUserbookId(userId, userbookId);
 		assertTrue(byId.isPresent());
 
-		WishBook updatedWishBook = byId.get();
-		assertEquals(updatedWishBook.getUserbook().getId(), userbookId);
-		assertEquals(updatedWishBook.getUser().getId(), user.getId());
+		Wishbook updatedWishbook = byId.get();
+		assertEquals(updatedWishbook.getUserbook().getId(), userbookId);
+		assertEquals(updatedWishbook.getUser().getId(), user.getId());
 	}
 
 	@DisplayName("관심 등록된 사용자도서 관심 등록 취소 요청")
@@ -130,15 +130,15 @@ class WishBookServiceTest {
 		boolean wished = true;
 
 		// when
-		WishBookResponse wishBookResponse = this
-			.wishBookService.updateWishBook(userbookId, wished);
+		WishbookResponse wishBookResponse = this
+			.wishBookService.updateWishbook(userbookId, wished);
 
 		// then
 		assertNotNull(wishBookResponse);
 
 		assertFalse(wishBookResponse.wished());
 
-		Optional<WishBook> byId = this
+		Optional<Wishbook> byId = this
 			.wishBookRepository.findWithUserbookByUserIdAndUserbookId(userId, userbookId);
 		assertFalse(byId.isPresent());
 	}
@@ -153,7 +153,7 @@ class WishBookServiceTest {
 
 		// expected
 		assertThrows(ErrorException.class,
-			() -> this.wishBookService.updateWishBook(invalidUserbookId, false));
+			() -> this.wishBookService.updateWishbook(invalidUserbookId, false));
 	}
 
 	@DisplayName("이미 관심 등록된 책에 관심 등록 요청")
@@ -167,7 +167,7 @@ class WishBookServiceTest {
 
 		// expected
 		assertThrows(ErrorException.class,
-			() -> this.wishBookService.updateWishBook(userbookId, wished));
+			() -> this.wishBookService.updateWishbook(userbookId, wished));
 	}
 
 	@DisplayName("관심 목록에 존재하지 않는 책에 관심 등록 취소 요청")
@@ -181,7 +181,7 @@ class WishBookServiceTest {
 
 		// expected
 		assertThrows(ErrorException.class,
-			() -> this.wishBookService.updateWishBook(userbookId, wished));
+			() -> this.wishBookService.updateWishbook(userbookId, wished));
 
 	}
 }

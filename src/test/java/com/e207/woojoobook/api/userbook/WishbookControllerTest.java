@@ -14,21 +14,21 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.e207.woojoobook.api.userbook.request.WishBookRequest;
-import com.e207.woojoobook.api.userbook.response.WishBookResponse;
+import com.e207.woojoobook.api.userbook.request.WishbookRequest;
+import com.e207.woojoobook.api.userbook.response.WishbookResponse;
 import com.e207.woojoobook.domain.user.UserRepository;
-import com.e207.woojoobook.domain.userbook.WishBookRepository;
+import com.e207.woojoobook.domain.userbook.WishbookRepository;
 import com.e207.woojoobook.global.security.SecurityConfig;
 import com.e207.woojoobook.restdocs.AbstractRestDocsTest;
 
 @Import({SecurityConfig.class})
-@WebMvcTest(controllers = WishBookController.class)
-class WishBookControllerTest extends AbstractRestDocsTest {
+@WebMvcTest(controllers = WishbookController.class)
+class WishbookControllerTest extends AbstractRestDocsTest {
 
 	@MockBean
-	private WishBookService wishBookService;
+	private WishbookService wishBookService;
 	@MockBean
-	private WishBookRepository wishBookRepository;
+	private WishbookRepository wishBookRepository;
 	@MockBean
 	private UserRepository userRepository;
 
@@ -44,12 +44,12 @@ class WishBookControllerTest extends AbstractRestDocsTest {
 	@WithMockUser
 	@DisplayName("회원이 사용자 도서에 관심 등록 요청을 보냄")
 	@Test
-	void updateWishBookRequest() throws Exception {
+	void updateWishbookRequest() throws Exception {
 		// given
 		boolean wished = false;
-		WishBookRequest wishBookRequest = new WishBookRequest(userId, wished);
-		given(wishBookService.updateWishBook(userbookId, wished))
-			.willReturn(new WishBookResponse(userbookId, wished));
+		WishbookRequest wishBookRequest = new WishbookRequest(userId, wished);
+		given(wishBookService.updateWishbook(userbookId, wished))
+			.willReturn(new WishbookResponse(userbookId, wished));
 
 		// when
 		ResultActions resultActions = this.mockMvc.perform(
@@ -64,8 +64,8 @@ class WishBookControllerTest extends AbstractRestDocsTest {
 	@WithMockUser
 	@DisplayName("관심 등록된 사용자 도서에 관심 등록 취소 요청을 보냄")
 	@Test
-	void deleteWishBookRequest() throws Exception {
-		WishBookRequest wishBookRequest = new WishBookRequest(1L, true);
+	void deleteWishbookRequest() throws Exception {
+		WishbookRequest wishBookRequest = new WishbookRequest(1L, true);
 		ResultActions resultActions = this.mockMvc.perform(
 			post("/userbooks/{userbookId}/wish", userbookId)
 				.contentType(MediaType.APPLICATION_JSON)

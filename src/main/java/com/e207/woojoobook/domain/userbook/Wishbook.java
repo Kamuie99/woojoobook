@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-public class WishBook {
+public class Wishbook {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -26,7 +26,7 @@ public class WishBook {
 	private Userbook userbook;
 
 	@Builder
-	public WishBook(User user, Userbook userbook) {
+	public Wishbook(User user, Userbook userbook) {
 		this.user = user;
 		this.userbook = userbook;
 	}
