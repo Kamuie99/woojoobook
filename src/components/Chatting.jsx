@@ -47,20 +47,22 @@ const Chatting = () => {
   }, [receiverId]);
 
   useEffect(() => {
+    let subscription;
     if (client.current && chatRoomId) {
       const destination = `/topic/user_${userId}`;
-      const subscription = client.current.subscribe(destination, (message) => {
+      subscription = client.current.subscribe(destination, (message) => {
         console.log('수신된 메시지:', message.body);
         const messageBody = JSON.parse(message.body);
-        setMessages((prev) =>
-          [{
-            senderId: messageBody.senderId,
-            content: messageBody.content
-          }, ...prev]);
+        setMessages((prev) => [
+          { senderId: messageBody.senderId, content: messageBody.content },
+          ...prev,
+        ]);
       });
-      return () => subscription.unsubscribe();
+      return () => {
+        if (subscription) subscription.unsubscribe();
+      };
     }
-  }, [userId, chatRoomId]);
+  }, [messages]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -153,12 +155,10 @@ const Chatting = () => {
 
   const fetchChatMessages = async (chatRoomId) => {
     try {
-      console.log(localStorage.getItem('token'));
-      const response = await axiosInstance.get(`chat/${chatRoomId}`);  // 오류가 예상되는 부분
-      console.log(response) // response 값
+      const response = await axiosInstance.get(`chat/${chatRoomId}`);
       console.log("chatRoomId: " + chatRoomId);
-      const data = await response.data; // 응답으로 page를 전달 받는다!
-      setMessages(data.content || []); // Page 객체의 content를 추출하여 상태 업데이트
+      const data = await response.data;
+      setMessages(data.content || []);
     } catch (error) {
       console.error('채팅 메시지 조회 중 오류 발생:', error);
     }
@@ -213,7 +213,6 @@ const Chatting = () => {
               let otherUserId = room.receiverId;
               if (otherUserId == userId) {
                 otherUserId = room.senderId;
-                console.log('other')
               }
               setReceiverId(otherUserId);
               setChatRoomId(room.id);
