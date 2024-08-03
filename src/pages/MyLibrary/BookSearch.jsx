@@ -10,8 +10,13 @@ const BookSearch = ({ onSelect }) => {
   const [books, setBooks] = useState([]);
   const [maxPage, setMaxPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [noResults, setNoResults] = useState(false);
 
   const handleSearch = () => {
+    if (!keyword.trim()) {
+      alert('검색어를 입력해주세요.');
+      return;
+    }
     searchBooks(keyword, 1);
     setIsModalOpen(true);
   };
@@ -26,8 +31,10 @@ const BookSearch = ({ onSelect }) => {
       setBooks(response.data.bookList)
       setMaxPage(response.data.maxPage)
       setPage(searchPage)
+      setNoResults(response.data.bookList.length === 0)
     } catch (error) {
       console.log(error)
+      setNoResults(true)
     }
   }, [])
 
@@ -65,7 +72,7 @@ const BookSearch = ({ onSelect }) => {
           onKeyPress={handleKeyPress}
           placeholder="책 제목을 입력하세요"
         />
-        <button className={styles.searchButton} onClick={handleSearch}>검색</button>
+        <button className={styles.searchButton} onClick={handleSearch} type='button'>검색</button>
       </div>
 
       <Modal 
@@ -74,23 +81,29 @@ const BookSearch = ({ onSelect }) => {
         contentLabel="Book Search Results"
       >
         <div className={styles.modalContent}>
-          <BookList books={books} onSelect={handleSelect} selectable={true} />
-          <div className={styles.paginationContainer}>
-            <button
-              className={styles.pageButton}
-              onClick={() => handlePageChange(page - 1)}
-              disabled={page <= 1}
-            >
-              이전 페이지
-            </button>
-            <button
-              className={styles.pageButton}
-              onClick={() => handlePageChange(page + 1)}
-              disabled={page >= maxPage}
-            >
-              다음 페이지
-            </button>
-          </div>
+          {noResults ? (
+            <div className={styles.noResults}>검색 결과가 없습니다.</div>
+          ) : (
+            <>
+              <BookList books={books} onSelect={handleSelect} selectable={true} />
+              <div className={styles.paginationContainer}>
+                <button
+                  className={styles.pageButton}
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page <= 1}
+                >
+                  이전 페이지
+                </button>
+                <button
+                  className={styles.pageButton}
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={page >= maxPage}
+                >
+                  다음 페이지
+                </button>
+              </div>
+          </>
+          )}
         </div>
       </Modal>
     </div>
