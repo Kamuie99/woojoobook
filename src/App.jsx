@@ -6,7 +6,7 @@ import Notfound from './pages/Notfound';
 import BookRegister from './pages/BookRegister/BookRegister';
 import Policy from './pages/Policy';
 import MyBook from './pages/MyBook';
-import MyActivity from './pages/MyActivity';
+import MyActivity from './pages/MyActivity/MyActivity';
 import MyLibrary from './pages/MyLibrary/MyLibrary';
 import Register from './pages/Register/Register';
 import MyPage from './pages/MyPage/MyPage'
