@@ -23,7 +23,7 @@ const History = () => {
           params: {
             userCondition: "SENDER",
             rentalStatus: "COMPLETED",
-            page: rentalPage,
+            page: 0,
             size: 10
           }
         }),
@@ -31,29 +31,63 @@ const History = () => {
           params: {
             userCondition: "SENDER_RECEIVER",
             exchangeStatus: "APPROVED",
-            page: exchangePage,
+            page: 0,
             size: 10
           }
         })
       ])
-      setRentalHistory(prev => [...prev, ...response1.data.content])
+      setRentalHistory(response1.data.content)
       setRentalHistoryCnt(response1.data.totalElements)
+      setRentalPage(1)
 
-      setExchangeHistory(prev => [...prev, ...response2.data.content])
+      setExchangeHistory(response2.data.content)
       setExchangeHistoryCnt(response2.data.totalElements)
+      setExchangePage(1)
     } catch (error) {
       console.log(error)
     }
   }
 
-  const loadMoreRentals = () => {
-    setRentalPage(prev => prev + 1)
-    fetchHistory()
+  const fetchMoreRentals = async () => {
+    try {
+      const response = await axiosInstance.get('/rentals', {
+        params: {
+          userCondition: "SENDER",
+          rentalStatus: "COMPLETED",
+          page: rentalPage,
+          size: 10
+        }
+      })
+      const newItems = response.data.content.filter(
+        newItem => !rentalHistory.some(item => item.id === newItem.id)
+      )
+      setRentalHistory(prev => [...prev, ...newItems])
+      setRentalHistoryCnt(response.data.totalElements)
+      setRentalPage(prev => prev + 1)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  const loadMoreExchanges = () => {
-    setExchangePage(prev => prev + 1)
-    fetchHistory()
+  const fetchMoreExchanges = async () => {
+    try {
+      const response = await axiosInstance.get('/exchanges', {
+        params: {
+          userCondition: "SENDER_RECEIVER",
+          exchangeStatus: "APPROVED",
+          page: exchangePage,
+          size: 10
+        }
+      })
+      const newItems = response.data.content.filter(
+        newItem => !exchangeHistory.some(item => item.id === newItem.id)
+      )
+      setExchangeHistory(prev => [...prev, ...newItems])
+      setExchangeHistoryCnt(response.data.totalElements)
+      setExchangePage(prev => prev + 1)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -61,7 +95,7 @@ const History = () => {
       <h2>대여했던 목록 (총 {rentalHistoryCnt}개)</h2>
       <InfiniteScroll
         dataLength={rentalHistory.length}
-        next={loadMoreRentals}
+        next={fetchMoreRentals}
         hasMore={rentalHistory.length < rentalHistoryCnt}
         loader={<h4>Loading...</h4>}
         scrollableTarget="rentalList"
@@ -83,7 +117,7 @@ const History = () => {
       <h2>교환했던 목록 (총 {exchangeHistoryCnt}개)</h2>
       <InfiniteScroll
         dataLength={exchangeHistory.length}
-        next={loadMoreExchanges}
+        next={fetchMoreExchanges}
         hasMore={exchangeHistory.length < exchangeHistoryCnt}
         loader={<h4>Loading...</h4>}
         scrollableTarget="exchangeList"

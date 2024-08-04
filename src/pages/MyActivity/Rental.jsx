@@ -30,7 +30,7 @@ const Rental = () => {
           params: {
             userCondition: "SENDER",
             rentalStatus: "IN_PROGRESS",
-            page: currentRentPage,
+            page: 0,
             size: 10
           }
         }),
@@ -38,7 +38,7 @@ const Rental = () => {
           params: {
             userCondition: "SENDER",
             rentalStatus: "OFFERING",
-            page: rentalRequestsPage,
+            page: 0,
             size: 10
           }
         }),
@@ -46,7 +46,7 @@ const Rental = () => {
           params: {
             userCondition: "RECEIVER",
             rentalStatus: "OFFERING",
-            page: receivedRentalRequestsPage,
+            page: 0,
             size: 10
           }
         }),
@@ -54,22 +54,26 @@ const Rental = () => {
           params: {
             userCondition: "SENDER",
             rentalStatus: "REJECTED",
-            page: rejectedRentalRequestsPage,
+            page: 0,
             size: 10
           }
         })
       ])
       setCurrentRent(prev => [...prev, ...response1.data.content])
       setCurrentRentCnt(response1.data.totalElements)
+      setCurrentRentPage(1)
   
       setRentalRequests(prev => [...prev, ...response2.data.content])
       setRentalRequestsCnt(response2.data.totalElements)
+      setRentalRequestsPage(1)
   
       setReceivedRentalRequests(prev => [...prev, ...response3.data.content])
       setReceivedRentalRequestsCnt(response3.data.totalElements)
+      setReceivedRentalRequestsPage(1)
       
       setRejectedRentalRequests(prev => [...prev, ...response4.data.content])
       setRejectedRentalRequestsCnt(response4.data.totalElements)
+      setRejectedRentalRequestsPage(1)
     } catch (error) {
       console.log(error)
     }
@@ -265,7 +269,7 @@ const Rental = () => {
     })
   }
 
-  const handleCancleRental = async (offerId) => {
+  const handleCancelRental = async (offerId) => {
     Swal.fire({
       title: "대여 신청을 취소하시겠습니까?",
       icon: "question",
@@ -385,7 +389,7 @@ const Rental = () => {
               <div>{item.userbook.bookInfo.title}</div>
               <div>{item.userbook.ownerInfo.nickname}</div>
               <div>{item.startDate}</div>
-              <div><button onClick={() => handleCancleRental(item.id)}>신청취소</button></div>
+              <div><button onClick={() => handleCancelRental(item.id)}>신청취소</button></div>
             </>
           )}
         />

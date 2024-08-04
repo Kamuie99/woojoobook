@@ -27,7 +27,7 @@ const Exchange = () => {
           params: {
             userCondition: "SENDER",
             exchangeStatus: "IN_PROGRESS",
-            page: exchangeRequestsPage,
+            page: 0,
             size: 10
           }
         }),
@@ -35,7 +35,7 @@ const Exchange = () => {
           params: {
             userCondition: "RECEIVER",
             exchangeStatus: "IN_PROGRESS",
-            page: receivedExchangeRequestsPage,
+            page: 0,
             size: 10
           }
         }),
@@ -43,19 +43,22 @@ const Exchange = () => {
           params: {
             userCondition: "SENDER",
             exchangeStatus: "REJECTED",
-            page: rejectedExchangeRequestsPage,
+            page: 0,
             size: 10
           }
         })
       ])
       setExchangeRequests(prev => [...prev, ...response1.data.content])
       setExchangeRequestsCnt(response1.data.totalElements)
+      setExchangeRequestsPage(1)
 
       setReceivedExchangeRequests(prev => [...prev, ...response2.data.content])
       setReceivedExchangeRequestsCnt(response2.data.totalElements)
+      setReceivedExchangeRequestsPage(1)
       
       setRejectedExchangeRequests(prev => [...prev, ...response3.data.content])
       setRejectedExchangeRequestsCnt(response3.data.totalElements)
+      setRejectedExchangeRequestsPage(1)
     } catch (error) {
       console.log(error)
     }
@@ -123,7 +126,7 @@ const Exchange = () => {
     }
   }
 
-  const fetchRejectedRentalRequests = async () => {
+  const fetchRejectedExchangeRequests = async () => {
     try {
       const response = await axiosInstance.get('/exchanges', {
         params: {
@@ -138,7 +141,7 @@ const Exchange = () => {
 
       setRejectedExchangeRequests(prev => {
         const existingIds = new Set(prev.map(item => item.id));
-        const uniqueNewItems = existingIds.filter(item => !existingIds.has(item.id));
+        const uniqueNewItems = newItems.filter(item => !existingIds.has(item.id));
         return [...prev, ...uniqueNewItems];
 
       })
@@ -158,10 +161,10 @@ const Exchange = () => {
   }
 
   const loadMoreRejectedExchangeRequests = () => {
-    fetchRejectedRentalRequests()
+    fetchRejectedExchangeRequests()
   }
 
-  const handleCancleExchange = async (offerId) => {
+  const handleCancelExchange = async (offerId) => {
     Swal.fire({
       title: "교환 신청을 취소하시겠습니까?",
       icon: "question",
@@ -187,24 +190,56 @@ const Exchange = () => {
   }
 
   const handleAccept = async (offerId, response) => {
-    try {
-      await axiosInstance.post(`/exchanges/offer/${offerId}`, {
-        status: response
+    if (response === true) {
+      Swal.fire({
+        title: "교환 신청을 수락하시겠습니까?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "수락하기",
+        cancelButtonText: "돌아가기"
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axiosInstance.post(`/exchanges/offer/${offerId}`, {
+              status: response
+            })
+            await fetchReceivedExchangeRequests(true)
+            Swal.fire({
+              title: "교환신청을 수락했습니다.",
+              icon: "success"
+            })
+          } catch (error) {
+            console.log(error)
+          }
+        }
       })
-      await fetchReceivedExchangeRequests(true)
-      if (response === true) {
-        Swal.fire({
-          title: "교환신청을 수락했습니다.",
-          icon: "success"
-        })
-      } else {
-        Swal.fire({
-          title: "교환신청을 거절했습니다.",
-          icon: "warning"
-        })
-      }
-    } catch (error) {
-      console.log(error)
+    } else {
+      Swal.fire({
+        title: "교환 신청을 거절하시겠습니까?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "거절하기",
+        cancelButtonText: "돌아가기"
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axiosInstance.post(`/exchanges/offer/${offerId}`, {
+              status: response
+            })
+            await fetchReceivedExchangeRequests(true)
+            Swal.fire({
+              title: "교환신청을 거절했습니다.",
+              icon: "warning"
+            })
+          } catch (error) {
+            console.log(error)
+          }
+        }
+      })
     }
   }
 
@@ -226,7 +261,7 @@ const Exchange = () => {
               <div>{item.senderBook.bookInfo.title}</div>
               <div>{item.receiverBook.bookInfo.title}</div>
               <div>{item.receiverBook.ownerInfo.nickname}</div>
-              <div><button onClick={() => handleCancleExchange(item.id)}>신청취소</button></div>
+              <div><button onClick={() => handleCancelExchange(item.id)}>신청취소</button></div>
             </>
           )}
         />

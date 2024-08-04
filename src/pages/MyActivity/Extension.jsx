@@ -27,7 +27,7 @@ const Extension = () => {
           params: {
             userCondition: "SENDER",
             extensionStatus: "OFFERING",
-            page: extensionRequestsPage,
+            page: 0,
             size: 10
           }
         }),
@@ -37,7 +37,7 @@ const Extension = () => {
           params: {
             userCondition: "RECEIVER",
             extensionStatus: "OFFERING",
-            page: receivedExtensionRequestsPage,
+            page: 0,
             size: 10
           }
         }),
@@ -45,19 +45,22 @@ const Extension = () => {
           params: {
             userCondition: "SENDER",
             extensionStatus: "REJECTED",
-            page: rejectedExtensionRequestsPage,
+            page: 0,
             size: 10
           }
         })
       ])
       setExtensionRequests(prev => [...prev, ...response1.data.content])
       setExtensionRequestsCnt(response1.data.totalElements)
+      setExtensionRequestsPage(1)
       
       setReceivedExtensionRequests(prev => [...prev, ...response2.data.content])
       setReceivedExtensionRequestsCnt(response2.data.totalElements)
+      setReceivedExtensionRequestsPage(1)
       
       setRejectedExtensionRequests(prev => [...prev, ...response3.data.content])
       setRejectedExtensionRequestsCnt(response3.data.totalElements)
+      setRejectedExtensionRequestsPage(1)
     } catch (error) {
       console.log(error)
     }
@@ -114,7 +117,7 @@ const Extension = () => {
       } else {
         setReceivedExtensionRequests(prev => {
           const existingIds = new Set(prev.map(item => item.id));
-          const uniqueNewItems = newItems.filter(item > !existingIds.has(item.id));
+          const uniqueNewItems = newItems.filter(item => !existingIds.has(item.id));
           return [...prev, ...uniqueNewItems];
         })
         setReceivedExtensionRequestsPage(prev => prev + 1)
@@ -151,18 +154,18 @@ const Extension = () => {
   }
 
   const loadMoreExtensionRequests = () => {
-    fetchExchangeRequests()
+    fetchExtensionRequests()
   }
 
   const loadMoreReceivedExtensionRequests = () => {
-    fetchReceivedExchangeRequests()
+    fetchReceivedExtensionRequests()
   }
 
   const loadMoreRejectedExtensionRequests = () => {
     fetchRejectedExtensionRequests()
   }
 
-  const handleCancleExtension = async (offerId) => {
+  const handleCancelExtension = async (offerId) => {
     Swal.fire({
       title: "연장 신청을 취소하시겠습니까?",
       icon: "question",
@@ -188,24 +191,56 @@ const Extension = () => {
   }
 
   const handleAccept = async (offerId, response) => {
-    try {
-      await axiosInstance.put(`/extensions/${offerId}`, {
-        isApproved: response
+    if (response === true) {
+      Swal.fire({
+        title: "연장 신청을 수락하시겠습니까?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "수락하기",
+        cancelButtonText: "돌아가기"
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axiosInstance.put(`/extensions/${offerId}`, {
+              isApproved: response
+            })
+            await fetchReceivedExtensionRequests(true)
+            Swal.fire({
+              title: "연장신청을 수락했습니다.",
+              icon: "success"
+            })
+          } catch (error) {
+            console.log(error)
+          }
+        }
       })
-      await fetchReceivedExtensionRequests(true)
-      if (response === true) {
-        Swal.fire({
-          title: "연장신청을 수락했습니다.",
-          icon: "success"
-        })
-      } else {
-        Swal.fire({
-          title: "연장신청을 거절했습니다.",
-          icon: "warning"
-        })
-      }
-    } catch (error) {
-      console.log(error)
+    } else {
+      Swal.fire({
+        title: "연장 신청을 거절하시겠습니까?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "거절하기",
+        cancelButtonText: "돌아가기"
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axiosInstance.put(`/extensions/${offerId}`, {
+              isApproved: response
+            })
+            await fetchReceivedExtensionRequests(true)
+            Swal.fire({
+              title: "연장신청을 거절했습니다.",
+              icon: "warning"
+            })
+          } catch (error) {
+            console.log(error)
+          }     
+        }
+      })
     }
   }
 
@@ -224,10 +259,9 @@ const Extension = () => {
           emptyMessage="목록이 없습니다"
           renderItem={(item) => (
             <>
-              <div>{item.userbook.bookInfo.title}</div>
-              <div>{item.userbook.ownerInfo.nickname}</div>
-              <div>{item.startDate}</div>
-              <div><button onClick={() => handleCancleExtension(item.id)}>신청취소</button></div>
+              <div>{item.rentalResponse.userbook.bookInfo.title}</div>
+              <div>{item.rentalResponse.userbook.ownerInfo.nickname}</div>
+              <div><button onClick={() => handleCancelExtension(item.id)}>신청취소</button></div>
             </>
           )}
         />
@@ -246,9 +280,8 @@ const Extension = () => {
           emptyMessage="목록이 없습니다"
           renderItem={(item) => (
             <>
-              <div>{item.userbook.bookInfo.title}</div>
-              <div>{item.user.nickname}</div>
-              <div>{item.startDate}</div>
+              <div>{item.rentalResponse.userbook.bookInfo.title}</div>
+              <div>{item.rentalResponse.user.nickname}</div>
               <div><button onClick={() => handleAccept(item.id, true)}>수락</button></div>
               <div><button onClick={() => handleAccept(item.id, false)}>거절</button></div>
             </>
@@ -270,7 +303,7 @@ const Extension = () => {
           emptyMessage="목록이 없습니다"
           renderItem={(item) => (
             <>
-              <div>{item.userbook.bookInfo.title}</div>
+              <div>{item.rentalResponse.userbook.bookInfo.title}</div>
             </>
           )}
         />
