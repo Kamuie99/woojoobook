@@ -1,0 +1,5 @@
+.chat_button {
+  position: fixed !important;
+  bottom: 16px;
+  left: 16px;
+}

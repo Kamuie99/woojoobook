@@ -1,0 +1,28 @@
+:global(.MuiInputBase-root),
+:global(.MuiTypography-root),
+:global(.MuiButtonBase-root) {
+  font-family: "samsungGodik" !important;
+  text-decoration: none !important;
+}
+:global(.MuiModal-root) {
+  width: 1px;
+}
+
+:global(.MuiBackdrop-root) {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
+:global(.MuiListItem-root:hover) {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+:global(.MuiButton-text) {
+  color: black !important;
+}
+
+:global(.MuiSnackbar-anchorOriginBottomLeft) {
+  position: fixed !important;
+  bottom: 23% !important;
+  left: 3% !important;
+}

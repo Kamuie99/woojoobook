@@ -13,7 +13,7 @@ import MyPage from './pages/MyPage/MyPage'
 import UserUpdate from './pages/MyPage/UserUpdate';
 import PasswordChange from './pages/MyPage/PasswordChange';
 import ProtectedRoute from './util/ProtectedRoute';
-import Chatting from './components/Chatting';
+import Chatting from './components/Chatting/Chatting';
 import BookList from './pages/BookList/BookList';
 import TestPage from './pages/TestPage';
 

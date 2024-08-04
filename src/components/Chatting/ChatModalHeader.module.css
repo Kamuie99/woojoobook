@@ -1,0 +1,19 @@
+
+.modal_header {
+  position: absolute;
+  top: 35px;
+  background-color: inherit;
+  /* background-color: var(--main-color); */
+  width: calc(100% - 32px);
+  display: flex;
+  flex-wrap: nowrap;
+  font-size: 22px;
+  z-index: 1001;
+  height: 40px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal_title {
+  align-self: center;
+}

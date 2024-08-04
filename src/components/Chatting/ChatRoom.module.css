@@ -1,0 +1,76 @@
+.message_list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-top: 50px;
+  padding-bottom: 120px;
+}
+
+.message_list::-webkit-scrollbar {
+  display: none;
+}
+
+.messages_container {
+  overflow-y: auto;
+}
+
+.message {
+  display: flex;
+  margin: 10px;
+  max-width: 95%;
+}
+
+.sent {
+  justify-content: flex-end;
+  align-self: flex-end;
+}
+
+.sent > p {
+  background-color: var(--sub-color);
+}
+
+.received {
+  justify-content: flex-start;
+  align-self: flex-start;
+}
+
+.received > p {
+  background-color: var(--sub-color);
+}
+
+.message > p {
+  padding: 0.35rem 0.5rem;
+  border-radius: 10px;
+  max-width: 90%;
+  font-size: 20px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.message_input {
+  background-color: var(--main-color);
+  font-family: none;
+
+}
+
+.message_input_container {
+  display: flex;
+  padding: 8px 0px;
+  position: absolute;
+  bottom: 65px;
+  width: calc(100% - 32px);
+  background-color: var(--main-color);
+}
+
+.message_input_button {
+  flex: 1;
+  margin-left: 3px;
+  display: flex;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  border-radius: 4px;
+  background-color: var(--main-color);
+}
+
+.input_button {
+  align-self: center;
+}

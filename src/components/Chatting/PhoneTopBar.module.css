@@ -1,0 +1,33 @@
+.phone_top_bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  padding: 0px 16px;
+  background-color: inherit;
+  /* background-color: var(--main-color); */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.top_bar_right {
+  display: flex;
+}
+
+.top_bar_right > p {
+  margin-left: 3px;
+}
+
+.camera {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #000;
+  transform: translateX(-50%);
+  z-index: 2;
+}
