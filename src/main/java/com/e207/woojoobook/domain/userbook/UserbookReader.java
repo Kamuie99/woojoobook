@@ -14,18 +14,21 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @Component
 public class UserbookReader {
+
 	private final UserbookRepository userbookRepository;
+	private final WishbookRepository wishbookRepository;
 
-	public Page<Userbook> findUserbookListByPage(User user, UserbookFindCondition condition, Pageable pageable) {
-		if (condition.areaCodeList().isEmpty()) {
-			condition.areaCodeList().add(user.getAreaCode());
-		}
+	public Page<Userbook> findPage(UserbookFindCondition condition, Pageable pageable) {
+		return this.userbookRepository.findUserbookListByPage(condition, pageable);
+	}
 
-		return userbookRepository.findUserbookListByPage(condition, pageable);
+	public Page<Userbook> findLikedPageByUser(User user, Pageable pageable) {
+		return this.wishbookRepository.findWishbookPageWithUserbookByUser(user, pageable)
+			.map(Wishbook::getUserbook);
 	}
 
 	public Userbook findOwnedUserbook(User user, Long userbookId) {
-		Userbook userbook = userbookRepository.findWithUserById(userbookId)
+		Userbook userbook = this.userbookRepository.findWithUserById(userbookId)
 			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 		if (!userbook.getUser().equals(user)) {
 			throw new ErrorException(ErrorCode.ForbiddenError);
@@ -38,7 +41,7 @@ public class UserbookReader {
 	}
 
 	public Userbook findDomain(Long id) {
-		return userbookRepository.findByIdWithUserAndBook(id)
+		return this.userbookRepository.findByIdWithUserAndBook(id)
 			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
 
@@ -50,10 +53,10 @@ public class UserbookReader {
 			.registerType(registerType)
 			.tradeStatus(registerType.getDefaultTradeStatus())
 			.build();
-		return userbookRepository.save(userbook);
+		return this.userbookRepository.save(userbook);
 	}
 
 	public Userbook findUserbook(Long id) {
-		return userbookRepository.findUserbookById(id).orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
+		return this.userbookRepository.findUserbookById(id).orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
 }

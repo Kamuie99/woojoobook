@@ -33,7 +33,8 @@ public class UserbookFindRepositoryImpl implements UserbookFindRepository {
 		List<Userbook> content = this.queryFactory.selectFrom(userbook)
 			.join(userbook.book, book)
 			.where(isKeywordInTitleOrAuthor(condition.keyword()), isAreaCodeInList(condition.areaCodeList()),
-				canExecuteTrade(condition.registerType()), hasRegisterType(condition.registerType()))
+				canExecuteTrade(condition.registerType()), hasRegisterType(condition.registerType()),
+				isOwnedByUser(condition.userId()))
 			.orderBy(this.queryHelper.generateFieldSort(Book.class, pageable.getSort(), "userbook.book"))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -82,5 +83,9 @@ public class UserbookFindRepositoryImpl implements UserbookFindRepository {
 	private BooleanExpression hasRegisterType(RegisterType registerType) {
 		return Objects.isNull(registerType) ? null :
 			userbook.registerType.eq(registerType).or(userbook.registerType.eq(RegisterType.RENTAL_EXCHANGE));
+	}
+
+	private BooleanExpression isOwnedByUser(Long userId) {
+		return userId == null ? null : userbook.user.id.eq(userId);
 	}
 }

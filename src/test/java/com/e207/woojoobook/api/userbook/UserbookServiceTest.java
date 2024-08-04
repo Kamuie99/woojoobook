@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -28,6 +29,7 @@ import com.e207.woojoobook.api.book.response.BookResponse;
 import com.e207.woojoobook.api.userbook.request.UserbookCreateRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookUpdateRequest;
+import com.e207.woojoobook.api.userbook.response.UserbookResponse;
 import com.e207.woojoobook.client.BookSearchClient;
 import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.book.BookRepository;
@@ -41,6 +43,7 @@ import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.domain.userbook.QualityStatus;
 import com.e207.woojoobook.domain.userbook.RegisterType;
+import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
 import com.e207.woojoobook.global.helper.UserHelper;
@@ -165,6 +168,32 @@ class UserbookServiceTest {
 		assertThat(result).allMatch(exchange -> exchange.getExchangeStatus() == ExchangeStatus.REJECTED);
 	}
 
+	@DisplayName("사용자가 등록한 도서를 조회할 수 있다.")
+	@Transactional
+	@Test
+	void When_FindOwnedUserbook_Expect_OwnedUserbookList() {
+		// given
+		User otherUser = User.builder().build();
+		userRepository.save(otherUser);
+
+		List<Book> myBookList = makeRandomBookList(3);
+		List<Book> otherBookList = makeRandomBookList(3);
+
+		List<UserbookResponse> myUserbookList = makeUserbookList(currentUser, myBookList).stream()
+			.map(UserbookResponse::of)
+			.toList();
+		List<UserbookResponse> otherUserbookList = makeUserbookList(otherUser, otherBookList).stream()
+			.map(UserbookResponse::of)
+			.toList();
+
+		// when
+		Page<UserbookResponse> result = userbookService.findOwnedUserbookPage(Pageable.ofSize(10));
+
+		// then
+		List<UserbookResponse> content = result.getContent();
+		assertThat(content).isNotEmpty().allMatch(myUserbookList::contains).noneMatch(otherUserbookList::contains);
+	}
+
 	private List<User> makeRandomUserList(int size) {
 		return Stream.generate(() -> User.builder().build()).limit(size).peek(userRepository::save).toList();
 	}
@@ -173,6 +202,18 @@ class UserbookServiceTest {
 		return Stream.generate(() -> Book.builder().isbn(RandomString.make()).build())
 			.limit(size)
 			.peek(bookRepository::save)
+			.toList();
+	}
+
+	private List<Userbook> makeUserbookList(User user, List<Book> bookList) {
+		return bookList.stream()
+			.map(book -> Userbook.builder()
+				.user(user)
+				.book(book)
+				.registerType(RegisterType.RENTAL_EXCHANGE)
+				.tradeStatus(TradeStatus.RENTAL_EXCHANGE_AVAILABLE)
+				.build())
+			.map(userbookRepository::save)
 			.toList();
 	}
 
@@ -198,13 +239,12 @@ class UserbookServiceTest {
 	private void makeRental(List<User> borrowerList, Userbook userbook) {
 		borrowerList.stream()
 			.map(user -> Rental.builder().user(user).userbook(userbook).rentalStatus(RentalStatus.IN_PROGRESS).build())
-			.peek(rentalRepository::save)
-			.toList();
+			.forEach(rentalRepository::save);
 	}
 
 	private void makeExchange(List<Userbook> senderUserbookList, Userbook receiverUserbook) {
 		senderUserbookList.stream()
 			.map(userbook -> Exchange.builder().senderBook(userbook).receiverBook(receiverUserbook).build())
-			.toList();
+			.forEach(exchangeRepository::save);
 	}
 }

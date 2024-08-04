@@ -112,7 +112,7 @@ class WishbookServiceTest {
 		assertTrue(wishBookResponse.wished());
 
 		Optional<Wishbook> byId = this
-			.wishBookRepository.findWithUserbookByUserIdAndUserbookId(userId, userbookId);
+			.wishBookRepository.findWithUserbookByUserAndUserbookId(user, userbookId);
 		assertTrue(byId.isPresent());
 
 		Wishbook updatedWishbook = byId.get();
@@ -139,7 +139,7 @@ class WishbookServiceTest {
 		assertFalse(wishBookResponse.wished());
 
 		Optional<Wishbook> byId = this
-			.wishBookRepository.findWithUserbookByUserIdAndUserbookId(userId, userbookId);
+			.wishBookRepository.findWithUserbookByUserAndUserbookId(user, userbookId);
 		assertFalse(byId.isPresent());
 	}
 

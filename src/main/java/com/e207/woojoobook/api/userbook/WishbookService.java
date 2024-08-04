@@ -29,7 +29,7 @@ public class WishbookService {
 	public WishbookResponse updateWishbook(Long userbookId, boolean wished) {
 		User user = userHelper.findCurrentUser();
 		Optional<Wishbook> wishbookOptional = wishbookRepository
-			.findWithUserbookByUserIdAndUserbookId(user.getId(), userbookId);
+			.findWithUserbookByUserAndUserbookId(user, userbookId);
 
 		if (wished) {
 			Wishbook wishbook = wishbookOptional.orElseThrow(

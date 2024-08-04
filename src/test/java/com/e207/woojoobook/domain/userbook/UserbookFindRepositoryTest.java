@@ -37,7 +37,7 @@ class UserbookFindRepositoryTest {
 		// given
 		String expectedKeyword = "우주";
 
-		UserbookFindCondition condition = new UserbookFindCondition(expectedKeyword, List.of(), null);
+		UserbookFindCondition condition = new UserbookFindCondition(expectedKeyword, List.of(), null, null);
 
 		List<Book> bookList = List.of(createBookByKeywordInTitle(expectedKeyword),
 			createBookByKeywordInAuthor(expectedKeyword), createBookByKeywordInTitle("지구"));
@@ -69,7 +69,7 @@ class UserbookFindRepositoryTest {
 	void findUserbookPageListByAreaCode() {
 		// given
 		List<String> expectedAreaCodeList = List.of("대구", "대전");
-		UserbookFindCondition condition = new UserbookFindCondition(null, expectedAreaCodeList, null);
+		UserbookFindCondition condition = new UserbookFindCondition(null, expectedAreaCodeList, null, null);
 
 		List<Book> bookList = Stream.generate(this::createRandomBook).limit(5).toList();
 		bookList.forEach(em::persist);
@@ -105,7 +105,7 @@ class UserbookFindRepositoryTest {
 		Set<RegisterType> expectedRegisterTypes = Set.of(RegisterType.RENTAL, RegisterType.RENTAL_EXCHANGE);
 		Set<TradeStatus> expectedTradeStatus = Set.of(TradeStatus.RENTAL_AVAILABLE,
 			TradeStatus.RENTAL_EXCHANGE_AVAILABLE);
-		UserbookFindCondition condition = new UserbookFindCondition(null, List.of(), registerRental);
+		UserbookFindCondition condition = new UserbookFindCondition(null, List.of(), registerRental, null);
 
 		List<Book> bookList = Stream.generate(this::createRandomBook).limit(6).toList();
 		bookList.forEach(em::persist);

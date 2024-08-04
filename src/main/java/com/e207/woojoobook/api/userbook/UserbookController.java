@@ -17,7 +17,6 @@ import com.e207.woojoobook.api.userbook.request.UserbookCreateRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookUpdateRequest;
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
-import com.e207.woojoobook.global.security.SecurityUtil;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

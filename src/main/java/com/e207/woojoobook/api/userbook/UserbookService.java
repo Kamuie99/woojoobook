@@ -1,5 +1,7 @@
 package com.e207.woojoobook.api.userbook;
 
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -20,6 +22,7 @@ import com.e207.woojoobook.domain.user.experience.ExperienceHistory;
 import com.e207.woojoobook.domain.user.point.PointHistory;
 import com.e207.woojoobook.domain.userbook.RegisterType;
 import com.e207.woojoobook.domain.userbook.Userbook;
+import com.e207.woojoobook.domain.userbook.UserbookFindCondition;
 import com.e207.woojoobook.domain.userbook.UserbookReader;
 import com.e207.woojoobook.domain.userbook.UserbookStateManager;
 import com.e207.woojoobook.global.exception.ErrorCode;
@@ -39,7 +42,7 @@ public class UserbookService {
 
 	public UserbookService(@Value("${userbook.search.ereacode.count}") Integer MAX_AREA_CODE_SIZE,
 		UserbookReader userbookReader, BookReader bookReader, UserHelper userHelper,
-		UserbookStateManager userbookStateManager,ApplicationEventPublisher eventPublisher) {
+		UserbookStateManager userbookStateManager, ApplicationEventPublisher eventPublisher) {
 		this.MAX_AREA_CODE_SIZE = MAX_AREA_CODE_SIZE;
 		this.userbookReader = userbookReader;
 		this.bookReader = bookReader;
@@ -55,10 +58,32 @@ public class UserbookService {
 		}
 
 		User user = userHelper.findCurrentUser();
-		Page<Userbook> userbookListByPage = this.userbookReader.findUserbookListByPage(user, request.toCondition(),
-			pageable);
+		UserbookFindCondition condition = request.toCondition();
+
+		if (condition.areaCodeList().isEmpty()) {
+			condition.areaCodeList().add(user.getAreaCode());
+		}
+		Page<Userbook> userbookListByPage = this.userbookReader.findPage(condition, pageable);
 
 		return userbookListByPage.map(UserbookResponse::of);
+	}
+
+	@Transactional(readOnly = true)
+	public Page<UserbookResponse> findOwnedUserbookPage(Pageable pageable) {
+		User user = userHelper.findCurrentUser();
+		UserbookFindCondition condition = UserbookFindCondition.builder()
+			.areaCodeList(Collections.emptyList())
+			.userId(user.getId())
+			.build();
+
+		Page<Userbook> userbookListByPage = this.userbookReader.findPage(condition, pageable);
+		return userbookListByPage.map(UserbookResponse::of);
+	}
+
+	@Transactional(readOnly = true)
+	public Page<UserbookResponse> findLikedUserbookPageList(Pageable pageable) {
+		User user = userHelper.findCurrentUser();
+		return userbookReader.findLikedPageByUser(user, pageable).map(UserbookResponse::of);
 	}
 
 	@Transactional

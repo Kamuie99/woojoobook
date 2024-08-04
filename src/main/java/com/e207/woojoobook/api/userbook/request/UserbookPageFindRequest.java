@@ -16,6 +16,10 @@ public record UserbookPageFindRequest(String keyword, List<String> areaCodeList,
 	}
 
 	public UserbookFindCondition toCondition() {
-		return new UserbookFindCondition(keyword, areaCodeList, registerType);
+		return UserbookFindCondition.builder()
+			.keyword(keyword)
+			.areaCodeList(areaCodeList)
+			.registerType(registerType)
+			.build();
 	}
 }
