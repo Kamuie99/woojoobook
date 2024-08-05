@@ -1,0 +1,52 @@
+.modalBox {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 2px solid #000;
+  border-radius: 20px;
+  box-shadow: 24px;
+  padding: 16px;
+  width: 400px;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modalContent {
+  margin-top: 16px;
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+}
+
+.emotionImages {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 16px;
+}
+
+.emotionImages img {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+  margin: 10px;
+}
+
+.emotionImages img:not(.selected) {
+  opacity: 0.2;
+}
+
+.submitButton {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}

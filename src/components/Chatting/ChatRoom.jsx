@@ -46,7 +46,7 @@ const ChatRoom = ({ chatRoomId, receiverId }) => {
         if (subscription) subscription.unsubscribe();
       };
     }
-  }, [messages, chatRoomId, userId]);
+  }, [messages]);
   
   useEffect(() => {
     fetchChatMessages(0, true);

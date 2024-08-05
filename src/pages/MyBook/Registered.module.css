@@ -1,0 +1,9 @@
+.registeredContainer {
+  padding: 20px;
+}
+
+.emptyList {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}

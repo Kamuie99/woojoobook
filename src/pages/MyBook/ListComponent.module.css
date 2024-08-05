@@ -1,0 +1,42 @@
+.listContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 500px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.listItemContent {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.listItemContent > img {
+  width: 20%;
+  height: 100%;
+}
+
+.listItemContent > * > * >img {
+  width: 80px;
+}
+
+.emptyList {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #888;
+}

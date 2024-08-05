@@ -15,7 +15,7 @@ const MyPage = () => {
   const [nickname, setNickname] = useState('');
   const [userPoint, setUserPoint] = useState('');
   const [userExperience, setUserExperience] = useState('');
-  const { isLoggedIn, logout, sub } = useContext(AuthContext);
+  const { isLoggedIn, logout, sub, token } = useContext(AuthContext);
   const navigator = useNavigate([]);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const MyPage = () => {
 
   const deleteUser = async () => {
     if (isLoggedIn && 
-      jwtDecode(localStorage.getItem('token'))?.sub != fetchedUserId) {
+      jwtDecode(token)?.sub != fetchedUserId) {
       return alert('잘못된 요청입니다.')
     }
     if (!password) {

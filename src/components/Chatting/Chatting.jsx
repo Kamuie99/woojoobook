@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 import axiosInstance from '../../util/axiosConfig';
-import styles from './Chatting.module.css';
 import ChatButton from './ChatButton';
 import ChatModal from './ChatModal';
 

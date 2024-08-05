@@ -1,0 +1,50 @@
+.bookInfo {
+  display: flex;
+  margin: 20px;
+  width: 100%;
+  position: relative;
+}
+
+.bookInfo > img {
+  width: 20%;
+}
+
+.bookInfoDetail {
+  position: relative; /* Ensure the parent container is positioned */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.bookInfoDetail > div {
+  margin: 10px;
+}
+
+.bookInfoDetail > * > img {
+  width: 50px;
+}
+
+.bookStatus {
+  position: relative;
+  bottom: 0;
+
+}
+
+.bookStatusEdit {
+  position: absolute;
+  right: 25px;
+  bottom: 10px;
+  cursor: pointer;
+}
+
+.modal {
+  position: fixed;
+  width: auto;
+  height: auto;
+  padding: 20px 40px;
+  background-color: rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
