@@ -68,7 +68,9 @@ const MyActivity = () => {
       case 'proceed':
         return <Proceed />;
       case 'history':
-        return <History />;
+        return <History
+        userId={userId}
+        />;
       default:
         return <Proceed />;
     }

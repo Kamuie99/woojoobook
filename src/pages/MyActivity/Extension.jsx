@@ -31,8 +31,6 @@ const Extension = () => {
             size: 10
           }
         }),
-        // ERROR : 내가 받은 연장 목록 요청 시 401 에러
-        // 서버 확인 필요!
         axiosInstance.get('/extensions', {
           params: {
             userCondition: "RECEIVER",

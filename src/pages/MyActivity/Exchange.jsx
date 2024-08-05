@@ -203,7 +203,7 @@ const Exchange = () => {
         if (result.isConfirmed) {
           try {
             await axiosInstance.post(`/exchanges/offer/${offerId}`, {
-              status: response
+              status: "APPROVED"
             })
             await fetchReceivedExchangeRequests(true)
             Swal.fire({
@@ -228,7 +228,7 @@ const Exchange = () => {
         if (result.isConfirmed) {
           try {
             await axiosInstance.post(`/exchanges/offer/${offerId}`, {
-              status: response
+              status: "REJECTED"
             })
             await fetchReceivedExchangeRequests(true)
             Swal.fire({

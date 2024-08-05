@@ -366,7 +366,6 @@ const Rental = () => {
               <div>{item.userbook.bookInfo.title}</div>
               <div>{item.userbook.ownerInfo.nickname}</div>
               <div>{item.endDate}</div>
-              <div><button onClick={() => handleReturn(item.id)}>반납</button></div>
               <div><button onClick={() => handleExtension(item.id)}>연장</button></div>
             </>
           )}

@@ -4,7 +4,7 @@ import axiosInstance from '../../util/axiosConfig'
 import ListComponent from './ListComponent'
 import styles from './History.module.css'
 
-const History = () => {
+const History = (userId) => {
   const [rentalHistory, setRentalHistory] = useState([]);
   const [rentalHistoryCnt, setRentalHistoryCnt] = useState(0);
   const [exchangeHistory, setExchangeHistory] = useState([]);
