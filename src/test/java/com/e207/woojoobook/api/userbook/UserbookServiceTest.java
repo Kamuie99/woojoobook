@@ -187,7 +187,7 @@ class UserbookServiceTest {
 			.toList();
 
 		// when
-		Page<UserbookResponse> result = userbookService.findOwnedUserbookPage(Pageable.ofSize(10));
+		Page<UserbookResponse> result = userbookService.findOwnedUserbookPage(RegisterType.RENTAL, Pageable.ofSize(10));
 
 		// then
 		List<UserbookResponse> content = result.getContent();

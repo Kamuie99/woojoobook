@@ -4,9 +4,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
+import com.e207.woojoobook.domain.userbook.RegisterType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +25,8 @@ public class MyUserbookController {
 	}
 
 	@GetMapping("/userbooks/registered")
-	public Page<UserbookResponse> findRegisteredUserbookListByPage(Pageable pageable) {
-		return userbookService.findOwnedUserbookPage(pageable);
+	public Page<UserbookResponse> findRegisteredUserbookListByPage(
+		@RequestParam(value = "registerType", required = false) RegisterType registerType, Pageable pageable) {
+		return userbookService.findOwnedUserbookPage(registerType, pageable);
 	}
 }

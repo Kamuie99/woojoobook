@@ -17,6 +17,7 @@ import com.e207.woojoobook.api.userbook.request.UserbookUpdateRequest;
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
 import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.book.BookReader;
+import com.e207.woojoobook.domain.rental.RentalStatus;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.experience.ExperienceHistory;
 import com.e207.woojoobook.domain.user.point.PointHistory;
@@ -69,10 +70,11 @@ public class UserbookService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<UserbookResponse> findOwnedUserbookPage(Pageable pageable) {
+	public Page<UserbookResponse> findOwnedUserbookPage(RegisterType registerType, Pageable pageable) {
 		User user = userHelper.findCurrentUser();
 		UserbookFindCondition condition = UserbookFindCondition.builder()
 			.areaCodeList(Collections.emptyList())
+			.registerType(registerType)
 			.userId(user.getId())
 			.build();
 

@@ -74,10 +74,11 @@ class MyUserbookControllerTest {
 		PageImpl<UserbookResponse> expectedResponse = new PageImpl<>(currentUserbookList);
 		String expectedResponseJson = objectMapper.writeValueAsString(expectedResponse);
 
-		given(userbookService.findOwnedUserbookPage(any(Pageable.class))).willReturn(expectedResponse);
+		given(userbookService.findOwnedUserbookPage(any(RegisterType.class), any(Pageable.class))).willReturn(
+			expectedResponse);
 
 		// when
-		ResultActions action = mvc.perform(get("/users/userbooks/registered"));
+		ResultActions action = mvc.perform(get("/users/userbooks/registered").param("registerType", "RENTAL"));
 
 		// then
 		action.andExpect(status().isOk());
@@ -107,7 +108,7 @@ class MyUserbookControllerTest {
 			.ownerInfo(owner)
 			.bookInfo(book)
 			.registerType(RegisterType.RENTAL_EXCHANGE)
-			.tradeStatus(TradeStatus.RENTAL_EXCHANGE_AVAILABLE)
+			.tradeStatus(TradeStatus.RENTAL_AVAILABLE)
 			.qualityStatus(QualityStatus.VERY_GOOD)
 			.areaCode(RandomString.make(10))
 			.build();
