@@ -50,7 +50,8 @@ public class UserbookFindRepositoryImpl implements UserbookFindRepository {
 			.from(userbook)
 			.join(userbook.book, book)
 			.where(isKeywordInTitleOrAuthor(condition.keyword()), isAreaCodeInList(condition.areaCodeList()),
-				canExecuteTrade(condition.registerType()), hasRegisterType(condition.registerType()))
+				canExecuteTrade(condition.registerType()), hasRegisterType(condition.registerType()),
+				isOwnedByUser(condition.userId()))
 			.fetchOne();
 	}
 
