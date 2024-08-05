@@ -5,6 +5,7 @@ import static com.e207.woojoobook.domain.extension.ExtensionStatus.*;
 import java.time.LocalDateTime;
 
 import com.e207.woojoobook.domain.rental.Rental;
+import com.querydsl.core.annotations.QueryInit;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,6 +25,7 @@ public class Extension {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@ManyToOne
+	@QueryInit({"user", "userbook.user"})
 	private Rental rental;
 	private LocalDateTime createdAt;
 	private ExtensionStatus extensionStatus;
@@ -32,7 +34,7 @@ public class Extension {
 	public Extension(Rental rental, LocalDateTime createdAt, ExtensionStatus extensionStatus) {
 		this.rental = rental;
 		this.createdAt = createdAt;
-		this.extensionStatus = OFFERING;
+		this.extensionStatus = extensionStatus;
 	}
 
 	public void respond(boolean isApproved) {

@@ -1,5 +1,6 @@
 package com.e207.woojoobook.api.extension;
 
+import static com.e207.woojoobook.domain.extension.ExtensionStatus.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
@@ -20,7 +21,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import com.e207.woojoobook.api.extension.request.ExtensionRespondRequest;
 import com.e207.woojoobook.domain.extension.Extension;
 import com.e207.woojoobook.domain.extension.ExtensionRepository;
-import com.e207.woojoobook.domain.extension.ExtensionStatus;
 import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.rental.RentalRepository;
 import com.e207.woojoobook.domain.user.User;
@@ -86,7 +86,7 @@ class ExtensionServiceTest {
 	}
 
 	@DisplayName("도서 소유자가 연장신청에 대해 수락할 경우 반납일이 7일이 늘어난다")
-	// @Test
+		// @Test
 	void extensionRespond() {
 		// given
 		Rental save = createRental();
@@ -103,7 +103,7 @@ class ExtensionServiceTest {
 		assertTrue(byId.isPresent());
 		LocalDateTime endDate = byId.get().getRental().getEndDate();
 		long days = ChronoUnit.DAYS.between(currentEndDate, endDate);
-		assertEquals(byId.get().getExtensionStatus(), ExtensionStatus.APPROVED);
+		assertEquals(byId.get().getExtensionStatus(), APPROVED);
 		assertEquals(days, 7);
 	}
 
@@ -128,6 +128,7 @@ class ExtensionServiceTest {
 		Extension build = Extension.builder()
 			.rental(save)
 			.createdAt(LocalDateTime.now())
+			.extensionStatus(OFFERING)
 			.build();
 		Extension extension = this.extensionRepository.save(build);
 		return extension;

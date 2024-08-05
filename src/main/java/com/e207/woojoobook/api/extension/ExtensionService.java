@@ -44,6 +44,7 @@ public class ExtensionService {
 		Extension extension = Extension.builder()
 			.rental(rental)
 			.createdAt(LocalDateTime.now())
+			.extensionStatus(OFFERING)
 			.build();
 
 		Extension save = this.extensionRepository.save(extension);

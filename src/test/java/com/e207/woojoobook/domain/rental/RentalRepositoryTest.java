@@ -93,10 +93,10 @@ class RentalRepositoryTest {
 		Page<Rental> result = rentalRepository.findByStatusAndUserCondition(me.getId(), OFFERING, RECEIVER,
 			PageRequest.of(0, 10));
 
-		List<Rental> exchanges = result.getContent();
-		assertRentalWithRentalStatus(exchanges, 1, OFFERING);
+		List<Rental> rentals = result.getContent();
+		assertRentalWithRentalStatus(rentals, 1, OFFERING);
 
-		Userbook receiverBook = exchanges.get(0).getUserbook();
+		Userbook receiverBook = rentals.get(0).getUserbook();
 		assertThatUserbookMatchExactly(receiverBook, mine);
 	}
 
@@ -124,8 +124,8 @@ class RentalRepositoryTest {
 			PageRequest.of(0, 10));
 
 		///then
-		List<Rental> exchanges = result.getContent();
-		assertRentalWithRentalStatus(exchanges, 2, OFFERING);
+		List<Rental> rentals = result.getContent();
+		assertRentalWithRentalStatus(rentals, 2, OFFERING);
 	}
 
 	@DisplayName("거절당한 대여 신청 목록을 조회한다.")
@@ -152,10 +152,10 @@ class RentalRepositoryTest {
 			PageRequest.of(0, 10));
 
 		///then
-		List<Rental> exchanges = result.getContent();
-		assertRentalWithRentalStatus(exchanges, 1, REJECTED);
+		List<Rental> rentals = result.getContent();
+		assertRentalWithRentalStatus(rentals, 1, REJECTED);
 
-		Userbook receiverBook = exchanges.get(0).getUserbook();
+		Userbook receiverBook = rentals.get(0).getUserbook();
 		assertThatUserbookMatchExactly(receiverBook, userbook);
 	}
 
@@ -183,10 +183,10 @@ class RentalRepositoryTest {
 			PageRequest.of(0, 10));
 
 		///then
-		List<Rental> exchanges = result.getContent();
-		assertRentalWithRentalStatus(exchanges, 1, REJECTED);
+		List<Rental> rentals = result.getContent();
+		assertRentalWithRentalStatus(rentals, 1, REJECTED);
 
-		Userbook receiverBook = exchanges.get(0).getUserbook();
+		Userbook receiverBook = rentals.get(0).getUserbook();
 		assertThatUserbookMatchExactly(receiverBook, mine);
 	}
 
@@ -214,8 +214,8 @@ class RentalRepositoryTest {
 			PageRequest.of(0, 10));
 
 		///then
-		List<Rental> exchanges = result.getContent();
-		assertRentalWithRentalStatus(exchanges, 2, REJECTED);
+		List<Rental> rentals = result.getContent();
+		assertRentalWithRentalStatus(rentals, 2, REJECTED);
 	}
 
 	@DisplayName("대여 중인 목록을 조회한다.")
@@ -242,10 +242,10 @@ class RentalRepositoryTest {
 			PageRequest.of(0, 10));
 
 		///then
-		List<Rental> exchanges = result.getContent();
-		assertRentalWithRentalStatus(exchanges, 1, IN_PROGRESS);
+		List<Rental> rentals = result.getContent();
+		assertRentalWithRentalStatus(rentals, 1, IN_PROGRESS);
 
-		Userbook receiverBook = exchanges.get(0).getUserbook();
+		Userbook receiverBook = rentals.get(0).getUserbook();
 		assertThatUserbookMatchExactly(receiverBook, userbook);
 	}
 
@@ -273,10 +273,10 @@ class RentalRepositoryTest {
 			PageRequest.of(0, 10));
 
 		///then
-		List<Rental> exchanges = result.getContent();
-		assertRentalWithRentalStatus(exchanges, 1, IN_PROGRESS);
+		List<Rental> rentals = result.getContent();
+		assertRentalWithRentalStatus(rentals, 1, IN_PROGRESS);
 
-		Userbook receiverBook = exchanges.get(0).getUserbook();
+		Userbook receiverBook = rentals.get(0).getUserbook();
 		assertThatUserbookMatchExactly(receiverBook, mine);
 	}
 
@@ -304,8 +304,8 @@ class RentalRepositoryTest {
 			PageRequest.of(0, 10));
 
 		///then
-		List<Rental> exchanges = result.getContent();
-		assertRentalWithRentalStatus(exchanges, 2, IN_PROGRESS);
+		List<Rental> rentals = result.getContent();
+		assertRentalWithRentalStatus(rentals, 2, IN_PROGRESS);
 	}
 
 	@DisplayName("대여했던 목록을 조회한다.")
@@ -332,10 +332,10 @@ class RentalRepositoryTest {
 			PageRequest.of(0, 10));
 
 		///then
-		List<Rental> exchanges = result.getContent();
-		assertRentalWithRentalStatus(exchanges, 1, COMPLETED);
+		List<Rental> rentals = result.getContent();
+		assertRentalWithRentalStatus(rentals, 1, COMPLETED);
 
-		Userbook receiverBook = exchanges.get(0).getUserbook();
+		Userbook receiverBook = rentals.get(0).getUserbook();
 		assertThatUserbookMatchExactly(receiverBook, userbook);
 	}
 
@@ -363,10 +363,10 @@ class RentalRepositoryTest {
 			PageRequest.of(0, 10));
 
 		///then
-		List<Rental> exchanges = result.getContent();
-		assertRentalWithRentalStatus(exchanges, 1, COMPLETED);
+		List<Rental> rentals = result.getContent();
+		assertRentalWithRentalStatus(rentals, 1, COMPLETED);
 
-		Userbook receiverBook = exchanges.get(0).getUserbook();
+		Userbook receiverBook = rentals.get(0).getUserbook();
 		assertThatUserbookMatchExactly(receiverBook, mine);
 	}
 
@@ -394,8 +394,8 @@ class RentalRepositoryTest {
 			PageRequest.of(0, 10));
 
 		///then
-		List<Rental> exchanges = result.getContent();
-		assertRentalWithRentalStatus(exchanges, 2, COMPLETED);
+		List<Rental> rentals = result.getContent();
+		assertRentalWithRentalStatus(rentals, 2, COMPLETED);
 	}
 
 	private User createUser(String nickname) {
