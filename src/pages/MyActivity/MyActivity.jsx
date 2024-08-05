@@ -6,6 +6,7 @@ import Proceed from './Proceed'
 import History from './History'
 import { MdPendingActions } from "react-icons/md";
 import { AuthContext } from "../../contexts/AuthContext"
+import styles from './MyActivity.module.css'
 
 const MyActivity = () => {
   const navigate = useNavigate()
@@ -80,15 +81,26 @@ const MyActivity = () => {
     <>
       <Header />
       <main>
-        <div>
+        <div className={styles.titleDiv}>
           <MdPendingActions /> 내 활동
         </div>
-        <div>
-          <button onClick={() => setActiveContent('proceed')}>진행 중</button>
-          <button onClick={() => setActiveContent('history')}>히스토리</button>
+        <div className={styles.contentDiv}>
+          <div className={styles.buttons}>
+            <button
+              className={`${styles.tab} ${activeContent === 'proceed' ? styles.active : ''}`}
+              onClick={() => setActiveContent('proceed')}
+            >
+              진행 중
+            </button>
+            <button
+              className={`${styles.tab} ${activeContent === 'history' ? styles.active : ''}`}
+              onClick={() => setActiveContent('history')}
+            >
+              히스토리
+            </button>
+          </div>
+          {renderContent()}
         </div>
-
-        {renderContent()}
       </main>
   </>
   )

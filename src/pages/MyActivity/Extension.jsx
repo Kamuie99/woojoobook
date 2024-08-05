@@ -3,7 +3,14 @@ import Swal from 'sweetalert2'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import axiosInstance from '../../util/axiosConfig'
 import ListComponent from './ListComponent'
+import Modal from '../BookRegister/Modal'
 import styles from './Extension.module.css'
+
+const MODAL_TYPES = {
+  EXTENSION_REQUEST: 'EXTENSION_REQUEST',
+  RECEIVED_REQUEST: 'RECEIVED_REQUEST',
+  REJECTED_REQUEST: 'REJECTED_REQUEST'
+};
 
 const Extension = () => {
   const [extensionRequests, setExtensionRequests] = useState([]);
@@ -15,6 +22,9 @@ const Extension = () => {
   const [extensionRequestsPage, setExtensionRequestsPage] = useState(0);
   const [receivedExtensionRequestsPage, setReceivedExtensionRequestsPage] = useState(0);
   const [rejectedExtensionRequestsPage, setRejectedExtensionRequestsPage] = useState(0);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null);
 
   useEffect(() => {
     fetchExtensionList()
@@ -48,21 +58,23 @@ const Extension = () => {
           }
         })
       ])
-      setExtensionRequests(prev => [...prev, ...response1.data.content])
-      setExtensionRequestsCnt(response1.data.totalElements)
-      setExtensionRequestsPage(1)
-      
-      setReceivedExtensionRequests(prev => [...prev, ...response2.data.content])
-      setReceivedExtensionRequestsCnt(response2.data.totalElements)
-      setReceivedExtensionRequestsPage(1)
-      
-      setRejectedExtensionRequests(prev => [...prev, ...response3.data.content])
-      setRejectedExtensionRequestsCnt(response3.data.totalElements)
-      setRejectedExtensionRequestsPage(1)
+      updateStateWithoutDuplicates(setExtensionRequests, response1.data.content, setExtensionRequestsCnt, setExtensionRequestsPage, response1.data.totalElements)
+      updateStateWithoutDuplicates(setReceivedExtensionRequests, response2.data.content, setReceivedExtensionRequestsCnt, setReceivedExtensionRequestsPage, response2.data.totalElements)
+      updateStateWithoutDuplicates(setRejectedExtensionRequests, response3.data.content, setRejectedExtensionRequestsCnt, setRejectedExtensionRequestsPage, response3.data.totalElements)
     } catch (error) {
       console.log(error)
     }
   }
+
+  const updateStateWithoutDuplicates = (setter, newItems, countSetter, pageSetter, totalElements) => {
+    setter(prevItems => {
+      const existingIds = new Set(prevItems.map(item => item.id));
+      const uniqueNewItems = newItems.filter(item => !existingIds.has(item.id));
+      return [...prevItems, ...uniqueNewItems];
+    });
+    countSetter(totalElements);
+    pageSetter(1);
+  };
 
   const fetchExtensionRequests = async (reset = false) => {
     try {
@@ -181,6 +193,7 @@ const Extension = () => {
             title: "연장 신청을 취소했습니다",
             icon: "success"
           })
+          closeModal()
         } catch (error) {
           console.log(error)
         }
@@ -209,6 +222,7 @@ const Extension = () => {
               title: "연장신청을 수락했습니다.",
               icon: "success"
             })
+            closeModal()
           } catch (error) {
             console.log(error)
           }
@@ -234,6 +248,7 @@ const Extension = () => {
               title: "연장신청을 거절했습니다.",
               icon: "warning"
             })
+            closeModal()
           } catch (error) {
             console.log(error)
           }     
@@ -242,9 +257,89 @@ const Extension = () => {
     }
   }
 
+  const openModal = (item, type) => {
+    setSelectedItem(item);
+    setModalType(type);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedItem(null);
+    setModalType(null);
+    setIsModalOpen(false);
+  };
+
+  const renderModalContent = () => {
+    if (!selectedItem) return null;
+
+    switch (modalType) {
+      case MODAL_TYPES.EXTENSION_REQUEST:
+        return (
+          <>
+            <div className={styles.modalBook}>
+              <div className={styles.modalBookImg}>
+                <img src={selectedItem.rentalResponse.userbook.bookInfo.thumbnail} alt=""/>
+              </div>
+              <div className={styles.modalBookInfo}>
+                <h2>제목</h2>
+                <p>{selectedItem.rentalResponse.userbook.bookInfo.title}</p>
+                <h2>저자</h2>
+                <p>{selectedItem.rentalResponse.userbook.bookInfo.author}</p>
+                <h2>소유자</h2>
+                <p>{selectedItem.rentalResponse.userbook.ownerInfo.nickname}</p>
+              </div>
+            </div>
+            <div className={styles.rentalInfo}>
+              <h2>반납 예정일</h2>
+              <p>{selectedItem.rentalResponse.endDate.split('T')[0]}</p>
+            </div>
+            <button className={styles.modalButton} onClick={() => handleCancelExtension(selectedItem.id)}>신청취소</button>
+          </>
+        );
+      case MODAL_TYPES.RECEIVED_REQUEST:
+        return (
+          <>
+            <div className={styles.modalBook}>
+              <div className={styles.modalBookImg}>
+                <img src={selectedItem.rentalResponse.userbook.bookInfo.thumbnail} alt=""/>
+              </div>
+              <div className={styles.modalBookInfo}>
+                <h2>제목</h2>
+                <p>{selectedItem.rentalResponse.userbook.bookInfo.title}</p>
+                <h2>저자</h2>
+                <p>{selectedItem.rentalResponse.userbook.bookInfo.author}</p>
+              </div>
+            </div>
+            <div className={styles.rentalInfo}>
+              <h2>신청자</h2>
+              <p>{selectedItem.rentalResponse.user.nickname}</p>
+              <h2>반납 예정일</h2>
+              <p>{selectedItem.rentalResponse.endDate.split('T')[0]}</p>
+            </div>
+            <div className={styles.buttons}>
+              <button className={styles.modalButton} onClick={() => handleAccept(selectedItem.id, true)}>수락</button>
+              <button className={styles.modalButton} onClick={() => handleAccept(selectedItem.id, false)}>거절</button>
+            </div>
+          </>
+        );
+      // case MODAL_TYPES.REJECTED_REQUEST:
+      //   return (
+      //     <>
+      //       <h2>{selectedItem.rentalResponse.userbook.bookInfo.title}</h2>
+      //     </>
+      //   );
+      default:
+        return null;
+    }
+  }
+
   return (
     <div className={styles.extensionContainer}>
       <h2>연장 신청한 목록 (총 {extensionRequestsCnt}개)</h2>
+      <div className={styles.listHeader}>
+        <div>제목</div>
+        <div>소유자</div>
+      </div>
       <InfiniteScroll
         dataLength={extensionRequests.length}
         next={loadMoreExtensionRequests}
@@ -256,16 +351,19 @@ const Extension = () => {
           items={extensionRequests}
           emptyMessage="목록이 없습니다"
           renderItem={(item) => (
-            <>
+            <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.EXTENSION_REQUEST)} style={{cursor: 'pointer'}}>
               <div>{item.rentalResponse.userbook.bookInfo.title}</div>
               <div>{item.rentalResponse.userbook.ownerInfo.nickname}</div>
-              <div><button onClick={() => handleCancelExtension(item.id)}>신청취소</button></div>
-            </>
+            </div>
           )}
         />
       </InfiniteScroll>
 
       <h2>연장 신청 받은 목록 (총 {receivedExtensionRequestsCnt}개)</h2>
+      <div className={styles.listHeader}>
+        <div>제목</div>
+        <div>신청자</div>
+      </div>
       <InfiniteScroll
         dataLength={receivedExtensionRequests.length}
         next={loadMoreReceivedExtensionRequests}
@@ -277,18 +375,19 @@ const Extension = () => {
           items={receivedExtensionRequests}
           emptyMessage="목록이 없습니다"
           renderItem={(item) => (
-            <>
+            <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{cursor: 'pointer'}}>
               <div>{item.rentalResponse.userbook.bookInfo.title}</div>
               <div>{item.rentalResponse.user.nickname}</div>
-              <div><button onClick={() => handleAccept(item.id, true)}>수락</button></div>
-              <div><button onClick={() => handleAccept(item.id, false)}>거절</button></div>
-            </>
+            </div>
           )}
 
         />
       </InfiniteScroll>
       
       <h2>연장 신청 거절 당한 목록 (총 {rejectedExtensionRequestsCnt}개)</h2>
+      <div className={styles.listHeader}>
+        <div>제목</div>
+      </div>
       <InfiniteScroll
         dataLength={rejectedExtensionRequests.length}
         next={loadMoreRejectedExtensionRequests}
@@ -300,12 +399,20 @@ const Extension = () => {
           items={rejectedExtensionRequests}
           emptyMessage="목록이 없습니다"
           renderItem={(item) => (
-            <>
+            <div className={styles.listItem}>
               <div>{item.rentalResponse.userbook.bookInfo.title}</div>
-            </>
+            </div>
           )}
         />
       </InfiniteScroll>
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="상세 정보"
+      >
+        {renderModalContent()}
+      </Modal>
     </div>
   )
 }

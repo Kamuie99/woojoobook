@@ -1,0 +1,33 @@
+.titleDiv {
+  padding: 10px 20px;
+  font-size: 22px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+}
+
+.contentDiv {
+  padding: 0 20px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.tab.active {
+  background-color: var(--accent-color);
+  color: white;
+}

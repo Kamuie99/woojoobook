@@ -1,9 +1,96 @@
 .historyContainer {
-  padding: 20px;
+  padding: 10px 0;
 }
 
 .emptyList {
   text-align: center;
   padding: 20px;
   color: #888;
+}
+
+.listItem {
+  width: 100%;
+  padding: 0 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.modalBook {
+  display: flex;
+  margin-bottom: 30px;
+}
+
+.exModalBook {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.modalBookImg {
+  width: 50%;
+}
+
+.modalBookInfo {
+  width: 50%;
+  padding: 0 20px;
+}
+
+.modalBookInfo h2 {
+  margin: 15px 0 5px 0;
+  font-weight: bold;
+}
+
+.modalBookImg img {
+  width: 100%;
+  object-fit: cover;
+}
+
+.rentalInfo {
+  margin-bottom: 30px;
+}
+
+.rentalInfo h2 {
+  margin: 15px 0 5px 0;
+  font-weight: bold;
+}
+
+.senderBook, .receiverBook {
+  width: 45%;
+}
+
+.senderBook img, .receiverBook img {
+  width: 100%;
+  object-fit: cover;
+}
+
+.receiverBook {
+  text-align: right;
+}
+
+.receiverBook > * {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.receiverBook img {
+  margin-left: auto;
+}
+
+.modalBook h2, .exchangeInfo h2{
+  margin: 15px 0 5px 0;
+  font-weight: bold;
+}
+
+.exchangeBook {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.listHeader {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  padding: 10px 20px;
 }

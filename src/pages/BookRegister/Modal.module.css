@@ -28,9 +28,14 @@
 }
 
 .closeButton {
+  position: sticky;
+  top: 0;
+  float: right;
+  background-color: white;
+  border: none;
   padding: 10px;
-  font-size: 16px;
+  font-size: 30px;
   cursor: pointer;
-  margin-top: 10px;
   align-self: center;
+  z-index: 1;
 }

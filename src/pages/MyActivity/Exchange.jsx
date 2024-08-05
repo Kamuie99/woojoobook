@@ -3,7 +3,14 @@ import Swal from 'sweetalert2'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import axiosInstance from '../../util/axiosConfig'
 import ListComponent from './ListComponent'
+import Modal from '../BookRegister/Modal'
 import styles from './Exchange.module.css'
+
+const MODAL_TYPES = {
+  EXCHANGE_REQUEST: 'EXCHANGE_REQUEST',
+  RECEIVED_REQUEST: 'RECEIVED_REQUEST',
+  REJECTED_REQUEST: 'REJECTED_REQUEST'
+};
 
 const Exchange = () => {
   const [exchangeRequests, setExchangeRequests] = useState([]);
@@ -15,6 +22,9 @@ const Exchange = () => {
   const [exchangeRequestsPage, setExchangeRequestsPage] = useState(0);
   const [receivedExchangeRequestsPage, setReceivedExchangeRequestsPage] = useState(0);
   const [rejectedExchangeRequestsPage, setRejectedExchangeRequestsPage] = useState(0);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null);
 
   useEffect(() => {
     fetchExchangeList()
@@ -48,21 +58,23 @@ const Exchange = () => {
           }
         })
       ])
-      setExchangeRequests(prev => [...prev, ...response1.data.content])
-      setExchangeRequestsCnt(response1.data.totalElements)
-      setExchangeRequestsPage(1)
-
-      setReceivedExchangeRequests(prev => [...prev, ...response2.data.content])
-      setReceivedExchangeRequestsCnt(response2.data.totalElements)
-      setReceivedExchangeRequestsPage(1)
-      
-      setRejectedExchangeRequests(prev => [...prev, ...response3.data.content])
-      setRejectedExchangeRequestsCnt(response3.data.totalElements)
-      setRejectedExchangeRequestsPage(1)
+      updateStateWithoutDuplicates(setExchangeRequests, response1.data.content, setExchangeRequestsCnt, setExchangeRequestsPage, response1.data.totalElements)
+      updateStateWithoutDuplicates(setReceivedExchangeRequests, response2.data.content, setReceivedExchangeRequestsCnt, setReceivedExchangeRequestsPage, response2.data.totalElements)
+      updateStateWithoutDuplicates(setRejectedExchangeRequests, response3.data.content, setRejectedExchangeRequestsCnt, setRejectedExchangeRequestsPage, response3.data.totalElements)
     } catch (error) {
       console.log(error)
     }
   }
+
+  const updateStateWithoutDuplicates = (setter, newItems, countSetter, pageSetter, totalElements) => {
+    setter(prevItems => {
+      const existingIds = new Set(prevItems.map(item => item.id));
+      const uniqueNewItems = newItems.filter(item => !existingIds.has(item.id));
+      return [...prevItems, ...uniqueNewItems];
+    });
+    countSetter(totalElements);
+    pageSetter(1);
+  };
 
   const fetchExchangeRequests = async (reset = false) => {
     try {
@@ -182,6 +194,7 @@ const Exchange = () => {
             title: "교환 신청을 취소했습니다",
             icon: "success"
           })
+          closeModal()
         } catch (error) {
           console.log(error)
         }
@@ -210,6 +223,7 @@ const Exchange = () => {
               title: "교환신청을 수락했습니다.",
               icon: "success"
             })
+            closeModal()
           } catch (error) {
             console.log(error)
           }
@@ -235,6 +249,7 @@ const Exchange = () => {
               title: "교환신청을 거절했습니다.",
               icon: "warning"
             })
+            closeModal()
           } catch (error) {
             console.log(error)
           }
@@ -243,9 +258,96 @@ const Exchange = () => {
     }
   }
 
+  const openModal = (item, type) => {
+    setSelectedItem(item);
+    setModalType(type);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedItem(null);
+    setModalType(null);
+    setIsModalOpen(false);
+  };
+
+  const renderModalContent = () => {
+    if (!selectedItem) return null;
+
+    switch (modalType) {
+      case MODAL_TYPES.EXCHANGE_REQUEST:
+        return (
+          <>
+            <div className={styles.modalBook}>
+              <div className={styles.senderBook}>
+                <p>상대 책</p>
+                <img src={selectedItem.receiverBook.bookInfo.thumbnail} alt="" />
+                <h2>제목</h2>
+                <p>{selectedItem.receiverBook.bookInfo.title}</p>
+                <h2>저자</h2>
+                <p>{selectedItem.receiverBook.bookInfo.author}</p>
+                <h2>소유자</h2>
+                <p>{selectedItem.receiverBook.ownerInfo.nickname}</p>
+              </div>
+              <div className={styles.receiverBook}>
+                <p>내 책</p>
+                <img src={selectedItem.senderBook.bookInfo.thumbnail} alt="" />
+                <h2>제목</h2>
+                <p>{selectedItem.senderBook.bookInfo.title}</p>
+                <h2>저자</h2>
+                <p>{selectedItem.senderBook.bookInfo.author}</p>
+              </div>
+            </div>
+            <button className={styles.modalButton} onClick={() => handleCancelExchange(selectedItem.id)}>신청취소</button>
+          </>
+        );
+      case MODAL_TYPES.RECEIVED_REQUEST:
+        return (
+          <>
+            <div className={styles.modalBook}>
+              <div className={styles.senderBook}>
+                <p>상대 책</p>
+                <img src={selectedItem.senderBook.bookInfo.thumbnail} alt="" />
+                <h2>제목</h2>
+                <p>{selectedItem.senderBook.bookInfo.title}</p>
+                <h2>저자</h2>
+                <p>{selectedItem.senderBook.bookInfo.author}</p>
+                <h2>소유자</h2>
+                <p>{selectedItem.senderBook.ownerInfo.nickname}</p>
+              </div>
+              <div className={styles.receiverBook}>
+                <p>내 책</p>
+                <img src={selectedItem.receiverBook.bookInfo.thumbnail} alt="" />
+                <h2>제목</h2>
+                <p>{selectedItem.receiverBook.bookInfo.title}</p>
+                <h2>저자</h2>
+                <p>{selectedItem.receiverBook.bookInfo.author}</p>
+              </div>
+            </div>
+            <div className={styles.buttons}>
+              <button className={styles.modalButton} onClick={() => handleAccept(selectedItem.id, true)}>수락</button>
+              <button className={styles.modalButton} onClick={() => handleAccept(selectedItem.id, false)}>거절</button>
+            </div>
+          </>
+        );
+      // case MODAL_TYPES.REJECTED_REQUEST:
+      //   return (
+      //     <>
+      //       <div>{item.senderBook.bookInfo.title}</div>
+      //       <div>{item.receiverBook.bookInfo.title}</div>
+      //     </>
+      //   );
+      default:
+        return null;
+    }
+  }
+
   return (
     <div className={styles.exchangeContainer}>
       <h2>교환 신청한 목록 (총 {exchangeRequestsCnt}개)</h2>
+      <div className={styles.listHeader}>
+        <div>상대 책</div>
+        <div>내 책</div>
+      </div>
       <InfiniteScroll
         dataLength={exchangeRequests.length}
         next={loadMoreExchangeRequests}
@@ -257,17 +359,19 @@ const Exchange = () => {
           items={exchangeRequests}
           emptyMessage="목록이 없습니다"
           renderItem={(item) => (
-            <>
-              <div>{item.senderBook.bookInfo.title}</div>
-              <div>{item.receiverBook.bookInfo.title}</div>
-              <div>{item.receiverBook.ownerInfo.nickname}</div>
-              <div><button onClick={() => handleCancelExchange(item.id)}>신청취소</button></div>
-            </>
+            <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.EXCHANGE_REQUEST)} style={{cursor: 'pointer'}}>
+              <div className={styles.senderBook}>{item.receiverBook.bookInfo.title}</div>
+              <div className={styles.receiverBook}>{item.senderBook.bookInfo.title}</div>
+            </div>
           )}
         />
       </InfiniteScroll>
 
       <h2>교환 신청 받은 목록 (총 {receivedExchangeRequestsCnt}개)</h2>
+      <div className={styles.listHeader}>
+        <div>상대 책</div>
+        <div>내 책</div>
+      </div>
       <InfiniteScroll
         dataLength={receivedExchangeRequests.length}
         next={loadMoreReceivedExchangeRequests}
@@ -279,18 +383,19 @@ const Exchange = () => {
           items={receivedExchangeRequests}
           emptyMessage="목록이 없습니다"
           renderItem={(item) => (
-            <>
-              <div>{item.receiverBook.bookInfo.title}</div>
-              <div>{item.senderBook.bookInfo.title}</div>
-              <div>{item.senderBook.ownerInfo.nickname}</div>
-              <div><button onClick={() => handleAccept(item.id, true)}>수락</button></div>
-              <div><button onClick={() => handleAccept(item.id, false)}>거절</button></div>
-            </>
+            <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{cursor: 'pointer'}}>
+              <div className={styles.senderBook}>{item.senderBook.bookInfo.title}</div>
+              <div className={styles.receiverBook}>{item.receiverBook.bookInfo.title}</div>
+            </div>
           )}
         />
       </InfiniteScroll>
       
       <h2>교환 신청 거절 당한 내역</h2>
+      <div className={styles.listHeader}>
+        <div>상대 책</div>
+        <div>내 책</div>
+      </div>
       <InfiniteScroll
         dataLength={rejectedExchangeRequests.length}
         next={loadMoreRejectedExchangeRequests}
@@ -302,13 +407,21 @@ const Exchange = () => {
           items={rejectedExchangeRequests}
           emptyMessage="목록이 없습니다"
           renderItem={(item) => (
-            <>
-              <div>{item.senderBook.bookInfo.title}</div>
-              <div>{item.receiverBook.bookInfo.title}</div>
-            </>
+            <div className={styles.exchangeBook}>
+              <div className={styles.senderBook}>{item.receiverBook.bookInfo.title}</div>
+              <div className={styles.receiverBook}>{item.senderBook.bookInfo.title}</div>
+            </div>
           )}
         />
       </InfiniteScroll>
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="상세 정보"
+      >
+        {renderModalContent()}
+      </Modal>
     </div>
   )
 }

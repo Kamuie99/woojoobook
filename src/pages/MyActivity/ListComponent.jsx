@@ -7,9 +7,7 @@ const ListComponent = ({ items, renderItem, emptyMessage }) => {
       {items.length > 0 ? (
         items.map((item, index) => (
           <div key={index} className={styles.listItem}>
-            <div className={styles.listItemContent}>
-              {renderItem(item)}
-            </div>
+            {renderItem(item)}
           </div>
         ))
       ) : (

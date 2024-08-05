@@ -3,7 +3,15 @@ import Swal from 'sweetalert2'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import axiosInstance from '../../util/axiosConfig'
 import ListComponent from './ListComponent'
+import Modal from '../BookRegister/Modal'
 import styles from './Rental.module.css'
+
+const MODAL_TYPES = {
+  CURRENT_RENT: 'CURRENT_RENT',
+  RENTAL_REQUEST: 'RENTAL_REQUEST',
+  RECEIVED_REQUEST: 'RECEIVED_REQUEST',
+  REJECTED_REQUEST: 'REJECTED_REQUEST'
+};
 
 const Rental = () => {
   const [currentRent, setCurrentRent] = useState([]);
@@ -18,7 +26,10 @@ const Rental = () => {
   const [rentalRequestsPage, setRentalRequestsPage] = useState(0);
   const [receivedRentalRequestsPage, setReceivedRentalRequestsPage] = useState(0);
   const [rejectedRentalRequestsPage, setRejectedRentalRequestsPage] = useState(0);
-
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null);
+  
   useEffect(() => {
     fetchRentalList()
   }, [])
@@ -59,25 +70,24 @@ const Rental = () => {
           }
         })
       ])
-      setCurrentRent(prev => [...prev, ...response1.data.content])
-      setCurrentRentCnt(response1.data.totalElements)
-      setCurrentRentPage(1)
-  
-      setRentalRequests(prev => [...prev, ...response2.data.content])
-      setRentalRequestsCnt(response2.data.totalElements)
-      setRentalRequestsPage(1)
-  
-      setReceivedRentalRequests(prev => [...prev, ...response3.data.content])
-      setReceivedRentalRequestsCnt(response3.data.totalElements)
-      setReceivedRentalRequestsPage(1)
-      
-      setRejectedRentalRequests(prev => [...prev, ...response4.data.content])
-      setRejectedRentalRequestsCnt(response4.data.totalElements)
-      setRejectedRentalRequestsPage(1)
+      updateStateWithoutDuplicates(setCurrentRent, response1.data.content, setCurrentRentCnt, setCurrentRentPage, response1.data.totalElements);
+      updateStateWithoutDuplicates(setRentalRequests, response2.data.content, setRentalRequestsCnt, setRentalRequestsPage, response2.data.totalElements);
+      updateStateWithoutDuplicates(setReceivedRentalRequests, response3.data.content, setReceivedRentalRequestsCnt, setReceivedRentalRequestsPage, response3.data.totalElements);
+      updateStateWithoutDuplicates(setRejectedRentalRequests, response4.data.content, setRejectedRentalRequestsCnt, setRejectedRentalRequestsPage, response4.data.totalElements);
     } catch (error) {
       console.log(error)
     }
   }
+
+  const updateStateWithoutDuplicates = (setter, newItems, countSetter, pageSetter, totalElements) => {
+    setter(prevItems => {
+      const existingIds = new Set(prevItems.map(item => item.id));
+      const uniqueNewItems = newItems.filter(item => !existingIds.has(item.id));
+      return [...prevItems, ...uniqueNewItems];
+    });
+    countSetter(totalElements);
+    pageSetter(1);
+  };
 
   const fetchCurrentRent = async (reset = false) => {
     try {
@@ -216,34 +226,6 @@ const Rental = () => {
     fetchRejectedRentalRequests()
   }
 
-  const handleReturn = async (rentalId) => {
-    Swal.fire({
-      title: "반납하시겠습니까?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "반납하기",
-      cancelButtonText: "취소하기"
-    }).then(async (result) => {
-      // ERROR : (현) 책권자가 반납 확인하는 요청임
-      // 수정필요!!
-      if (result.isConfirmed) {
-        try {
-          await axiosInstance.put(`/rentals/${rentalId}/return`)
-          await fetchCurrentRent(true)
-          Swal.fire({
-            title: "반납이 완료되었습니다",
-            text: "이용해주셔서 감사합니다",
-            icon: "success"
-          })
-        } catch (error) {
-          console.log(error)
-        }
-      }
-    })
-  }
-
   const handleExtension = async (rentalId) => {
     Swal.fire({
       title: "연장 신청하시겠습니까?",
@@ -262,6 +244,7 @@ const Rental = () => {
             title: "연장신청이 완료되었습니다",
             icon: "success"
           })
+          closeModal()
         } catch (error) {
           console.log(error)
         }
@@ -287,6 +270,7 @@ const Rental = () => {
             title: "대여 신청을 취소했습니다",
             icon: "success"
           })
+          closeModal()
         } catch (error) {
           console.log(error)
         }
@@ -315,6 +299,7 @@ const Rental = () => {
               title: "대여 신청을 수락했습니다",
               icon: "success"
             })
+            closeModal()
           } catch (error) {
             console.log(error)
           }      
@@ -340,6 +325,7 @@ const Rental = () => {
               title: "대여 신청을 거절했습니다",
               icon: "success"
             })
+            closeModal()
           } catch (error) {
             console.log(error)
           }      
@@ -348,9 +334,108 @@ const Rental = () => {
     }
   }
 
+  const openModal = (item, type) => {
+    setSelectedItem(item);
+    setModalType(type);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedItem(null);
+    setModalType(null);
+    setIsModalOpen(false);
+  };
+
+  const renderModalContent = () => {
+    if (!selectedItem) return null;
+
+    switch (modalType) {
+      case MODAL_TYPES.CURRENT_RENT:
+        return (
+          <>
+            <div className={styles.modalBook}>
+              <div className={styles.modalBookImg}>
+                <img src={selectedItem.userbook.bookInfo.thumbnail} alt=""/>
+              </div>
+              <div className={styles.modalBookInfo}>
+                <h2>제목</h2>
+                <p>{selectedItem.userbook.bookInfo.title}</p>
+                <h2>저자</h2>
+                <p>{selectedItem.userbook.bookInfo.author}</p>
+                <h2>소유자</h2>
+                <p>{selectedItem.userbook.ownerInfo.nickname}</p>
+              </div>
+            </div>
+            <div className={styles.rentalInfo}>
+              <h2>대여 시작일</h2>
+              <p>{selectedItem.startDate.split('T')[0]}</p>
+              <h2>대여 종료일</h2>
+              <p>{selectedItem.endDate.split('T')[0]}</p>
+            </div>
+            <button className={styles.modalButton} onClick={() => handleExtension(selectedItem.id)}>연장 신청</button>
+          </>
+        );
+      case MODAL_TYPES.RENTAL_REQUEST:
+        return (
+          <>
+            <div className={styles.modalBook}>
+              <div className={styles.modalBookImg}>
+                <img src={selectedItem.userbook.bookInfo.thumbnail} alt=""/>
+              </div>
+              <div className={styles.modalBookInfo}>
+                <h2>제목</h2>
+                <p>{selectedItem.userbook.bookInfo.title}</p>
+                <h2>저자</h2>
+                <p>{selectedItem.userbook.bookInfo.author}</p>
+                <h2>소유자</h2>
+                <p>{selectedItem.userbook.ownerInfo.nickname}</p>
+              </div>
+            </div>
+            <button className={styles.modalButton} onClick={() => handleCancelRental(selectedItem.id)}>신청취소</button>
+          </>
+        );
+      case MODAL_TYPES.RECEIVED_REQUEST:
+        return (
+          <>
+            <div className={styles.modalBook}>
+              <div className={styles.modalBookImg}>
+                <img src={selectedItem.userbook.bookInfo.thumbnail} alt=""/>
+              </div>
+              <div className={styles.modalBookInfo}>
+                <h2>제목</h2>
+                <p>{selectedItem.userbook.bookInfo.title}</p>
+                <h2>저자</h2>
+                <p>{selectedItem.userbook.bookInfo.author}</p>
+              </div>
+            </div>
+            <div className={styles.rentalInfo}>
+              <h2>신청자</h2>
+              <p>{selectedItem.user.nickname}</p>
+            </div>
+            <div className={styles.buttons}>
+              <button className={styles.modalButton} onClick={() => handleAccept(selectedItem.id, true)}>수락</button>
+              <button className={styles.modalButton} onClick={() => handleAccept(selectedItem.id, false)}>거절</button>
+            </div>
+          </>
+        );
+      // case MODAL_TYPES.REJECTED_REQUEST:
+      //   return (
+      //     <>
+      //       <h2>{selectedItem.userbook.bookInfo.title}</h2>
+      //     </>
+      //   );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className={styles.rentalContainer}>
       <h2>대여 중인 목록 (총 {currentRentCnt}개)</h2>
+      <div className={styles.listHeader}>
+        <div>제목</div>
+        <div>소유자</div>
+      </div>
       <InfiniteScroll
         dataLength={currentRent.length}
         next={loadMoreCurrentRent}
@@ -362,17 +447,19 @@ const Rental = () => {
           items={currentRent}
           emptyMessage="목록이 없습니다"
           renderItem={(item) => (
-            <>
+            <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.CURRENT_RENT)} style={{cursor: 'pointer'}}>
               <div>{item.userbook.bookInfo.title}</div>
               <div>{item.userbook.ownerInfo.nickname}</div>
-              <div>{item.endDate}</div>
-              <div><button onClick={() => handleExtension(item.id)}>연장</button></div>
-            </>
+            </div>
           )}
         />
       </InfiniteScroll>
 
       <h2>대여 신청한 목록 (총 {rentalRequestsCnt}개)</h2>
+      <div className={styles.listHeader}>
+        <div>제목</div>
+        <div>소유자</div>
+      </div>
       <InfiniteScroll
         dataLength={rentalRequests.length}
         next={loadMoreRentalRequests}
@@ -384,17 +471,19 @@ const Rental = () => {
           items={rentalRequests}
           emptyMessage="목록이 없습니다"
           renderItem={(item) => (
-            <>
+            <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RENTAL_REQUEST)} style={{cursor: 'pointer'}}>
               <div>{item.userbook.bookInfo.title}</div>
               <div>{item.userbook.ownerInfo.nickname}</div>
-              <div>{item.startDate}</div>
-              <div><button onClick={() => handleCancelRental(item.id)}>신청취소</button></div>
-            </>
+            </div>
           )}
         />
       </InfiniteScroll>
 
       <h2>대여 신청 받은 목록 (총 {receivedRentalRequestsCnt}개)</h2>
+      <div className={styles.listHeader}>
+        <div>제목</div>
+        <div>신청자</div>
+      </div>
       <InfiniteScroll
         dataLength={receivedRentalRequests.length}
         next={loadMoreReceivedRentalRequests}
@@ -406,18 +495,18 @@ const Rental = () => {
           items={receivedRentalRequests}
           emptyMessage="목록이 없습니다"
           renderItem={(item) => (
-            <>
+            <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{cursor: 'pointer'}}>
               <div>{item.userbook.bookInfo.title}</div>
-              <div>{item.startDate}</div>
               <div>{item.user.nickname}</div>
-              <div><button onClick={() => handleAccept(item.id, true)}>수락</button></div>
-              <div><button onClick={() => handleAccept(item.id, false)}>거절</button></div>
-            </>
+            </div>
           )}
         />
       </InfiniteScroll>
 
       <h2>대여 신청 거절당한 목록 (총 {rejectedRentalRequestsCnt}개)</h2>
+      <div className={styles.listHeader}>
+        <div>제목</div>
+      </div>
       <InfiniteScroll
         dataLength={rejectedRentalRequests.length}
         next={loadMoreRejectedRentalRequests}
@@ -429,12 +518,20 @@ const Rental = () => {
           items={rejectedRentalRequests}
           emptyMessage="목록이 없습니다"
           renderItem={(item) => (
-            <>
+            <div className={styles.listItem}>
               <div>{item.userbook.bookInfo.title}</div>
-            </>
+            </div>
           )}
         />
       </InfiniteScroll>
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="상세 정보"
+      >
+        {renderModalContent()}
+      </Modal>
     </div>
   )
 }
