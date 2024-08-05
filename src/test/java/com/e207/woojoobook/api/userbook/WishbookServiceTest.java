@@ -77,20 +77,18 @@ class WishbookServiceTest {
 		this.wishUser = this.userRepository.save(user);
 
 		// 사용자 도서
-		Userbook build = Userbook.builder()
+		Userbook userbook = Userbook.builder()
 			.registerType(RegisterType.RENTAL_EXCHANGE)
 			.tradeStatus(TradeStatus.UNAVAILABLE)
 			.user(owner)
 			.build();
-		this.userbook = this.userbookRepository.save(build);
+		this.userbook = this.userbookRepository.save(userbook);
 
 		Wishbook wishBook = Wishbook.builder()
 			.user(wishUser)
-			.userbook(userbook)
+			.userbook(this.userbook)
 			.build();
-		Wishbook save = this.wishBookRepository.save(wishBook);
-		userbook.getWishbooks().add(save);
-		this.userbook = this.userbookRepository.save(userbook);
+		this.wishBookRepository.save(wishBook);
 	}
 
 	@DisplayName("관심 등록 되어있지 않은 사용자도서 관심 등록 요청")

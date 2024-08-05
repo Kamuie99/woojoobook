@@ -1,8 +1,5 @@
 package com.e207.woojoobook.domain.userbook;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.user.User;
 
@@ -14,7 +11,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,9 +30,6 @@ public class Userbook {
 	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	private User user;
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "userbook")
-	private List<Wishbook> wishbooks = new ArrayList<>();
 
 	@Enumerated(EnumType.STRING)
 	private RegisterType registerType;
