@@ -21,7 +21,7 @@ const TestPage = () => {
     <>
       <Header />
       <div>
-        <h1>렌탈 요청 테스트</h1>
+        <h1>교환 요청 테스트</h1>
         <button onClick={handleRentalOffer}>렌탈 신청</button>
         {rentalId && <p>Rental offer successful! Rental ID: {rentalId}</p>}
         {error && <p style={{color: 'red'}}>{error}</p>}

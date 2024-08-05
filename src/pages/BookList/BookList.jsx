@@ -9,7 +9,7 @@ import Header from "../../components/Header"
 import axiosInstance from './../../util/axiosConfig';
 import AreaSelector from "../../components/AreaSelector";
 import BookModal from './BookModal';
-import './BookList.css';
+import styles from './BookList.module.css';
 
 const BookList = () => {
   const { searchTerm: initialSearchTerm  } = useSearch();
@@ -22,21 +22,25 @@ const BookList = () => {
   const [selectedAreaCode, setSelectedAreaCode] = useState('');
   const [userAreaName, setUserAreaName] = useState('');
   const { user } = useContext(AuthContext);
-
   const [selectedBook, setSelectedBook] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   const fetchBooks = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const params = { keyword: searchTerm };
+      const params = { 
+        keyword: searchTerm,
+        page: currentPage,
+        size: 10
+      };
       if (selectedAreaCode) {
         params.areaCodeList = selectedAreaCode;
       }
-      console.log(selectedAreaCode)
       const response = await axiosInstance.get('/userbooks', { params });
-      console.log("API 응답:", response.data.content);
       setBooks(response.data.content);
+      setTotalPages(response.data.totalPages);
       return response.data.content;
     } catch (err) {
       setError('힝 실패했음...')
@@ -44,7 +48,7 @@ const BookList = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, selectedAreaCode]);
+  }, [searchTerm, selectedAreaCode, currentPage]);
 
   const fetchAreaName = useCallback(async (areaCode) => {
     if (areaCode) {
@@ -73,7 +77,7 @@ const BookList = () => {
         fetchAreaNames(fetchedBooks);
       }
     });
-  }, [fetchBooks]);
+  }, [fetchBooks, currentPage]);
 
   const fetchAreaNames = async (books) => {
     const areaPromises = books.map(book => 
@@ -94,6 +98,7 @@ const BookList = () => {
 
   const handleSearch = () => {
     setSearchTerm(inputValue);
+    setCurrentPage(0);
   };
 
   const handleInputChange = (e) => {
@@ -108,7 +113,8 @@ const BookList = () => {
 
   const handleAreaSelected = async (areaCode) => {
     setSelectedAreaCode(areaCode);
-    setBooks([]); // 지역이 변경되면 기존 책 목록을 초기화
+    setBooks([]);
+    setCurrentPage(0);
     const areaName = await fetchAreaName(areaCode);
     setUserAreaName(areaName);
   };
@@ -119,7 +125,11 @@ const BookList = () => {
 
   const closeModal = () => {
     setSelectedBook(null);
-    fetchBooks(); // 모달이 닫힐 때 책 목록을 다시 불러옴
+    fetchBooks();
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
   };
 
   const getQualityEmoticon = (qualityStatus) => {
@@ -141,16 +151,16 @@ const BookList = () => {
   return (
     <>
       <Header />
-      <div className="titleAndSearch">
-        <div className="titleDiv">
+      <div className={styles.titleAndSearch}>
+        <div className={styles.titleDiv}>
           <LuBookPlus /> 우주 도서 ({userAreaName || '지역 정보 로딩 중...'})
         </div>
       </div>
-      <div className="areaSelectorContainer">
+      <div className={styles.areaSelectorContainer}>
         <div>
           <AreaSelector onAreaSelected={handleAreaSelected} />
         </div>
-        <div className="bookSearchBox">
+        <div className={styles.searchBox}>
           <input
             type="text"
             value={inputValue}
@@ -162,49 +172,49 @@ const BookList = () => {
           <button onClick={handleSearch} style={{ padding: '5px 10px' }}>검색</button>
         </div>  
       </div>
-      <main className="BookListMain">
+      <main className={styles.main}>
         {loading && <p>로딩중...</p>}
         {error && <p>{error}</p>}
         {!loading && !error && (
           books.length > 0 ? (
-            <div className="booksList">
+            <div className={styles.list}>
               {books.map((book) => (
-                <div key={book.id} className="bookItem">
-                  <div className="bookImageContainer">
+                <div key={book.id} className={styles.item}>
+                  <div className={styles.imageContainer}>
                     <img 
                       src={getQualityEmoticon(book.qualityStatus)} 
                       alt={book.qualityStatus} 
-                      className="qualityEmoticon"
+                      className={styles.qualityEmoticon}
                     />
                     <img 
                       src={book.bookInfo.thumbnail} 
                       alt={book.bookInfo.title} 
-                      style={{ width: '100px' }} 
+                      style={{ width: '100px', height: '140px' }} 
                     />
                   </div>
-                  <div className="bookDescription" onClick={() => openModal(book)}>
+                  <div className={styles.description} onClick={() => openModal(book)}>
                     <h3>{book.bookInfo.title}</h3>
-                    <div className="liInnerBox">
+                    <div className={styles.innerBox}>
                       <p><strong>저자 |</strong> {truncateAuthor(book.bookInfo.author)}</p>
                       <p><strong>책권자 |</strong> {book.ownerInfo.nickname}</p>
                       <p>책 ID {book.id}</p>
                     </div>
-                    <div className="liInnerBox">
+                    <div className={styles.innerBox}>
                       <p><strong>출판사 |</strong> {book.bookInfo.publisher}</p>
                       <p><strong>출판일 |</strong> {book.bookInfo.publicationDate}</p>
                     </div>
-                    <div className="liInnerBox">
-                      {book.tradeStatus === 'RENTAL_AVAILABLE' && <p className="statusMessage">대여가능</p>}
-                      {book.tradeStatus === 'EXCHANGE_AVAILABLE' && <p className="statusMessage">교환가능</p>}
-                      {book.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE' && <p className="statusMessage">대여, 교환가능</p>}
+                    <div className={styles.innerBox}>
+                      {book.tradeStatus === 'RENTAL_AVAILABLE' && <p className={styles.statusMessage}>대여가능</p>}
+                      {book.tradeStatus === 'EXCHANGE_AVAILABLE' && <p className={styles.statusMessage}>교환가능</p>}
+                      {book.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE' && <p className={styles.statusMessage}>대여, 교환가능</p>}
                     </div>
                   </div>
-                  <div className="bookStatus">
-                    <div className="bookStatusIcon">
+                  <div className={styles.status}>
+                    <div className={styles.statusIcon}>
                       <button><CiHeart size={'35px'}/></button>
                     </div>
-                    <div className="bookStatusDong">
-                      <button className="bookregion">
+                    <div className={styles.statusDong}>
+                      <button className={styles.region}>
                         <FiMapPin  />{areaNames[book.areaCode] || '로딩 중...'}
                       </button>
                     </div>
@@ -217,6 +227,31 @@ const BookList = () => {
           )
         )}
       </main>
+      <div className={styles.pagination}>
+        <button 
+          onClick={() => handlePageChange(currentPage - 1)} 
+          disabled={currentPage === 0}
+        >
+          이전
+        </button>
+        
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index)}
+            disabled={currentPage === index}
+          >
+            {index + 1}
+          </button>
+        ))}
+        
+        <button 
+          onClick={() => handlePageChange(currentPage + 1)} 
+          disabled={currentPage === totalPages - 1}
+        >
+          다음
+        </button>
+      </div>
       {selectedBook && <BookModal book={selectedBook} onClose={closeModal} />}
     </>
   )

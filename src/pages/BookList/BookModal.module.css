@@ -1,4 +1,4 @@
-.modal-backdrop {
+.modalBackdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -11,7 +11,7 @@
   z-index: 1000;
 }
 
-.modal-content {
+.modalContent {
   background-color: white;
   padding: 20px;
   border-radius: 15px;
@@ -21,7 +21,7 @@
   overflow-y: auto;
 }
 
-.close-button {
+.closeButton {
   float: right;
   border: none;
   background: none;
@@ -29,24 +29,25 @@
   cursor: pointer;
 }
 
-.modal-body {
+.modalBody {
   display: flex;
   flex-direction: row;
   gap: 20px;
   margin-top: 20px;
 }
 
-.book-image-container {
+.bookImageContainer {
   position: relative;
   width: 200px;
 }
 
-.book-thumbnail {
+.bookThumbnail {
   width: 100%;
+  height: 75px;
   height: auto;
 }
 
-.quality-emoticon {
+.qualityEmoticon {
   position: absolute;
   bottom: -10px;
   right: -10px;
@@ -55,7 +56,7 @@
   z-index: 1;
 }
 
-.book-details {
+.bookDetails {
   padding: 20px;
   flex: 1;
   display: flex;
@@ -63,14 +64,14 @@
   gap: 20px;
 }
 
-.button-group {
+.buttonGroup {
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
   gap: 10px;
 }
 
-.button-group button {
+.buttonGroup button {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -79,45 +80,44 @@
   cursor: pointer;
 }
 
-.button-group button:hover {
+.buttonGroup button:hover {
   background-color: var(--accent-color);
 }
 
-.button-group button.disabled {
+.buttonGroup button.disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
 
-.button-group button.enabled {
+.buttonGroup button.enabled {
   background-color: var(--accent-sub-color);
   cursor: pointer;
 }
 
-.button-group button.enabled:hover {
+.buttonGroup button.enabled:hover {
   background-color: var(--accent-color);
 }
 
-.book-title {
+.bookTitle {
   font-size: 22px;
 }
 
-.book-info {
+.bookInfo {
   width: 100%;
   display: flex;
   flex-direction: row;
   gap: 30px;
 }
 
-.book-details strong {
+.bookDetails strong {
   color: var(--accent-color);
 }
 
-.special-user {
+.specialUser {
   color: var(--contrast-color) !important;
 }
 
-
-.tooltip-container {
+.tooltipContainer {
   position: relative;
   display: inline-block;
 }
@@ -139,7 +139,7 @@
   transition: opacity 0.3s;
 }
 
-.tooltip-container:hover .tooltip {
+.tooltipContainer:hover .tooltip {
   visibility: visible;
   opacity: 1;
 }

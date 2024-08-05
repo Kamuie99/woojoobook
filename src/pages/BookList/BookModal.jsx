@@ -1,13 +1,15 @@
 /* eslint-disable react/prop-types */
-import { useContext } from 'react';
-import './BookModal.css';
+import { useState, useContext } from 'react';
+import styles from './BookModal.module.css';
 import { getEmotionImage } from '../../util/get-emotion-image';
 import axiosInstance from '../../util/axiosConfig';
 import { AuthContext } from '../../contexts/AuthContext';
 import Swal from 'sweetalert2';
+import ExchangeModal from './ExchangeModal';
 
 const BookModal = ({ book, onClose }) => {
   const { user } = useContext(AuthContext);
+  const [showExchangeModal, setShowExchangeModal] = useState(false);
 
   const getQualityEmoticon = (qualityStatus) => {
     switch (qualityStatus) {
@@ -26,7 +28,7 @@ const BookModal = ({ book, onClose }) => {
 
   const handleExchangeRequest = () => {
     if (isExchangeEnabled && !isOwner) {
-      console.log('교환 신청');
+      setShowExchangeModal(true);
     }
   };
 
@@ -79,57 +81,63 @@ const BookModal = ({ book, onClose }) => {
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <button className="close-button" onClick={onClose}>×</button>
-        <div className="modal-body">
-          <div className="book-image-container">
-            <img src={book.bookInfo.thumbnail} alt={book.bookInfo.title} className="book-thumbnail" />
+    <div className={styles.modalBackdrop} onClick={onClose}>
+      <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+        <button className={styles.closeButton} onClick={onClose}>×</button>
+        <div className={styles.modalBody}>
+          <div className={styles.bookImageContainer}>
+            <img src={book.bookInfo.thumbnail} alt={book.bookInfo.title} className={styles.bookThumbnail} />
             <img 
               src={getQualityEmoticon(book.qualityStatus)} 
               alt={book.qualityStatus} 
-              className="quality-emoticon"
+              className={styles.qualityEmoticon}
             />
           </div>
-          <div className="book-details">
-            <h2 className='book-title'>{book.bookInfo.title}</h2>
+          <div className={styles.bookDetails}>
+            <h2 className={styles.bookTitle}>{book.bookInfo.title}</h2>
             <p><strong>줄거리 |</strong> {book.bookInfo.description}</p>
-            <div className='book-info'>
+            <div className={styles.bookInfo}>
               <p><strong>출판사 |</strong> {book.bookInfo.publisher}</p>
               <p><strong>출판일 |</strong> {book.bookInfo.publicationDate}</p>
             </div>
             <p><strong>저자 |</strong> {book.bookInfo.author}</p>
-            <p><strong className='special-user'>책권자 |</strong> {book.ownerInfo.nickname}</p>
+            <p><strong className={styles.specialUser}>책권자 |</strong> {book.ownerInfo.nickname}</p>
           </div>
         </div>
-        <div className="button-group">
-  {!isOwner && (
-    <>
-      <div className="tooltip-container">
-        <button 
-          onClick={handleRentalRequest} 
-          disabled={!isRentalEnabled}
-          className={isRentalEnabled ? 'enabled' : 'disabled'}
-        >
-          대여 신청
-        </button>
-        {!isRentalEnabled && <span className="tooltip">대여가 불가능한 도서입니다.</span>}
+        <div className={styles.buttonGroup}>
+          {!isOwner && (
+            <>
+              <div className={styles.tooltipContainer}>
+                <button 
+                  onClick={handleRentalRequest} 
+                  disabled={!isRentalEnabled}
+                  className={isRentalEnabled ? styles.enabled : styles.disabled}
+                >
+                  대여 신청
+                </button>
+                {!isRentalEnabled && <span className={styles.tooltip}>대여가 불가능한 도서입니다.</span>}
+              </div>
+              <div className={styles.tooltipContainer}>
+                <button 
+                  onClick={handleExchangeRequest} 
+                  disabled={!isExchangeEnabled}
+                  className={isExchangeEnabled ? styles.enabled : styles.disabled}
+                >
+                  교환 신청
+                </button>
+                {!isExchangeEnabled && <span className={styles.tooltip}>교환이 불가능한 도서입니다.</span>}
+              </div>
+            </>
+          )}
+          <button onClick={() => console.log('채팅하기')} className={styles.tochatButton}>채팅하기</button>
+        </div>
       </div>
-      <div className="tooltip-container">
-        <button 
-          onClick={handleExchangeRequest} 
-          disabled={!isExchangeEnabled}
-          className={isExchangeEnabled ? 'enabled' : 'disabled'}
-        >
-          교환 신청
-        </button>
-        {!isExchangeEnabled && <span className="tooltip">교환이 불가능한 도서입니다.</span>}
-      </div>
-    </>
-  )}
-  <button onClick={() => console.log('채팅하기')} className='tochatButton'>채팅하기</button>
-</div>
-      </div>
+      {showExchangeModal && (
+        <ExchangeModal 
+          receiverBook={book} 
+          onClose={() => setShowExchangeModal(false)} 
+        />
+      )}
     </div>
   );
 };

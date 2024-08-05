@@ -1,23 +1,23 @@
-.BookListMain {
+.main {
   padding: 20px;
-  height: calc(100vh - 200px); /* 100vh에서 헤더의 높이를 뺀 값으로 설정 */
-  overflow-y: auto; /* 세로 스크롤이 가능하도록 설정 */
+  height: calc(100vh - 240px);
+  overflow-y: auto;
 }
 
-.liInnerBox {
+.innerBox {
   display: flex;
   flex-direction: row;
   gap: 20px;
 }
 
-.booksList {
+.list {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
 }
 
-.bookItem {
+.item {
   display: flex;
   flex-direction: row;
   padding: 20px;
@@ -27,7 +27,7 @@
   justify-content: space-between;
 }
 
-.bookDescription {
+.description {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -36,17 +36,17 @@
   cursor: pointer;
 }
 
-.bookDescription > h3 {
+.description > h3 {
   font-size: 20px;
   font-weight: bolder;
 }
 
-.bookDescription strong {
+.description strong {
   font-weight: normal;
   color: var(--contrast-color);
 }
 
-.bookDescription > p > strong {
+.description > p > strong {
   color: var(--accent-sub-color);
 }
 
@@ -70,38 +70,38 @@
   justify-content: space-between;
 }
 
-.bookSearchBox > input {
+.searchBox > input {
   width: 200px;
   border-radius: 5px;
   border: 1px solid gray;
 }
 
-.bookStatus {
+.status {
   width: 20%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-.bookStatusIcon {
+.statusIcon {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 30px;
 }
 
-.bookStatusIcon > button {
+.statusIcon > button {
   background-color: inherit;
   border: none;
   cursor: pointer;
 }
 
-.bookStatusDong {
+.statusDong {
   display: flex;
   justify-content: flex-end;
 }
 
-.bookImageContainer {
+.imageContainer {
   position: relative;
   display: inline-block;
 }
@@ -123,7 +123,6 @@
   justify-content: space-between;
 }
 
-
 .areaSelectorContainer > div select {
   height: 100%;
 }
@@ -138,16 +137,44 @@
   gap: 5px;
 }
 
-.bookregion {
+.region {
   width: 90px; 
   height: 30px;
   color: white;
   background-color: var(--accent-sub-color);
   border-radius: 5px;
   border: none;
-
   display: flex;
   gap: 10px;
   justify-content: center;
   align-items: center;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  padding-bottom: 20px;
+}
+
+.pagination button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: 1px solid var(--accent-sub-color);
+  background-color: white;
+  color: var(--accent-sub-color);
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.pagination button:disabled {
+  background-color: var(--accent-sub-color);
+  color: white;
+  cursor: default;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: var(--accent-sub-color);
+  color: white;
 }
