@@ -122,13 +122,19 @@ export const AuthProvider = ({ children }) => {
 
       if (response.status === 200) {
         setUser(response.data); // 응답이 성공적일 경우 유저 데이터 설정
+        return response.data;
       } else {
         throw new Error('사용자 정보를 가져오는데 실패했습니다.');
       }
     } catch (error) {
       console.error('사용자 정보를 가져오는데 실패했습니다:', error);
       setUser(null); // 오류 발생 시 유저를 null로 설정
+      return null;
     }
+  };
+
+  const updateUser = (updatedUserData) => {
+    setUser(prevUser => ({ ...prevUser, ...updatedUserData }));
   };
 
   const login = (newToken) => {
@@ -157,7 +163,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, isLoggedIn, user, sub, client, isConnected, login, logout }}>
+    <AuthContext.Provider value={{ token, isLoggedIn, user, sub, client, isConnected, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

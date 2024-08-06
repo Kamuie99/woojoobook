@@ -132,7 +132,7 @@ const History = (userId) => {
                 <p>{selectedItem.userbook.bookInfo.title}</p>
                 <h2>저자</h2>
                 <p>{selectedItem.userbook.bookInfo.author}</p>
-                <h2>소유자</h2>
+                <h2>책권자</h2>
                 <p>{selectedItem.userbook.ownerInfo.nickname}</p>
               </div>
             </div>
@@ -208,7 +208,7 @@ const History = (userId) => {
       <h2>대여했던 목록 (총 {rentalHistoryCnt}개)</h2>
       <div className={styles.listHeader}>
         <div>제목</div>
-        <div>소유자</div>
+        <div>책권자</div>
       </div>
       <InfiniteScroll
         dataLength={rentalHistory.length}

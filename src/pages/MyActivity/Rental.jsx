@@ -362,7 +362,7 @@ const Rental = () => {
                 <p>{selectedItem.userbook.bookInfo.title}</p>
                 <h2>저자</h2>
                 <p>{selectedItem.userbook.bookInfo.author}</p>
-                <h2>소유자</h2>
+                <h2>책권자</h2>
                 <p>{selectedItem.userbook.ownerInfo.nickname}</p>
               </div>
             </div>
@@ -387,7 +387,7 @@ const Rental = () => {
                 <p>{selectedItem.userbook.bookInfo.title}</p>
                 <h2>저자</h2>
                 <p>{selectedItem.userbook.bookInfo.author}</p>
-                <h2>소유자</h2>
+                <h2>책권자</h2>
                 <p>{selectedItem.userbook.ownerInfo.nickname}</p>
               </div>
             </div>
@@ -434,7 +434,7 @@ const Rental = () => {
       <h2>대여 중인 목록 (총 {currentRentCnt}개)</h2>
       <div className={styles.listHeader}>
         <div>제목</div>
-        <div>소유자</div>
+        <div>책권자</div>
       </div>
       <InfiniteScroll
         dataLength={currentRent.length}
@@ -458,7 +458,7 @@ const Rental = () => {
       <h2>대여 신청한 목록 (총 {rentalRequestsCnt}개)</h2>
       <div className={styles.listHeader}>
         <div>제목</div>
-        <div>소유자</div>
+        <div>책권자</div>
       </div>
       <InfiniteScroll
         dataLength={rentalRequests.length}

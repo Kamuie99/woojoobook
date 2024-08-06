@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUserCircle } from "react-icons/fa";
+import { AuthContext } from '../../contexts/AuthContext';
 import Swal from 'sweetalert2';
 import axiosInstance from '../../util/axiosConfig';
 import Header from "../../components/Header";
@@ -13,6 +14,7 @@ const UserUpdate = () => {
   const [selectedArea, setSelectedArea] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const { updateUser } = useContext(AuthContext);
 
   useEffect(() => {
     fetchUserInfo();
@@ -73,6 +75,11 @@ const UserUpdate = () => {
       });
 
       if (response.status === 200) {
+        updateUser({
+          nickname,
+          areaCode: selectedArea.areaCode
+        });
+
         Swal.fire({
           title: "Success!",
           text: "정보가 성공적으로 저장되었습니다.",

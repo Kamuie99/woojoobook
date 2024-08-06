@@ -285,7 +285,7 @@ const Exchange = () => {
                 <p>{selectedItem.receiverBook.bookInfo.title}</p>
                 <h2>저자</h2>
                 <p>{selectedItem.receiverBook.bookInfo.author}</p>
-                <h2>소유자</h2>
+                <h2>교환승인자</h2>
                 <p>{selectedItem.receiverBook.ownerInfo.nickname}</p>
               </div>
               <div className={styles.receiverBook}>
@@ -311,7 +311,7 @@ const Exchange = () => {
                 <p>{selectedItem.senderBook.bookInfo.title}</p>
                 <h2>저자</h2>
                 <p>{selectedItem.senderBook.bookInfo.author}</p>
-                <h2>소유자</h2>
+                <h2>교환신청자</h2>
                 <p>{selectedItem.senderBook.ownerInfo.nickname}</p>
               </div>
               <div className={styles.receiverBook}>
@@ -391,7 +391,7 @@ const Exchange = () => {
         />
       </InfiniteScroll>
       
-      <h2>교환 신청 거절 당한 내역</h2>
+      <h2>교환 신청 거절 당한 내역 (총 {rejectedExchangeRequestsCnt}개)</h2>
       <div className={styles.listHeader}>
         <div>상대 책</div>
         <div>내 책</div>
