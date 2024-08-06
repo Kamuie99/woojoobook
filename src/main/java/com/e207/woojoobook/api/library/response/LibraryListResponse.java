@@ -5,5 +5,5 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record LibraryListResponse(List<LibraryResponse> libraryList) {
+public record LibraryListResponse(String nickName, List<LibraryResponse> libraryList) {
 }

@@ -10,6 +10,7 @@ import com.e207.woojoobook.api.library.request.LibraryCreateRequest;
 import com.e207.woojoobook.api.library.request.LibraryUpdateRequest;
 import com.e207.woojoobook.api.library.response.LibraryListResponse;
 import com.e207.woojoobook.api.library.response.LibraryResponse;
+import com.e207.woojoobook.api.user.UserService;
 import com.e207.woojoobook.domain.library.Library;
 import com.e207.woojoobook.domain.library.LibraryRepository;
 import com.e207.woojoobook.domain.user.User;
@@ -25,6 +26,7 @@ public class LibraryService {
 
 	private final LibraryRepository libraryRepository;
 	private final UserHelper userHelper;
+	private final UserService userService;
 
 	private Library findByIdAndUserId(Long categoryId, Long userId) {
 		return libraryRepository.findByIdAndUserId(categoryId, userId)
@@ -39,6 +41,7 @@ public class LibraryService {
 
 	@Transactional(readOnly = true)
 	public LibraryListResponse findList(Long userId) {
+		User user = userService.findDomainById(userId);
 		List<Library> categoryList = libraryRepository.findByUserId(userId);
 
 		List<LibraryResponse> libraryResponses = categoryList.stream()
@@ -46,6 +49,7 @@ public class LibraryService {
 			.collect(Collectors.toList());
 
 		return LibraryListResponse.builder()
+			.nickName(user.getNickname())
 			.libraryList(libraryResponses)
 			.build();
 	}

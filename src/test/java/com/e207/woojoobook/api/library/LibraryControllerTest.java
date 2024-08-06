@@ -60,6 +60,7 @@ class LibraryControllerTest extends AbstractRestDocsTest {
 		LibraryResponse libraryResponse2 = LibraryResponse.of(library2);
 
 		LibraryListResponse libraryListResponse = LibraryListResponse.builder()
+			.nickName(testUser.getNickname())
 			.libraryList(List.of(libraryResponse1, libraryResponse2))
 			.build();
 		given(this.libraryService.findList(testUser.getId())).willReturn(libraryListResponse);
