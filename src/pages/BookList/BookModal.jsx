@@ -10,7 +10,7 @@ import ExchangeModal from './ExchangeModal';
 const BookModal = ({ book, onClose }) => {
   const { user } = useContext(AuthContext);
   const [showExchangeModal, setShowExchangeModal] = useState(false);
-
+  const userbook = book.userbook;
   const getQualityEmoticon = (qualityStatus) => {
     switch (qualityStatus) {
       case 'VERY_GOOD': return getEmotionImage(1);
@@ -22,9 +22,9 @@ const BookModal = ({ book, onClose }) => {
     }
   };
 
-  const isRentalEnabled = book.tradeStatus === 'RENTAL_AVAILABLE' || book.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE';
-  const isExchangeEnabled = book.tradeStatus === 'EXCHANGE_AVAILABLE' || book.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE';
-  const isOwner = user && user.id === book.ownerInfo.id;
+  const isRentalEnabled = userbook.tradeStatus === 'RENTAL_AVAILABLE' || userbook.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE';
+  const isExchangeEnabled = userbook.tradeStatus === 'EXCHANGE_AVAILABLE' || userbook.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE';
+  const isOwner = user && user.id === userbook.ownerInfo.id;
 
   const handleExchangeRequest = () => {
     if (isExchangeEnabled && !isOwner) {
@@ -42,9 +42,9 @@ const BookModal = ({ book, onClose }) => {
         title: '대여 신청 하시겠습니까?',
         html: `
         <div style="text-align: left; line-height: 1.5;">
-          <p><strong style="color: var(--contrast-color)">책권자 |</strong> ${book.ownerInfo.nickname}</p>
+          <p><strong style="color: var(--contrast-color)">책권자 |</strong> ${userbook.ownerInfo.nickname}</p>
           <p><strong style="color: var(--accent-sub-color)">대여일 |</strong> 기본 7일</p>
-          <p><strong style="color: var(--accent-color)">책제목 |</strong> ${truncateTitle(book.bookInfo.title, 20)}</p>
+          <p><strong style="color: var(--accent-color)">책제목 |</strong> ${truncateTitle(userbook.bookInfo.title, 20)}</p>
         </div> 
         `,
         icon: 'question',
@@ -55,7 +55,7 @@ const BookModal = ({ book, onClose }) => {
 
       if (result.isConfirmed) {
         try {
-          const response = await axiosInstance.post(`/userbooks/${book.id}/rentals/offer`);
+          const response = await axiosInstance.post(`/userbooks/${userbook.id}/rentals/offer`);
           console.log('대여 신청 성공:', response.data);
 
           await Swal.fire({
@@ -86,22 +86,22 @@ const BookModal = ({ book, onClose }) => {
         <button className={styles.closeButton} onClick={onClose}>×</button>
         <div className={styles.modalBody}>
           <div className={styles.bookImageContainer}>
-            <img src={book.bookInfo.thumbnail} alt={book.bookInfo.title} className={styles.bookThumbnail} />
+            <img src={userbook.bookInfo.thumbnail} alt={userbook.bookInfo.title} className={styles.bookThumbnail} />
             <img 
-              src={getQualityEmoticon(book.qualityStatus)} 
-              alt={book.qualityStatus} 
+              src={getQualityEmoticon(userbook.qualityStatus)} 
+              alt={userbook.qualityStatus} 
               className={styles.qualityEmoticon}
             />
           </div>
           <div className={styles.bookDetails}>
-            <h2 className={styles.bookTitle}>{book.bookInfo.title}</h2>
-            <p><strong>줄거리 |</strong> {book.bookInfo.description}</p>
+            <h2 className={styles.bookTitle}>{userbook.bookInfo.title}</h2>
+            <p><strong>줄거리 |</strong> {userbook.bookInfo.description}</p>
             <div className={styles.bookInfo}>
-              <p><strong>출판사 |</strong> {book.bookInfo.publisher}</p>
-              <p><strong>출판일 |</strong> {book.bookInfo.publicationDate}</p>
+              <p><strong>출판사 |</strong> {userbook.bookInfo.publisher}</p>
+              <p><strong>출판일 |</strong> {userbook.bookInfo.publicationDate}</p>
             </div>
-            <p><strong>저자 |</strong> {book.bookInfo.author}</p>
-            <p><strong className={styles.specialUser}>책권자 |</strong> {book.ownerInfo.nickname}</p>
+            <p><strong>저자 |</strong> {userbook.bookInfo.author}</p>
+            <p><strong className={styles.specialUser}>책권자 |</strong> {userbook.ownerInfo.nickname}</p>
           </div>
         </div>
         <div className={styles.buttonGroup}>
@@ -134,7 +134,7 @@ const BookModal = ({ book, onClose }) => {
       </div>
       {showExchangeModal && (
         <ExchangeModal 
-          receiverBook={book} 
+          receiverBook={userbook} 
           onClose={() => setShowExchangeModal(false)} 
         />
       )}
