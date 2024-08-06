@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useContext } from "react";
 import { useSearch } from '../../contexts/SearchContext';
-import { FaSpaceAwesome } from "react-icons/fa6";
+import { LuBookPlus } from "react-icons/lu";
 import { CiHeart } from "react-icons/ci";
 import { FaHeart } from "react-icons/fa";
 import { getEmotionImage } from '../../util/get-emotion-image';
@@ -22,7 +22,7 @@ const BookList = () => {
   const [areaNames, setAreaNames] = useState({});
   const [selectedAreaCode, setSelectedAreaCode] = useState('');
   const [userAreaName, setUserAreaName] = useState('');
-  const { user, sub: userId } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [selectedBook, setSelectedBook] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -52,6 +52,7 @@ const BookList = () => {
   }, [searchTerm, selectedAreaCode, currentPage]);
 
   const fetchAreaName = useCallback(async (areaCode) => {
+    console.log(areaCode);
     if (areaCode) {
       try {
         const response = await axiosInstance.get('/area', { params: { areaCode } });
@@ -82,14 +83,14 @@ const BookList = () => {
 
   const fetchAreaNames = async (books) => {
     const areaPromises = books.map(book => 
-      axiosInstance.get('/area', { params: { areaCode: book.areaCode } })
+      axiosInstance.get('/area', { params: { areaCode: book.userbook.areaCode } })
     );
-
+    
     try {
       const areaResponses = await Promise.all(areaPromises);
       const newAreaNames = {};
       areaResponses.forEach((response, index) => {
-        newAreaNames[books[index].areaCode] = response.data.dongName;
+        newAreaNames[books[index].userbook.areaCode] = response.data.dongName;
       });
       setAreaNames(newAreaNames);
     } catch (err) {
@@ -113,10 +114,11 @@ const BookList = () => {
   };
 
   const handleAreaSelected = async (areaCode) => {
-    setSelectedAreaCode(areaCode);
+    console.log(areaCode.areaCode)
+    setSelectedAreaCode(areaCode.areaCode);
     setBooks([]);
     setCurrentPage(0);
-    const areaName = await fetchAreaName(areaCode);
+    const areaName = await fetchAreaName(areaCode.areaCode);
     setUserAreaName(areaName);
   };
 
@@ -149,18 +151,9 @@ const BookList = () => {
     return firstAuthor;
   };
   
-  const toggleWish = async (bookId, wished) => {
+  const toggleWish = (bookId) => {
     console.log(bookId);
-    try {
-      const response = await axiosInstance.post(`/userbooks/${bookId}/wish`, {
-        userId,
-        wished
-      })
-      console.log(response);
-    } catch {
-      console.log(error);
-      console.error(error);
-    }
+    axiosInstance.post(`/userbooks/${bookId}/wish`,)
   }
 
   return (
@@ -168,7 +161,7 @@ const BookList = () => {
       <Header />
       <div className={styles.titleAndSearch}>
         <div className={styles.titleDiv}>
-          <FaSpaceAwesome /> 우주 도서 ({userAreaName || '지역 정보 로딩 중...'})
+          <LuBookPlus /> 우주 도서 ({userAreaName || '지역 정보 로딩 중...'})
         </div>
       </div>
       <div className={styles.areaSelectorContainer}>
@@ -194,45 +187,45 @@ const BookList = () => {
           books.length > 0 ? (
             <div className={styles.list}>
               {books.map((book) => (
-                <div key={book.id} className={styles.item}>
+                <div key={book.userbook.id} className={styles.item}>
                   <div className={styles.imageContainer}>
                     <img 
-                      src={getQualityEmoticon(book.qualityStatus)} 
-                      alt={book.qualityStatus} 
+                      src={getQualityEmoticon(book.userbook.qualityStatus)} 
+                      alt={book.userbook.qualityStatus} 
                       className={styles.qualityEmoticon}
                     />
                     <img 
-                      src={book.bookInfo.thumbnail} 
-                      alt={book.bookInfo.title} 
+                      src={book.userbook.bookInfo.thumbnail} 
+                      alt={book.userbook.bookInfo.title} 
                       style={{ width: '100px', height: '140px' }} 
                     />
                   </div>
                   <div className={styles.description} onClick={() => openModal(book)}>
-                    <h3>{book.bookInfo.title}</h3>
+                    <h3>{book.userbook.bookInfo.title}</h3>
                     <div className={styles.innerBox}>
-                      <p><strong>저자 |</strong> {truncateAuthor(book.bookInfo.author)}</p>
-                      <p><strong>책권자 |</strong> {book.ownerInfo.nickname}</p>
-                      <p>책 ID {book.id}</p>
+                      <p><strong>저자 |</strong> {truncateAuthor(book.userbook.bookInfo.author)}</p>
+                      <p><strong>책권자 |</strong> {book.userbook.ownerInfo.nickname}</p>
+                      <p>책 ID {book.userbook.id}</p>
                     </div>
                     <div className={styles.innerBox}>
-                      <p><strong>출판사 |</strong> {book.bookInfo.publisher}</p>
-                      <p><strong>출판일 |</strong> {book.bookInfo.publicationDate}</p>
+                      <p><strong>출판사 |</strong> {book.userbook.bookInfo.publisher}</p>
+                      <p><strong>출판일 |</strong> {book.userbook.bookInfo.publicationDate}</p>
                     </div>
                     <div className={styles.innerBox}>
-                      {book.tradeStatus === 'RENTAL_AVAILABLE' && <p className={styles.statusMessage}>대여가능</p>}
-                      {book.tradeStatus === 'EXCHANGE_AVAILABLE' && <p className={styles.statusMessage}>교환가능</p>}
-                      {book.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE' && <p className={styles.statusMessage}>대여, 교환가능</p>}
+                      {book.userbook.tradeStatus === 'RENTAL_AVAILABLE' && <p className={styles.statusMessage}>대여가능</p>}
+                      {book.userbook.tradeStatus === 'EXCHANGE_AVAILABLE' && <p className={styles.statusMessage}>교환가능</p>}
+                      {book.userbook.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE' && <p className={styles.statusMessage}>대여, 교환가능</p>}
                     </div>
                   </div>
                   <div className={styles.status}>
                     <div className={styles.statusIcon}>
-                      <button onClick={() => toggleWish(book.id, book.like)} style={{paddingRight: '2px'}}>
-                        {book.like ? <FaHeart size={'26px'} style={{margin:'3px'}}/> : <CiHeart size={'35px'}/>}
+                      <button onClick={() => toggleWish(book.userbook.id)} style={{paddingRight: '2px'}}>
+                        {book.like ? <FaHeart size={'28px'} /> : <CiHeart size={'35px'}/>}
                       </button>
                     </div>
                     <div className={styles.statusDong}>
                       <button className={styles.region}>
-                        <FiMapPin  />{areaNames[book.areaCode] || '로딩 중...'}
+                        <FiMapPin  />{areaNames[book.userbook.areaCode] || '로딩 중...'}
                       </button>
                     </div>
                   </div>
