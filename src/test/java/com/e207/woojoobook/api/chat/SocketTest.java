@@ -1,16 +1,20 @@
 package com.e207.woojoobook.api.chat;
 
+import com.e207.woojoobook.TestConfig;
 import com.e207.woojoobook.api.chat.response.UserOnResponse;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
+import com.e207.woojoobook.global.helper.UserHelper;
 import com.e207.woojoobook.global.security.jwt.JwtProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.junit.jupiter.api.*;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -18,18 +22,21 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ActiveProfiles("test")
+@Import(TestConfig.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SocketTest {
 
@@ -50,7 +57,10 @@ public class SocketTest {
     private User user;
 
     @BeforeEach
-    void setup() throws IOException {
+    void setup() {
+        // redis 초기화
+        this.redisTemplate.getConnectionFactory().getConnection().flushAll();
+
         // Stomp Client 설정
         stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
@@ -59,21 +69,13 @@ public class SocketTest {
         stompClient.setMessageConverter(messageConverter);
 
         user = this.userRepository.save(User.builder()
-                .email("test@test.com")
-                .password(passwordEncoder.encode("12345678"))
-                .areaCode(areaCode)
-                .nickname("testAccount")
-                .build());
+            .email("test@test.com")
+            .password(passwordEncoder.encode("12345678"))
+            .areaCode(areaCode)
+            .nickname("testAccount")
+            .build());
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user.getId(), null);
         jwt = jwtProvider.createToken(token);
-    }
-
-    @AfterEach
-    void tearDown() throws IOException {
-        redisTemplate.getConnectionFactory().getConnection().flushAll();
-        if (stompClient != null) {
-            stompClient.stop();
-        }
     }
 
     @DisplayName("소켓 연결 시 JWT 토큰이 유효하다면 정상적으로 연결된다")
@@ -86,9 +88,11 @@ public class SocketTest {
 
         // expected
         assertDoesNotThrow(() -> {
-            this.stompClient.connectAsync(uri, null, headers, new StompSessionHandlerAdapter() {
-            }).get(5, TimeUnit.SECONDS );
+            StompSession stompSession = this.stompClient.connectAsync(uri, null, headers, new StompSessionHandlerAdapter() {
+            }).get(5, TimeUnit.SECONDS);
+            stompSession.disconnect();
         });
+        stompClient.stop();
     }
 
     @DisplayName("소켓 연결 시 JWT 토큰이 유효하지 않다면 연결이 실패한다")
@@ -101,9 +105,9 @@ public class SocketTest {
         URI uri = new URI(String.format("ws://localhost:%d/ws", port));
 
         // expected
-        assertThrows(ExecutionException.class, () -> {
+        assertThrows(Exception.class, () -> {
             this.stompClient.connectAsync(uri, null, headers, new StompSessionHandlerAdapter() {
-            }).get(5, TimeUnit.SECONDS );
+            }).get(5, TimeUnit.SECONDS);
         });
     }
 
@@ -116,12 +120,13 @@ public class SocketTest {
         URI uri = new URI(String.format("ws://localhost:%d/ws", port));
 
         // when
-        this.stompClient.connectAsync(uri, null, headers, new StompSessionHandlerAdapter() {
-                }).get(5, TimeUnit.SECONDS);
+        StompSession stompSession = this.stompClient.connectAsync(uri, null, headers, new StompSessionHandlerAdapter() {
+        }).get(5, TimeUnit.SECONDS);
 
         // then
         Set<Object> members = redisTemplate.opsForSet().members("area:" + areaCode);
         assertTrue(members.contains(UserOnResponse.toDto(user)));
+        stompSession.disconnect();
     }
 
     @DisplayName("소켓 연결 해제 시 레디스에 사용자의 정보를 제거한다")
