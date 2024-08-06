@@ -3,6 +3,8 @@ package com.e207.woojoobook.api.exchange;
 import static com.e207.woojoobook.domain.exchange.ExchangeStatus.*;
 import static com.e207.woojoobook.domain.userbook.TradeStatus.*;
 
+import java.util.Optional;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +42,7 @@ public class ExchangeService {
 	public ExchangeResponse create(ExchangeCreateRequest request) {
 		Userbook senderBook = userbookReader.findDomain(request.senderBookId());
 		Userbook receiverBook = userbookReader.findDomain(request.receiverBookId());
+		validatePossibleOffer(senderBook, receiverBook);
 		Exchange exchange = createExchange(senderBook, receiverBook);
 		Exchange createdExchange = exchangeRepository.save(exchange);
 		return ExchangeResponse.of(createdExchange);
@@ -71,17 +74,63 @@ public class ExchangeService {
 	}
 
 	@Transactional
-	public void offerRespond(Long id, ExchangeOfferRespondRequest request) {
+	public void respondOffer(Long id, ExchangeOfferRespondRequest request) {
 		Exchange exchange = findDomain(id);
-		validateBookOwner(exchange);
+		validateBookOwner(userHelper.findCurrentUser(), exchange.getReceiverBook());
 		exchange.respond(request.status());
 		updateUserbookStatus(exchange);
 		eventPublisher.publishEvent(new ExchangeRespondEvent(exchange));
 	}
 
 	public void delete(Long id) {
-		validateExchangeSender(id);
+		Exchange exchange = findExchange(id);
+		User sessionUser = userHelper.findCurrentUser();
+		validateExchangeSender(sessionUser, exchange);
 		exchangeRepository.deleteById(id);
+	}
+
+	private void validatePossibleOffer(Userbook senderBook, Userbook receiverBook) {
+		validateDuplicatedExchange(senderBook, receiverBook);
+		validateRegisterType(senderBook, receiverBook);
+		validateUserbooks(senderBook, receiverBook);
+	}
+
+	private void validateDuplicatedExchange(Userbook senderBook, Userbook receiverBook) {
+		Optional<Exchange> result = exchangeRepository.findBySenderBookAndReceiverBook(senderBook, receiverBook);
+		if (result.isPresent()) {
+			throw new ErrorException(ErrorCode.NotAcceptDuplicate);
+		}
+	}
+
+	private void validateRegisterType(Userbook senderBook, Userbook receiverBook) {
+		if (!senderBook.getRegisterType().canExchange() || !receiverBook.getRegisterType().canExchange()) {
+			throw new ErrorException(
+				ErrorCode.InvalidAccess,
+				"교환 신청이 불가능한 도서입니다. registerType "
+					+ "= senderBook: " + senderBook.getRegisterType()
+					+ ", receiverBook: " + receiverBook.getRegisterType()
+			);
+		}
+	}
+
+	private void validateUserbooks(Userbook senderBook, Userbook receiverBook) {
+		User sessionUser = userHelper.findCurrentUser();
+		boolean isValidSenderBook = sessionUser.getId().equals(senderBook.getUser().getId());
+		boolean isValidReceiverBook = !sessionUser.getId().equals(receiverBook.getUser().getId());
+		if (!isValidSenderBook || !isValidReceiverBook) {
+			throw new ErrorException(
+				ErrorCode.InvalidAccess,
+				"교환하려는 도서가 잘못 선택되었습니다. match result "
+					+ "= senderBook: " + isValidSenderBook
+					+ ", receiverBook: " + isValidReceiverBook
+			);
+		}
+	}
+
+	private void validateBookOwner(User user, Userbook userbook) {
+		User pair = userbook.getUser();
+		if (!user.getId().equals(pair.getId()))
+			throw new ErrorException(ErrorCode.ForbiddenError);
 	}
 
 	private void updateUserbookStatus(Exchange exchange) {
@@ -96,26 +145,21 @@ public class ExchangeService {
 
 	private void validateExchangeable(Userbook senderBook, Userbook receiverBook) {
 		if (!senderBook.isAvailable() || !receiverBook.isAvailable()) {
-			throw new RuntimeException( // TODO <jhl221123> 대여 상태 검증 필요
-				"대여가 불가능한 도서 상태입니다. status "
-					+ "= 신청자 도서: " + senderBook.isAvailable()
-					+ ", 수신자 도서: " + receiverBook.isAvailable());
+			throw new RuntimeException(
+				"도서 상태로 인해 교환이 불가능합니다. tradeStatus "
+					+ "= senderBook: " + senderBook.getTradeStatus()
+					+ ", receiverBook: " + receiverBook.getTradeStatus());
 		}
 	}
 
-	private void validateBookOwner(Exchange exchange) {
-		User receiver = exchange.getReceiver();
-		User sessionUser = userHelper.findCurrentUser();
-		if (!sessionUser.getId().equals(receiver.getId()))
+	private void validateExchangeSender(User user, Exchange exchange) {
+		if (!user.getId().equals(exchange.getSender().getId()))
 			throw new ErrorException(ErrorCode.ForbiddenError);
 	}
 
-	private void validateExchangeSender(Long id) {
-		Exchange exchange = exchangeRepository.findById(id)
+	private Exchange findExchange(Long id) {
+		return exchangeRepository.findById(id)
 			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
-		User sessionUser = userHelper.findCurrentUser();
-		if (!sessionUser.getId().equals(exchange.getSender().getId()))
-			throw new ErrorException(ErrorCode.ForbiddenError);
 	}
 
 	private Exchange createExchange(Userbook senderBook, Userbook receiverBook) {

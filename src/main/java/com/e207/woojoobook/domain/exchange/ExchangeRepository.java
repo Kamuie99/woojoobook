@@ -3,8 +3,6 @@ package com.e207.woojoobook.domain.exchange;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -20,8 +18,8 @@ public interface ExchangeRepository extends JpaRepository<Exchange, Long>, Excha
 		+ " where e.id = :id")
 	Optional<Exchange> findByIdWithUserbookAndUser(Long id);
 
+	Optional<Exchange> findBySenderBookAndReceiverBook(Userbook senderBook, Userbook receiverBook);
+
 	// TODO <jhl221123> 의존성이 있는 곳 모두 동적 쿼리로 변경 후 삭제 필요
 	List<Exchange> findAllByReceiverBook(Userbook receiverBook);
-
-	Page<Exchange> findAllByExchangeStatus(ExchangeStatus exchangeStatus, Pageable pageable);
 }

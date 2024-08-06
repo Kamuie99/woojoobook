@@ -67,61 +67,6 @@ class ExchangeRepositoryTest {
 		assertThatBookMatchExactly(receiverBookInfo, userbook.getBook());
 	}
 
-	// TODO <jhl221123> 변경된 쿼리 테스트로 변경 필요
-	@DisplayName("수락된 교환 목록을 조회한다.")
-	@Test
-	void findCompletedExchangeSuccess() {
-		// given
-		User me = createUser("me");
-		User user = createUser("someone");
-		userRepository.saveAll(List.of(me, user));
-
-		Userbook mine = createUserbook(me, "001");
-		Userbook userbook = createUserbook(user, "002");
-		userbookRepository.saveAll(List.of(mine, userbook));
-
-		Exchange exchange = createExchange(mine, userbook);
-		Exchange approvedExchange = createExchange(mine, userbook);
-		Exchange rejectedExchange = createExchange(mine, userbook);
-		approvedExchange.respond(APPROVED);
-		rejectedExchange.respond(REJECTED);
-		exchangeRepository.saveAll(List.of(exchange, approvedExchange, rejectedExchange));
-
-		// when
-		Page<Exchange> result = exchangeRepository.findAllByExchangeStatus(APPROVED, PageRequest.of(0, 10));
-
-		///then
-		List<Exchange> exchanges = result.getContent();
-		assertExchangeStatus(exchanges, 1, APPROVED);
-	}
-
-	@DisplayName("거절된 교환 목록을 조회한다.")
-	@Test
-	void findRejectedExchangeSuccess() {
-		// given
-		User me = createUser("me");
-		User user = createUser("someone");
-		userRepository.saveAll(List.of(me, user));
-
-		Userbook mine = createUserbook(me, "001");
-		Userbook userbook = createUserbook(user, "002");
-		userbookRepository.saveAll(List.of(mine, userbook));
-
-		Exchange exchange = createExchange(mine, userbook);
-		Exchange approvedExchange = createExchange(mine, userbook);
-		Exchange rejectedExchange = createExchange(mine, userbook);
-		approvedExchange.respond(APPROVED);
-		rejectedExchange.respond(REJECTED);
-		exchangeRepository.saveAll(List.of(exchange, approvedExchange, rejectedExchange));
-
-		// when
-		Page<Exchange> result = exchangeRepository.findAllByExchangeStatus(REJECTED, PageRequest.of(0, 10));
-
-		///then
-		List<Exchange> exchanges = result.getContent();
-		assertExchangeStatus(exchanges, 1, REJECTED);
-	}
-
 	@DisplayName("교환 신청한 목록을 조회한다.")
 	@Test
 	void findExchangeOfferAsSenderSuccess() {

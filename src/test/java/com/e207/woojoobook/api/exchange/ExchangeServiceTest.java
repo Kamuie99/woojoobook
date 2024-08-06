@@ -40,6 +40,7 @@ import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 @ExtendWith(MockitoExtension.class)
@@ -86,6 +87,8 @@ class ExchangeServiceTest {
 
 		ExchangeCreateRequest request = createRequest(mine.getId(), userbook.getId());
 
+		given(userHelper.findCurrentUser()).willReturn(me);
+
 		// when
 		ExchangeResponse result = exchangeService.create(request);
 
@@ -108,6 +111,8 @@ class ExchangeServiceTest {
 
 		ExchangeCreateRequest request = createRequest(mine.getId(), userbook.getId());
 
+		given(userHelper.findCurrentUser()).willReturn(me);
+
 		// when
 		ExchangeResponse result = exchangeService.create(request);
 
@@ -129,11 +134,36 @@ class ExchangeServiceTest {
 
 		ExchangeCreateRequest request = createRequest(mine.getId(), userbook.getId());
 
+		given(userHelper.findCurrentUser()).willReturn(me);
+
 		// when
 		ExchangeResponse result = exchangeService.create(request);
 
 		//then
 		assertThat(result).extracting("exchangeStatus").isEqualTo(IN_PROGRESS);
+	}
+
+	@DisplayName("중복된 교환 신청은 할 수 없다.")
+	@Test
+	void createFailByDuplicatedRequest() {
+		// given
+		User me = createUser("me");
+		User user = createUser("someone");
+		userRepository.saveAll(List.of(me, user));
+
+		Userbook mine = createUserbook(me, "001");
+		Userbook userbook = createUserbook(user, "002");
+		userbookRepository.saveAll(List.of(mine, userbook));
+
+		ExchangeCreateRequest request = createRequest(mine.getId(), userbook.getId());
+
+		given(userHelper.findCurrentUser()).willReturn(me);
+
+		// when
+		ExchangeResponse result = exchangeService.create(request);
+
+		//then
+		assertThatThrownBy(() -> exchangeService.create(request)).isInstanceOf(ErrorException.class);
 	}
 
 	@DisplayName("사용자 등록 도서 및 일반 도서와 함께 교환 정보를 조회한다.")
@@ -230,7 +260,7 @@ class ExchangeServiceTest {
 	@Transactional
 	@DisplayName("교환 신청을 수락하면, 책 상태가 변경되고 이벤트를 발행한다.")
 	@Test
-	void offerRespondSuccess() {
+	void respondOfferSuccess() {
 		// given
 		User me = createUser("me");
 		User user = createUser("someone");
@@ -248,7 +278,7 @@ class ExchangeServiceTest {
 		given(userHelper.findCurrentUser()).willReturn(me);
 
 		// when
-		exchangeService.offerRespond(exchange.getId(), respondRequest);
+		exchangeService.respondOffer(exchange.getId(), respondRequest);
 
 		//then
 		assertThat(exchange.getSenderBook().getTradeStatus()).isEqualTo(EXCHANGED);

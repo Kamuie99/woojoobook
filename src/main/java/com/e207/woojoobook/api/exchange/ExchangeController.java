@@ -36,7 +36,7 @@ public class ExchangeController {
 	@PostMapping("/exchanges/offer/{id}")
 	public ResponseEntity<Void> offerRespond(@PathVariable("id") Long id,
 		@RequestBody ExchangeOfferRespondRequest request) {
-		exchangeService.offerRespond(id, request);
+		exchangeService.respondOffer(id, request);
 		return ResponseEntity.status(OK).build();
 	}
 
