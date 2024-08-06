@@ -5,6 +5,7 @@ import { AuthContext } from "../../contexts/AuthContext"
 import Header from "../../components/Header"
 import axiosInstance from "../../util/axiosConfig"
 import Modal from "../BookRegister/Modal";
+import Swal from 'sweetalert2'
 import CategoryForm from "./CategoryForm";
 import CategoryItem from "./CategoryItem";
 import { DndProvider } from 'react-dnd';
@@ -17,6 +18,7 @@ const MyLibrary = () => {
   const {userId} = useParams()
   const {sub: loggedInUserId} = useContext(AuthContext)
   const [isOwnLibrary, setIsOwnLibrary] = useState(false)
+  const [userNickname, setUserNickName] = useState('')
   const [categories, setCategories] = useState([])
   const [createModalIsOpen, setCreateModalIsOpen] = useState(false);
   const [updateModalIsOpen, setUpdateModalIsOpen] = useState(false);
@@ -30,6 +32,7 @@ const MyLibrary = () => {
   const fetchCategories = async () => {
     try {
       const response = await axiosInstance.get(`/users/${userId}/libraries`)
+      setUserNickName(response.data.nickName)
       setCategories(response.data.libraryList)
     } catch (error) {
       console.log(error)
@@ -50,15 +53,34 @@ const MyLibrary = () => {
   }
 
   const handleDelete = async (categoryId) => {
-    if (window.confirm("정말로 이 카테고리를 삭제하시겠습니까?")) {
-      try {
-        await axiosInstance.delete(`/users/${userId}/libraries/categories/${categoryId}`)
-        setCategories(categories.filter(cat => cat.id !== categoryId))
-      } catch (error) {
-        console.log(error)
-        alert("카테고리 삭제에 실패했습니다.")
+    Swal.fire({
+      title: '카테고리를 삭제하시겠습니까?',
+      showCancelButton: true,
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+      icon: 'question'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axiosInstance.delete(`/users/${userId}/libraries/categories/${categoryId}`)
+          setCategories(categories.filter(cat => cat.id !== categoryId))
+          Swal.fire({
+            title: '삭제 완료',
+            text: '카테고리를 삭제했습니다.',
+            confirmButtonText: '확인',
+            icon: 'success'
+          })
+        } catch (error) {
+          console.log(error)
+          Swal.fire({
+            title: '삭제 실패',
+            text: '카테고리 삭제에 실패했습니다.',
+            confirmButtonText: '확인',
+            icon: 'error'
+          })
+        }
       }
-    }
+    })
   }
 
   const handleCreateSubmit = async (newCategory) => {
@@ -111,7 +133,7 @@ const MyLibrary = () => {
     <DndProvider backend={HTML5Backend}>
       <Header />
         <div className={styles.titleDiv}>
-        <IoLibraryOutline /> 나의 서재
+        <IoLibraryOutline /> {userNickname}님의 서재
         </div>
         {isOwnLibrary ? (
           <main className={styles.main}>
@@ -169,7 +191,6 @@ const MyLibrary = () => {
           </main>
         ) : (
           <main className={styles.main}>
-            <p className={styles.libraryTitle}>남의 서재</p>
             <div className={styles.categoriesContainer}>
               {sortedCategories.map(category => (
                 <CategoryItem

@@ -64,9 +64,10 @@ const MyPage = () => {
     const decodedToken = jwtDecode(token);
     if (!isLoggedIn || decodedToken?.sub != fetchedUserId) {
       return Swal.fire({
-        title: "Error!",
-        text: "인증에 실패했습니다. 다시 로그인해 주세요.",
-        icon: "error"
+        title: '인증 실패',
+        text: '인증에 실패했습니다. 다시 로그인해 주세요.',
+        confirmButtonText: '확인',
+        icon: 'error'
       });
     }
 
@@ -74,9 +75,10 @@ const MyPage = () => {
       logout();
       navigate('/login');
       return Swal.fire({
-        title: "Error!",
-        text: "세션이 만료되었습니다. 다시 로그인해 주세요.",
-        icon: "error"
+        title: '세션 만료',
+        text: '세션이 만료되었습니다. 다시 로그인해 주세요.',
+        confirmButtonText: '확인',
+        icon: 'error'
       });
     }
 
@@ -87,29 +89,29 @@ const MyPage = () => {
       logout();
       navigate('/');
       Swal.fire({
-        title: "Deleted!",
-        text: "회원 탈퇴가 완료되었습니다",
-        icon: "success"
+        title: '회원 탈퇴가 완료되었습니다.',
+        confirmButtonText: '확인',
+        icon: 'success'
       });
     } catch (error) {
       console.log(error)
       Swal.fire({
-        title: "Error!",
-        text: "회원 탈퇴 중 문제가 발생했습니다. 다시 시도해 주세요.",
-        icon: "error"
+        title: '오류',
+        text: '회원 탈퇴 중 문제가 발생했습니다. 다시 시도해 주세요.',
+        confirmButtonText: '확인',
+        icon: 'error'
       })
     }
   }
 
   const openModal = () => {
     Swal.fire({
-      title: "비밀번호를 입력해주세요.",
+      title: '비밀번호를 입력해주세요.',
       html: `<p style="color: red; font-weight: bold;">탈퇴한 회원 정보는 되돌릴 수 없습니다.</p>
              <input type="password" id="password" class="swal2-input" placeholder="비밀번호를 입력해주세요">`,
       showCancelButton: true,
-      confirmButtonText: "탈퇴",
-      confirmButtonColor: "#d33",
-      cancelButtonText: "취소",
+      confirmButtonText: '탈퇴',
+      cancelButtonText: '취소',
       focusConfirm: false,
       preConfirm: () => {
         const password = Swal.getPopup().querySelector('#password').value;
@@ -145,7 +147,7 @@ const MyPage = () => {
           <div className={styles.main_container}>
             <div className={styles.main_container_update}>
               <div className={styles.to_mylibrary}>
-                <Link to={`/${sub}/mylibrary`}>내 서재 바로가기</Link>
+                <Link to={`/${sub}/mylibrary`}>나의 서재 바로가기</Link>
               </div>
               <div className={styles.update_info}>
                 <Link to='/userupdate'>회원정보 수정</Link>

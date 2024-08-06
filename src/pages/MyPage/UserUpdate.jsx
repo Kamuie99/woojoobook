@@ -52,18 +52,18 @@ const UserUpdate = () => {
 
     if (nickname.trim() === '') {
       Swal.fire({
-        title: "Error!",
-        text: "닉네임을 입력해주세요.",
-        icon: "warning"
+        title: '닉네임을 입력해주세요.',
+        confirmButtonText: '확인',
+        icon: 'warning'
       });
       return;
     }
 
-    if (!selectedArea || !selectedArea.siName || !selectedArea.guName || !selectedArea.dongName) {
+    if (!selectedArea || !selectedArea.areaCode) {
       Swal.fire({
-        title: "Error!",
-        text: "주소를 선택해주세요.",
-        icon: "warning"
+        title: '주소를 선택해주세요.',
+        confirmButtonText: '확인',
+        icon: 'warning'
       });
       return;
     }
@@ -81,24 +81,24 @@ const UserUpdate = () => {
         });
 
         Swal.fire({
-          title: "Success!",
-          text: "정보가 성공적으로 저장되었습니다.",
-          icon: "success"
+          title: '정보가 성공적으로 저장되었습니다.',
+          confirmButtonText: '확인',
+          icon: 'success'
         });
         navigate(`/${userId}/mypage`);
       } else {
         Swal.fire({
-          title: "Error!",
-          text: "정보 수정에 실패했습니다. 다시 시도해 주세요.",
-          icon: "error"
+          title: '정보 수정에 실패했습니다. 다시 시도해 주세요.',
+          confirmButtonText: '확인',
+          icon: 'error'
         });
       }
     } catch (error) {
       console.error(error);
       Swal.fire({
-        title: "Error!",
-        text: "정보 저장 중 오류가 발생했습니다.",
-        icon: "error"
+        title: '정보 저장 중 오류가 발생했습니다.',
+        confirmButtonText: '확인',
+        icon: 'error'
       });
     }
   };

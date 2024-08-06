@@ -228,21 +228,21 @@ const Rental = () => {
 
   const handleExtension = async (rentalId) => {
     Swal.fire({
-      title: "연장 신청하시겠습니까?",
-      icon: "question",
+      title: '연장 신청하시겠습니까?',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "신청하기",
-      cancelButtonText: "취소하기"
+      confirmButtonText: '신청',
+      cancelButtonText: '취소',
+      icon: 'question'
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           await axiosInstance.post(`/rentals/${rentalId}/extensions`)
           await fetchCurrentRent(true)
           Swal.fire({
-            title: "연장신청이 완료되었습니다",
-            icon: "success"
+            title: '연장 신청 완료',
+            text: '연장 신청이 완료되었습니다.',
+            confirmButtonText: '확인',
+            icon: 'success'
           })
           closeModal()
         } catch (error) {
@@ -254,21 +254,21 @@ const Rental = () => {
 
   const handleCancelRental = async (offerId) => {
     Swal.fire({
-      title: "대여 신청을 취소하시겠습니까?",
-      icon: "question",
+      title: '대여 신청을 취소하시겠습니까?',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "신청취소하기",
-      cancelButtonText: "돌아가기"
+      confirmButtonText: '신청취소',
+      cancelButtonText: '돌아가기',
+      icon: 'question'
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           await axiosInstance.delete(`/rentals/offer/${offerId}`)
           await fetchRentalRequests(true)
           Swal.fire({
-            title: "대여 신청을 취소했습니다",
-            icon: "success"
+            title: '대여 신청 취소',
+            text: '대여 신청을 취소했습니다.',
+            confirmButtonText: '확인',
+            icon: 'error'
           })
           closeModal()
         } catch (error) {
@@ -281,13 +281,11 @@ const Rental = () => {
   const handleAccept = async (offerId, response) => {
     if (response === true) {
       Swal.fire({
-        title: "대여 신청을 수락하시겠습니까?",
-        icon: "question",
+        title: '대여 신청을 수락하시겠습니까?',
         showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "수락하기",
-        cancelButtonText: "돌아가기"
+        confirmButtonText: '수락',
+        cancelButtonText: '취소',
+        icon: 'question'
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
@@ -296,8 +294,10 @@ const Rental = () => {
             })
             await fetchReceivedRentalRequests(true)
             Swal.fire({
-              title: "대여 신청을 수락했습니다",
-              icon: "success"
+              title: '대여 신청 수락',
+              text: '대여 신청을 수락했습니다.',
+              confirmButtonText: '확인',
+              icon: 'success'
             })
             closeModal()
           } catch (error) {
@@ -307,13 +307,11 @@ const Rental = () => {
       })
     } else {
       Swal.fire({
-        title: "대여 신청을 거절하시겠습니까?",
-        icon: "question",
+        title: '대여 신청을 거절하시겠습니까?',
         showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "거절하기",
-        cancelButtonText: "돌아가기"
+        confirmButtonText: '거절',
+        cancelButtonText: '취소',
+        icon: 'question'
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
@@ -322,8 +320,10 @@ const Rental = () => {
             })
             await fetchReceivedRentalRequests(true)
             Swal.fire({
-              title: "대여 신청을 거절했습니다",
-              icon: "success"
+              title: '대여 신청 거절',
+              text: '대여 신청을 거절했습니다.',
+              confirmButtonText: '확인',
+              icon: 'error'
             })
             closeModal()
           } catch (error) {

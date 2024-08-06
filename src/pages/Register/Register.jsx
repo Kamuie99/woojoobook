@@ -31,7 +31,6 @@ const Register = () => {
       console.log(checkResponse)
       if (checkResponse.data.isDuplicated  === true) {
         setEmailError('이미 가입된 이메일입니다.');
-        console.log('중복')
         return;
       }
       console.log('중복아님')
@@ -43,10 +42,18 @@ const Register = () => {
       console.error(error);
       if (error.code === 'ERR_NETWORK') {
         console.error('네트워크 오류:', error.message);
-        alert('서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.');
+        Swal.fire({
+          title: '서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.',
+          confirmButtonText: '확인',
+          icon: 'error'
+        })
       } else {
         console.error('요청 오류:', error);
-        alert('이메일 전송 중 오류가 발생했습니다.');
+        Swal.fire({
+          title: '이메일 전송 중 오류가 발생했습니다.',
+          confirmButtonText: '확인',
+          icon: 'error'
+        })
       }
     }
   };
@@ -61,9 +68,9 @@ const Register = () => {
     } catch (error) {
       if (error.response) {
         Swal.fire({
-          icon: 'error',
-          title: '인증번호 불일치',
-          text: '잘못된 인증번호를 입력하셨습니다. 다시 입력해주세요.'
+          title: '잘못된 인증번호를 입력하셨습니다. 다시 입력해주세요.',
+          confirmButtonText: '확인',
+          icon: 'error'
         })
       }
     }
@@ -72,7 +79,11 @@ const Register = () => {
   const handleFinalSubmit = async (e) => {
     e.preventDefault();
     if (password !== passwordConfirm) {
-      alert('비밀번호가 일치하지 않습니다.');
+      Swal.fire({
+        title: '비밀번호가 일치하지 않습니다.',
+        confirmButtonText: '확인',
+        icon: 'warning'
+      })
       return;
     }
     try {
@@ -88,12 +99,20 @@ const Register = () => {
         }
       });
       if (response.status === 201) {
-        alert('회원가입이 완료되었습니다. 로그인 해주세요.');
-        navigate('/');
+        Swal.fire({
+          title: '회원가입이 완료되었습니다. 로그인 해주세요.',
+          confirmButtonText: '확인',
+          icon: 'success'
+        })
+        navigate('/login');
       }
     } catch (error) {
       console.error(error);
-      alert('회원가입 실패');
+      Swal.fire({
+        title: '회원가입에 실패했습니다. 잠시 후에 다시 시도해주세요.',
+        confirmButtonText: '확인',
+        icon: 'error'
+      })
     }
   };
 

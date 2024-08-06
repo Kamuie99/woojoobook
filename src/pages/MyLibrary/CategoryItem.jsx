@@ -1,12 +1,10 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
 import { useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import styles from './CategoryItem.module.css';
 import { useRef } from 'react';
 import { PiBookmarkFill } from "react-icons/pi";
 import BookModal from './BookModal';
-import axiosInstance from '../../util/axiosConfig.js'; // axiosConfig 파일 import
+import axiosInstance from '../../util/axiosConfig.js';
 
 const ItemType = 'CATEGORY';
 
@@ -47,7 +45,6 @@ const CategoryItem = ({category, isOwnLibrary, index, onUpdate, onDelete, moveCa
       moveCategory(item.category, category);
       item.index = hoverIndex;
     },
-    // eslint-disable-next-line no-unused-vars
     drop: (item, monitor) => {
       saveCategoryOrder(item.category, category);
     },

@@ -51,6 +51,22 @@ const AreaSelector = ({ onAreaSelected, initialArea }) => {
     }
   }, [dongList, selectedSi, selectedGu, onAreaSelected]);
 
+  useEffect(() => {
+    if (selectedSi && selectedGu && selectedDong) {
+      const selectedSiName = siList.find(si => si.siCode === selectedSi)?.siName;
+      const selectedGuName = guList.find(gu => gu.guCode === selectedGu)?.guName;
+      const selectedDongName = dongList.find(dong => dong.areaCode === selectedDong)?.dongName;
+      onAreaSelected({
+        siName: selectedSiName,
+        guName: selectedGuName,
+        dongName: selectedDongName,
+        areaCode: selectedDong
+      });
+    } else {
+      onAreaSelected(null);
+    }
+  }, [selectedSi, selectedGu, selectedDong]);
+  
   const fetchSiList = async () => {
     try {
       const response = await axiosInstance.get('/area/si');

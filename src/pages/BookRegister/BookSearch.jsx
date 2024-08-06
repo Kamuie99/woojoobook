@@ -17,9 +17,10 @@ const BookSearch = ({ onSelectBook }) => {
   const handleSearch = async () => {
     if (!searchKeyword.trim()) {
       Swal.fire({
-        icon: 'error',
         title: '검색 실패',
-        text: '책 제목/저자/ISBN을 입력해주세요'
+        text: '책 제목 / 저자 / ISBN을 입력해주세요.',
+        confirmButtonText: '확인',
+        icon: 'error'
       });
       return;
     }

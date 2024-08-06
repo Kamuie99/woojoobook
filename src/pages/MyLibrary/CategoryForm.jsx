@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import BookSearch from './BookSearch';
 import BookList from './BookList';
+import Swal from 'sweetalert2';
 import styles from './CategoryForm.module.css';
 
 const CategoryForm = ({ initialCategory, onSubmit, action }) => {
@@ -23,7 +24,11 @@ const CategoryForm = ({ initialCategory, onSubmit, action }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (selectedBooks.length === 0) {
-      alert('최소 한 권의 책을 선택해주세요.');
+      Swal.fire({
+        title: '최소 1권 이상의 도서를 선택해주세요.',
+        confirmButtonText: '확인',
+        icon: 'warning'
+      })
       return;
     }
     onSubmit({ categoryName, books: JSON.stringify(selectedBooks) });

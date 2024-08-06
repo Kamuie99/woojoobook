@@ -39,7 +39,8 @@ const MyBook = () => {
 
       if (userId !== loggedInUserId) {
         Swal.fire({
-          title: "접근 권한이 없습니다",
+          title: '접근 권한이 없습니다.',
+          confirmButtonText: '확인',
           icon: "error"
         });
         navigate(-1);

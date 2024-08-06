@@ -32,8 +32,8 @@ const BookRegister = () => {
       await Swal.fire({
         title: '입력 오류',
         text: '모든 필드를 입력해주세요.',
-        icon: 'error',
-        confirmButtonText: '확인'
+        confirmButtonText: '확인',
+        icon: 'warning'
       });
       return;
     }
@@ -53,10 +53,10 @@ const BookRegister = () => {
           <p><strong>교환:</strong> ${isExchangeable ? '가능' : '불가능'}</p>
         </div>
       `,
-      icon: 'question',
       showCancelButton: true,
       confirmButtonText: '등록',
-      cancelButtonText: '취소'
+      cancelButtonText: '취소',
+      icon: 'question'
     });
 
     if (result.isConfirmed) {
@@ -68,19 +68,19 @@ const BookRegister = () => {
         });
         
         await Swal.fire({
-          title: "등록 완료!",
-          html: `책이 정상적으로 등록되었습니다.`,
-          icon: "success",
+          title: '등록 완료',
+          html: '책이 정상적으로 등록되었습니다.',
           confirmButtonText: "확인",
+          icon: 'success'
         });
         
-        navigate('/'); // 홈으로 이동
+        navigate('/booklist');
       } catch (error) {
         await Swal.fire({
           title: '오류',
           text: '책 등록 중 오류가 발생했습니다.',
-          icon: 'error',
-          confirmButtonText: '확인'
+          confirmButtonText: '확인',
+          icon: 'warning'
         });
       }
     }

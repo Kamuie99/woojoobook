@@ -42,10 +42,10 @@ const ExchangeModal = ({ receiverBook, onClose }) => {
           <p><strong>상대방 책:</strong> ${receiverBook.bookInfo.title}</p>
         </div>
       `,
-      icon: 'question',
       showCancelButton: true,
       confirmButtonText: '신청',
-      cancelButtonText: '취소'
+      cancelButtonText: '취소',
+      icon: 'question'
     });
 
     if (result.isConfirmed) {
@@ -59,8 +59,8 @@ const ExchangeModal = ({ receiverBook, onClose }) => {
         await Swal.fire({
           title: '교환 신청 완료',
           text: '교환 신청이 완료되었습니다.',
-          icon: 'success',
-          confirmButtonText: '확인'
+          confirmButtonText: '확인',
+          icon: 'success'
         });
 
         onClose();
@@ -69,8 +69,8 @@ const ExchangeModal = ({ receiverBook, onClose }) => {
         Swal.fire({
           title: '오류',
           text: '교환 신청 중 오류가 발생했습니다.',
-          icon: 'error',
-          confirmButtonText: '확인'
+          confirmButtonText: '확인',
+          icon: 'warning'
         });
       }
     }

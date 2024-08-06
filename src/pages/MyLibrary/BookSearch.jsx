@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import BookList from './BookList';
 import Modal from '../BookRegister/Modal';
 import axiosInstance from '../../util/axiosConfig';
+import Swal from 'sweetalert2';
 import styles from './BookSearch.module.css';
 
 const BookSearch = ({ onSelect }) => {
@@ -14,7 +15,12 @@ const BookSearch = ({ onSelect }) => {
 
   const handleSearch = () => {
     if (!keyword.trim()) {
-      alert('검색어를 입력해주세요.');
+      Swal.fire({
+        title: '입력 오류',
+        test: '검색어를 입력해주세요.',
+        confirmButtonText: '확인',
+        icon: 'warning'
+      })
       return;
     }
     searchBooks(keyword, 1);

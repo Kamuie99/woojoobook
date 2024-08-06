@@ -27,7 +27,6 @@ const Login = () => {
         if (authToken) {
           const token = authToken.split(' ')[1]; // "Bearer " 부분을 제거
           login(token);
-          // alert('로그인 성공');
           navigate('/');
         } else {
           throw new Error('토큰이 응답 헤더에 없습니다.');
@@ -35,9 +34,10 @@ const Login = () => {
       }
     } catch (error) {
       Swal.fire({
-        icon: 'error',
         title: '로그인 실패',
-        text: '이메일 또는 비밀번호를 확인해주세요.'
+        text: '이메일 또는 비밀번호를 확인해주세요.',
+        confirmButtonText: '확인',
+        icon: 'error',
       });
     }
   };

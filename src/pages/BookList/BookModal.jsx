@@ -47,10 +47,10 @@ const BookModal = ({ book, onClose }) => {
           <p><strong style="color: var(--accent-color)">책제목 |</strong> ${truncateTitle(userbook.bookInfo.title, 20)}</p>
         </div> 
         `,
-        icon: 'question',
         showCancelButton: true,
         confirmButtonText: '신청',
-        cancelButtonText: '취소'
+        cancelButtonText: '취소',
+        icon: 'question'
       });
 
       if (result.isConfirmed) {
@@ -60,20 +60,19 @@ const BookModal = ({ book, onClose }) => {
 
           await Swal.fire({
             title: '대여 신청 완료',
-            text: `대여 신청이 완료되었습니다. (대여 ID: ${response.data.rentalId})`,
-            icon: 'success',
-            confirmButtonText: '확인'
+            text: '대여 신청이 완료되었습니다.',
+            confirmButtonText: '확인',
+            icon: 'success'
           });
 
-          // 모달 닫기 및 부모 컴포넌트의 책 목록 갱신
           onClose();
         } catch (error) {
           console.error('대여 신청 실패:', error);
           Swal.fire({
             title: '오류',
             text: '대여 신청 중 오류가 발생했습니다.',
-            icon: 'error',
-            confirmButtonText: '확인'
+            confirmButtonText: '확인',
+            icon: 'warning'
           });
         }
       }
