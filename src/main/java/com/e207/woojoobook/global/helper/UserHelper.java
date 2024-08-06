@@ -22,4 +22,9 @@ public class UserHelper {
 		return this.userRepository.findById(currentUsername)
 			.orElseThrow(() -> new ErrorException(ErrorCode.UserNotFound));
 	}
+
+	public User findById(Long id) {
+		return this.userRepository.findById(id)
+				.orElseThrow(() -> new ErrorException(ErrorCode.UserNotFound));
+	}
 }

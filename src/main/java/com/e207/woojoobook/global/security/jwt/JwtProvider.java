@@ -51,9 +51,10 @@ public class JwtProvider {
         com.e207.woojoobook.domain.user.User user = this.userRepository.findById(
                 Long.valueOf(authentication.getName()))
             .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+        String authorities = getAuthorities(authentication);
         return Jwts.builder()
                 .subject(authentication.getName())
-                .claim("authorities", getAuthorities(authentication))
+                .claim("authorities", authorities.isEmpty() ? "ROLE_USER" : authorities)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(SignatureAlgorithm.HS256, secretKey)

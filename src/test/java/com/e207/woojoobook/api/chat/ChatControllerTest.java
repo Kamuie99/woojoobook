@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
@@ -34,6 +35,9 @@ class ChatControllerTest extends AbstractRestDocsTest {
 
 	@MockBean
 	ChatService chatService;
+
+	@MockBean
+	RedisTemplate<String, Object> redisTemplate;
 
 	@MockBean
 	SimpMessageSendingOperations operations;
