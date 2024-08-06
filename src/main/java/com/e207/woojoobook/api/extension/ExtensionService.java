@@ -40,6 +40,7 @@ public class ExtensionService {
 	@Transactional
 	public Long extensionRental(Long rentalId) {
 		Rental rental = validateAndFindRental(rentalId);
+		checkIsAvailable(rentalId, rental);
 
 		Extension extension = Extension.builder()
 			.rental(rental)
@@ -51,6 +52,7 @@ public class ExtensionService {
 		this.eventPublisher.publishEvent(new ExtensionEvent(rental));
 		return save.getId();
 	}
+
 
 	@Transactional
 	public Page<ExtensionResponse> findByCondition(ExtensionFindCondition conditionForFind, Pageable pageable) {
@@ -119,6 +121,16 @@ public class ExtensionService {
 
 	private static void validateRentalStatus(Rental rental) {
 		if (rental.getRentalStatus() != RentalStatus.IN_PROGRESS) {
+			throw new ErrorException(ErrorCode.InvalidAccess);
+		}
+	}
+
+	private void checkIsAvailable(Long rentalId, Rental rental) {
+		boolean isExists = this.extensionRepository.existsExtensionByExtensionStatus(rentalId, OFFERING);
+		if(isExists) {
+			throw new ErrorException(ErrorCode.NotAcceptDuplicate);
+		}
+		if(rental.getRentalStatus() != RentalStatus.IN_PROGRESS) {
 			throw new ErrorException(ErrorCode.InvalidAccess);
 		}
 	}

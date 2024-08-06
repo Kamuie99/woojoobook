@@ -23,12 +23,15 @@ import com.e207.woojoobook.domain.extension.Extension;
 import com.e207.woojoobook.domain.extension.ExtensionRepository;
 import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.rental.RentalRepository;
+import com.e207.woojoobook.domain.rental.RentalStatus;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.domain.userbook.RegisterType;
 import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 import jakarta.mail.internet.MimeMessage;
@@ -124,6 +127,20 @@ class ExtensionServiceTest {
 		assertFalse(byId.isPresent());
 	}
 
+	@DisplayName("연장은 중복으로 신청할 수 없다")
+	@Test
+	void rejectExtensionDuplicated() {
+		// given
+		Rental save = createRental();
+		Extension extension = createExtension(save);
+		given(this.userHelper.findCurrentUser()).willReturn(user);
+
+		// expected
+		ErrorException errorException = assertThrows(ErrorException.class,
+			() -> this.extensionService.extensionRental(save.getId()));
+		assertEquals(errorException.getErrorCode().getMessage(), ErrorCode.NotAcceptDuplicate.getMessage());
+	}
+
 	private Extension createExtension(Rental save) {
 		Extension build = Extension.builder()
 			.rental(save)
@@ -138,6 +155,7 @@ class ExtensionServiceTest {
 		Rental rental = Rental.builder()
 			.user(user)
 			.userbook(userbook)
+			.rentalStatus(RentalStatus.IN_PROGRESS)
 			.build();
 		rental.respond(true);
 		Rental save = this.rentalRepository.save(rental);

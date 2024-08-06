@@ -47,6 +47,7 @@ public class RentalService {
 	public RentalOfferResponse rentalOffer(Long userbooksId) {
 		Userbook userbook = validateAndFindUserbook(userbooksId);
 		User currentUser = validateCanRentalAndFindCurrentUser();
+		checkIsNotDuplicated(currentUser, userbook, OFFERING);
 
 		checkIsNotOwner(userbook, currentUser);
 
@@ -59,6 +60,7 @@ public class RentalService {
 
 		return new RentalOfferResponse(savedRental.getId());
 	}
+
 
 	@Transactional
 	public Page<RentalResponse> findByCondition(RentalFindCondition conditionForFind, Pageable pageable) {
@@ -74,7 +76,10 @@ public class RentalService {
 		Rental rental = validateAndFindRental(offerId);
 		User currentUser = this.userHelper.findCurrentUser();
 
-		checkCurrentUserIsOwner(rental.getUserbook().getUser(), currentUser);
+		Userbook userbook = rental.getUserbook();
+		checkCurrentUserIsOwner(userbook.getUser(), currentUser);
+
+		checkIsAvailable(userbook, rental);
 
 		boolean isApproved = request.isApproved();
 		boolean hasSufficientPoints = this.userPersonalFacade.checkPointToRental(rental.getUser().getId());
@@ -86,6 +91,7 @@ public class RentalService {
 
 		approveRentalRequest(rental, request);
 	}
+
 
 	@Transactional
 	public void deleteRentalOffer(Long offerId) {
@@ -102,6 +108,9 @@ public class RentalService {
 		User currentUser = this.userHelper.findCurrentUser();
 
 		checkCurrentUserIsOwner(rental.getUserbook().getUser(), currentUser);
+		if(rental.getRentalStatus() != IN_PROGRESS) {
+			throw new ErrorException(ErrorCode.InvalidAccess);
+		}
 		rental.giveBack();
 
 		Userbook userbook = rental.getUserbook();
@@ -117,6 +126,7 @@ public class RentalService {
 		if (!this.userPersonalFacade.checkPointToRental(currentUser.getId())) {
 			throw new ErrorException(ErrorCode.NotEnoughPoint);
 		}
+
 		return currentUser;
 	}
 
@@ -149,7 +159,7 @@ public class RentalService {
 	private void updateUserbookIfApproved(RentalOfferRespondRequest request, Rental rental) {
 		if (request.isApproved()) {
 			Userbook userbook = this.userbookRepository.findById(rental.getUserbook().getId())
-				.orElseThrow(() -> new RuntimeException("Userbook not found"));
+				.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 			if (!userbook.isAvailable()) {
 				throw new ErrorException(ErrorCode.InvalidAccess);
 			}
@@ -166,6 +176,7 @@ public class RentalService {
 		rental.respond(request.isApproved());
 		updateUserbookIfApproved(request, rental);
 		publishRentalApprovalEvents(rental);
+		rejectPreviousRentalRequests(rental.getUserbook());
 	}
 
 	private void publishRentalApprovalEvents(Rental rental) {
@@ -176,5 +187,27 @@ public class RentalService {
 		this.eventPublisher.publishEvent(new PointEvent(rental.getUser(), PointHistory.USE_BOOK_RENTAL));
 		this.eventPublisher.publishEvent(new ExperienceEvent(rental.getUser(), ExperienceHistory.BOOK_RENTAL));
 		this.eventPublisher.publishEvent(new UserBookTradeStatusUpdateEvent(rental.getUserbook(), TradeStatus.RENTED));
+	}
+
+	private void checkIsNotDuplicated(User currentUser, Userbook userbook, RentalStatus status) {
+		boolean existsRentalByRentalStatus = this.rentalRepository.existsRentalByRentalStatus(currentUser.getId(),
+			userbook.getId(), status);
+
+		if (existsRentalByRentalStatus) {
+			throw new ErrorException(ErrorCode.NotAcceptDuplicate);
+		}
+	}
+
+	private void checkIsAvailable(Userbook userbook, Rental rental) {
+		if(!userbook.isAvailable() || rental.isOffering()) {
+			throw new ErrorException(ErrorCode.InvalidAccess);
+		}
+	}
+
+	private void rejectPreviousRentalRequests(Userbook userbook) {
+		this.rentalRepository.findAllByUserbookAndRentalStatus(userbook, OFFERING)
+			.forEach(r -> {
+				handleRentalResponse(r, false);
+			});
 	}
 }

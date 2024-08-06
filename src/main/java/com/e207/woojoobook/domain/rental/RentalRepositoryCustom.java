@@ -6,4 +6,6 @@ import org.springframework.data.domain.Pageable;
 public interface RentalRepositoryCustom {
 	Page<Rental> findByStatusAndUserCondition(Long userId, RentalStatus rentalStatus, RentalUserCondition condition,
 		Pageable pageable);
+
+	boolean existsRentalByRentalStatus(Long userId, Long userbookId,RentalStatus status);
 }

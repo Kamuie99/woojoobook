@@ -13,4 +13,6 @@ public interface RentalRepository extends JpaRepository<Rental, Long>, RentalRep
 
 	@EntityGraph(attributePaths = "user")
 	List<Rental> findWithUserByUser(User user);
+
+	List<Rental> findAllByUserbookAndRentalStatus(Userbook userbook, RentalStatus rentalStatus);
 }

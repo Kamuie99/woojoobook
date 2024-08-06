@@ -48,6 +48,7 @@ import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
 import com.e207.woojoobook.domain.userbook.WishbookRepository;
+import com.e207.woojoobook.global.exception.ErrorCode;
 import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
@@ -175,15 +176,14 @@ class RentalServiceTest {
 			() -> this.rentalService.rentalOffer(userbook.getId()));
 	}
 
-	@DisplayName("회원이 대여신청을 수락한다")
+	@DisplayName("회원이 대여신청을 수락한다. 기존에 있던 대여신청은 자동 거절이 된다")
 	@Test
 	void offerRespond_approve() {
 		// given
-		Rental rental = Rental.builder()
-			.user(user)
-			.userbook(userbook)
-			.build();
-		Rental save = this.rentalRepository.save(rental);
+		Rental save = this.rentalRepository.save(createRental(user, userbook, OFFERING)); // 수락할 대여
+		User anotherUser = this.userRepository.save(createUser("anotherUser"));
+		Rental anotherRental = this.rentalRepository.save(createRental(anotherUser, userbook, OFFERING));
+
 		RentalOfferRespondRequest request = new RentalOfferRespondRequest(true);
 		doNothing().when(mailSender).send(any(MimeMessage.class));
 		given(this.userHelper.findCurrentUser()).willReturn(owner);
@@ -200,6 +200,9 @@ class RentalServiceTest {
 
 		userbook = findById.getUserbook();
 		assertEquals(userbook.getTradeStatus(), TradeStatus.RENTED);
+
+		Rental rental = this.rentalRepository.findById(anotherRental.getId()).get();
+		assertEquals(rental.getRentalStatus(), REJECTED);
 	}
 
 	@DisplayName("회원이 발생한 대여신청을 삭제한다")
@@ -304,10 +307,26 @@ class RentalServiceTest {
 	void rejectRentalOffer() {
 		// given
 		User rentalUser = this.userRepository.save(createUser("test"));
+		Userbook savedUserbook = this.userbookRepository.save(createUserbook(user, "test"));
 		given(this.userHelper.findCurrentUser()).willReturn(rentalUser);
 
-		// when
+		// expected
+		ErrorException errorException = assertThrows(ErrorException.class,
+			() -> this.rentalService.rentalOffer(savedUserbook.getId()));
+		assertEquals(errorException.getErrorCode().getMessage(), ErrorCode.NotEnoughPoint.getMessage());
+	}
 
+	@DisplayName("대여는 중복으로 신청할 수 없다")
+	@Test
+	void rejectRentalOfferDuplicated() {
+		// given
+		Rental rental = this.rentalRepository.save(createRental(user, userbook, OFFERING));
+		given(this.userHelper.findCurrentUser()).willReturn(user);
+
+		// expected
+		ErrorException errorException = assertThrows(ErrorException.class,
+			() -> this.rentalService.rentalOffer(userbook.getId()));
+		assertEquals(errorException.getErrorCode().getMessage(), ErrorCode.NotAcceptDuplicate.getMessage());
 	}
 
 	private User createUser(String nickname) {

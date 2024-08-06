@@ -23,6 +23,20 @@ public class RentalRepositoryCustomImpl implements RentalRepositoryCustom {
 	}
 
 	@Override
+	public boolean existsRentalByRentalStatus(Long userId, Long userbookId,RentalStatus status) {
+		Integer fetchFirst = queryFactory.selectOne()
+			.from(rental)
+			.where(
+				rental.user.id.eq(userId)
+					.and(rental.userbook.id.eq(userbookId))
+					.and(rental.rentalStatus.eq(status))
+			)
+			.fetchFirst();
+
+		return fetchFirst != null;
+	}
+
+	@Override
 	public Page<Rental> findByStatusAndUserCondition(Long userId, RentalStatus rentalStatus,
 		RentalUserCondition condition, Pageable pageable) {
 

@@ -1,6 +1,7 @@
 package com.e207.woojoobook.domain.extension;
 
 import static com.e207.woojoobook.domain.extension.QExtension.*;
+import static com.e207.woojoobook.domain.rental.QRental.*;
 
 import java.util.List;
 
@@ -21,6 +22,19 @@ public class ExtensionRepositoryCustomImpl implements ExtensionRepositoryCustom 
 
 	public ExtensionRepositoryCustomImpl(EntityManager em) {
 		this.queryFactory = new JPAQueryFactory(em);
+	}
+
+	@Override
+	public boolean existsExtensionByExtensionStatus(Long extensionId, ExtensionStatus status) {
+		Integer fetchFirst = queryFactory.selectOne()
+			.from(extension)
+			.where(
+				extension.rental.id.eq(extensionId)
+					.and(extension.extensionStatus.eq(status))
+			)
+			.fetchFirst();
+
+		return fetchFirst != null;
 	}
 
 	@Override

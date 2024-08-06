@@ -395,6 +395,23 @@ class RentalRepositoryTest {
 		assertRentalWithRentalStatus(rentals, 2, COMPLETED);
 	}
 
+	@DisplayName("유저의 ID, 도서의 ID, 대여 상태에 맞는 대여가 있는 지 확인한다")
+	@Test
+	void existsRentalByRentalStatus() {
+		// given
+		User rentalUser = this.userRepository.save(createUser("rentalUser"));
+		User ownerUser = this.userRepository.save(createUser("ownerUser"));
+		Userbook userbook = this.userbookRepository.save(createUserbook(ownerUser, "001"));
+		this.rentalRepository.save(createRental(rentalUser, userbook, OFFERING));
+
+		// when
+		boolean existsRentalByRentalStatus =
+			this.rentalRepository.existsRentalByRentalStatus(rentalUser.getId(), userbook.getId(), OFFERING);
+
+		// then
+		assertThat(existsRentalByRentalStatus).isTrue();
+	}
+
 	private User createUser(String nickname) {
 		return User.builder()
 			.email("user@email.com")
