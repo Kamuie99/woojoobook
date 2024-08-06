@@ -1,18 +1,55 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react';
 import axiosInstance from "../util/axiosConfig";
 
-// eslint-disable-next-line react/prop-types
-const AreaSelector = ({ onAreaSelected }) => {
+const AreaSelector = ({ onAreaSelected, initialArea }) => {
   const [siList, setSiList] = useState([]);
   const [guList, setGuList] = useState([]);
   const [dongList, setDongList] = useState([]);
   const [selectedSi, setSelectedSi] = useState('');
   const [selectedGu, setSelectedGu] = useState('');
   const [selectedDong, setSelectedDong] = useState('');
+  const isInitialMount = useRef(true);
+  const initialAreaRef = useRef(initialArea);
 
   useEffect(() => {
     fetchSiList();
   }, []);
+
+  useEffect(() => {
+    if (isInitialMount.current && initialAreaRef.current && siList.length > 0) {
+      const siCode = siList.find(si => si.siName === initialAreaRef.current.siName)?.siCode;
+      if (siCode) {
+        setSelectedSi(siCode);
+        fetchGuList(siCode);
+      }
+    }
+  }, [siList]);
+
+  useEffect(() => {
+    if (isInitialMount.current && initialAreaRef.current && selectedSi && guList.length > 0) {
+      const guCode = guList.find(gu => gu.guName === initialAreaRef.current.guName)?.guCode;
+      if (guCode) {
+        setSelectedGu(guCode);
+        fetchDongList(selectedSi, guCode);
+      }
+    }
+  }, [guList, selectedSi]);
+
+  useEffect(() => {
+    if (isInitialMount.current && initialAreaRef.current && selectedSi && selectedGu && dongList.length > 0) {
+      const dongCode = dongList.find(dong => dong.dongName === initialAreaRef.current.dongName)?.areaCode;
+      if (dongCode) {
+        setSelectedDong(dongCode);
+        onAreaSelected({
+          siName: initialAreaRef.current.siName,
+          guName: initialAreaRef.current.guName,
+          dongName: initialAreaRef.current.dongName,
+          areaCode: dongCode
+        });
+      }
+      isInitialMount.current = false;
+    }
+  }, [dongList, selectedSi, selectedGu, onAreaSelected]);
 
   const fetchSiList = async () => {
     try {
@@ -65,7 +102,12 @@ const AreaSelector = ({ onAreaSelected }) => {
     const selectedSiName = siList.find(si => si.siCode === selectedSi)?.siName;
     const selectedGuName = guList.find(gu => gu.guCode === selectedGu)?.guName;
     const selectedDongName = dongList.find(dong => dong.areaCode === dongCode)?.dongName;
-    onAreaSelected(dongCode, `${selectedSiName} ${selectedGuName} ${selectedDongName}`);
+    onAreaSelected({
+      siName: selectedSiName,
+      guName: selectedGuName,
+      dongName: selectedDongName,
+      areaCode: dongCode
+    });
   };
 
   return (
@@ -95,7 +137,7 @@ const AreaSelector = ({ onAreaSelected }) => {
         ))}
       </select>
     </div>
-  )
+  );
 }
 
 export default AreaSelector;

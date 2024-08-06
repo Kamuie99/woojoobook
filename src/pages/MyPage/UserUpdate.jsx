@@ -1,101 +1,98 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Header from "../../components/Header";
+import { FaUserCircle } from "react-icons/fa";
+import Swal from 'sweetalert2';
 import axiosInstance from '../../util/axiosConfig';
+import Header from "../../components/Header";
 import AreaSelector from '../../components/AreaSelector';
+import styles from './UserUpdate.module.css';
 
 const UserUpdate = () => {
+  const [userId, setUserId] = useState('');
   const [nickname, setNickname] = useState('');
-  const [selectedAreaName, setSelectedAreaName] = useState('');
-  const [siList, setSiList] = useState([]);
-  const [guList, setGuList] = useState([]);
-  const [dongList, setDongList] = useState([]);
-  const [siCode, setSiCode] = useState('');
-  const [guCode, setGuCode] = useState('');
-  const [dongCode, setDongCode] = useState('');
-  const navigator = useNavigate([]);
-  
+  const [selectedArea, setSelectedArea] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const userResponse = await axiosInstance.get('/users');
-        console.log(userResponse.json());
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    }
     fetchUserInfo();
-  }, []);  
-
-  useEffect(() => {
-    const userAreaCode = '2638051000';
-    const userSiCode = userAreaCode.slice(0, 2);
-    const userGuCode = userAreaCode.slice(2, 5);
-    const userDongCode = userAreaCode.slice(5, 10);
-    
-    const fetchAreaData = async () => {
-      try {
-        const siResponse = await axiosInstance.get('/area/si');
-        const guResponse = await axiosInstance.get(`/area/gu?siCode=${userSiCode}`);
-        const dongResponse = await axiosInstance.get(`/area/dong?siCode=${userSiCode}&guCode=${userGuCode}`);
-
-        setSiList(siResponse.data.siList);
-        setGuList(guResponse.data.guList);
-        setDongList(dongResponse.data.dongList);
-
-        setSiCode(userSiCode);
-        setGuCode(userGuCode);
-        setDongCode(userDongCode);
-
-        const selectedSiName = siResponse.data.siList.find(si => si.siCode === userSiCode)?.siName;
-        const selectedGuName = guResponse.data.guList.find(gu => gu.guCode === userGuCode)?.guName;
-        const selectedDongName = dongResponse.data.dongList.find(dong => dong.areaCode === userAreaCode)?.dongName;
-        
-        setSelectedAreaName(`${selectedSiName} ${selectedGuName} ${selectedDongName}`);
-      } catch (error) {
-        console.error("Error fetching area data:", error);
-      }
-    };
-
-    fetchAreaData();
   }, []);
 
-  const handleAreaSelected = (areaCode, selectedAreaName) => {
-    setSelectedAreaName(selectedAreaName);
-    const siCode = areaCode.slice(0, 2);
-    const guCode = areaCode.slice(2, 5);
+  const fetchUserInfo = async () => {
+    try {
+      setIsLoading(true);
+      const userResponse = await axiosInstance.get('/users');
+      const userData = userResponse.data;
+      setUserId(userData.id);
+      setNickname(userData.nickname);
+
+      const areaResponse = await axiosInstance.get(`/area?areaCode=${userData.areaCode}`);
+      const areaData = areaResponse.data;
+      setSelectedArea({
+        siName: areaData.siName,
+        guName: areaData.guName,
+        dongName: areaData.dongName,
+        areaCode: userData.areaCode
+      });
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAreaSelected = (selectedArea) => {
+    setSelectedArea(selectedArea);
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
-    
+
     if (nickname.trim() === '') {
-      alert('닉네임을 입력해주세요.');
+      Swal.fire({
+        title: "Error!",
+        text: "닉네임을 입력해주세요.",
+        icon: "warning"
+      });
       return;
     }
 
-    if (siCode.trim() === '' || guCode.trim() === '' || dongCode.trim() === '') {
-      alert('주소를 모두 선택해주세요.');
+    if (!selectedArea || !selectedArea.siName || !selectedArea.guName || !selectedArea.dongName) {
+      Swal.fire({
+        title: "Error!",
+        text: "주소를 선택해주세요.",
+        icon: "warning"
+      });
       return;
     }
-
-    const areaCode = `${siCode}${guCode}${dongCode}`;
 
     try {
       const response = await axiosInstance.put('/users', {
         nickname,
-        areaCode
+        areaCode: selectedArea.areaCode
       });
 
       if (response.status === 200) {
-        alert('정보가 성공적으로 저장되었습니다.');
-        navigator('/');
+        Swal.fire({
+          title: "Success!",
+          text: "정보가 성공적으로 저장되었습니다.",
+          icon: "success"
+        });
+        navigate(`/${userId}/mypage`);
       } else {
-        alert('정보 저장에 실패했습니다.');
+        Swal.fire({
+          title: "Error!",
+          text: "정보 수정에 실패했습니다. 다시 시도해 주세요.",
+          icon: "error"
+        });
       }
     } catch (error) {
       console.error(error);
-      alert('정보 저장 중 오류가 발생했습니다.');
+      Swal.fire({
+        title: "Error!",
+        text: "정보 저장 중 오류가 발생했습니다.",
+        icon: "error"
+      });
     }
   };
 
@@ -103,34 +100,35 @@ const UserUpdate = () => {
     <>
       <Header />
       <main>
-        <div>
-          <img src="" alt="profile" />
-          <button>edit</button>
-          <Link to='/password-change'>
-            <button>비밀번호 변경</button>
-          </Link>
+        <div className={styles.titleDiv}>
+          <FaUserCircle /> 회원정보 수정
         </div>
-        <form onSubmit={handleSave}>
-          <p>닉네임</p>
-          <input type="text" value={nickname} onChange={(n) => setNickname(n.target.value)}/>
-          <div>
-            <label>지역</label>
-            {siCode}
-            {guCode}
-            {dongCode}
-            <AreaSelector
-              onAreaSelected={handleAreaSelected}
-              initialSiCode={siCode}
-              initialGuCode={guCode}
-              initialDongCode={dongCode}
-            />
+        {isLoading ? (
+          <div>로딩 중...</div>
+        ) : (
+          <div className={styles.contentDiv}>
+            <div>
+              <Link to='/passwordchange'>
+                <button>비밀번호 변경</button>
+              </Link>
+            </div>
+            <form onSubmit={handleSave}>
+              <p>닉네임</p>
+              <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+              <div>
+                <label>지역</label>
+                <AreaSelector
+                  onAreaSelected={handleAreaSelected}
+                  initialArea={selectedArea}
+                />
+              </div>
+              <button type="submit">저장</button>
+            </form>
           </div>
-          {selectedAreaName && <div style={{ marginTop: '20px' }}>선택된 지역: {selectedAreaName}</div>}
-          <button type="submit">저장</button>
-        </form>
+        )}
       </main>
     </>
-  )
-}
+  );
+};
 
 export default UserUpdate;

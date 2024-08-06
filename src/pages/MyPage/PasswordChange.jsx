@@ -1,28 +1,42 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../util/axiosConfig';
-import Header from "../../components/Header"
+import Header from "../../components/Header";
+import Swal from 'sweetalert2';
+import { FaUserCircle } from "react-icons/fa";
 import { AuthContext } from '../../contexts/AuthContext';
+import styles from './PasswordChange.module.css';
 
 const PasswordChange = () => {
-  const { isAuthenticated } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [curPassword, setCurPassword] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
-  const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
 
   const handlePasswordChange = async () => {
     if (!curPassword) {
-      setPasswordError('현재 비밀번호를 입력하세요.');
+      Swal.fire({
+        title: 'Error!',
+        text: '현재 비밀번호를 입력하세요.',
+        icon: 'error'
+      });
       return;
     }
     if (!password) {
-      setPasswordError('새 비밀번호를 입력하세요.');
+      Swal.fire({
+        title: 'Error!',
+        text: '새 비밀번호를 입력하세요.',
+        icon: 'error'
+      });
       return;
     }
-    if (password!==passwordConfirm) {
-      setPasswordError('변경할 비밀번호가 일치하지 않습니다.');
+    if (password !== passwordConfirm) {
+      Swal.fire({
+        title: 'Error!',
+        text: '변경할 비밀번호가 일치하지 않습니다.',
+        icon: 'error'
+      });
       return;
     }
 
@@ -33,43 +47,57 @@ const PasswordChange = () => {
         passwordConfirm
       });
       if (response.status === 200) {
-        alert('비밀번호가 성공적으로 변경되었습니다.');
+        Swal.fire({
+          title: 'Success!',
+          text: '비밀번호가 성공적으로 변경되었습니다.',
+          icon: 'success'
+        });
         setCurPassword('');
         setPassword('');
         setPasswordConfirm('');
-        navigate('/user-update');
+        navigate(`/${user.id}/mypage`);
       } else {
-        setPasswordError('비밀번호 변경 실패.');
+        Swal.fire({
+          title: 'Error!',
+          text: '비밀번호 변경을 실패했습니다.',
+          icon: 'error'
+        });
       }
     } catch (error) {
       console.log('비밀번호 변경 오류:', error);
-      setPasswordError('');
-      alert('비밀번호 변경 실패: ' + (error.response?.data?.message || error.message));
-  }
-};
-  
+      Swal.fire({
+        title: 'Error!',
+        text: '비밀번호 변경을 실패했습니다.: ' + (error.response?.data?.message || error.message),
+        icon: 'error'
+      });
+    }
+  };
+
   return (
     <>
       <Header />
       <main>
-        <h2>비밀번호 변경</h2>
-        <div>
-          <label>현재 비밀번호:</label>
-          <input type="password" value={curPassword} onChange={(e) => setCurPassword(e.target.value)} />
+        <div className={styles.titleDiv}>
+          <FaUserCircle /> 비밀번호 변경
         </div>
-        <div>
-          <label>새 비밀번호:</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <div className={styles.contentDiv}>
+          <div>
+            <label>현재 비밀번호:</label>
+            <input type="password" value={curPassword} onChange={(e) => setCurPassword(e.target.value)} />
+          </div>
+          <div>
+            <label>새 비밀번호:</label>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          </div>
+          <div>
+            <label>비밀번호 확인:</label>
+            <input type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
+          </div>
+          <button onClick={handlePasswordChange}>변경</button>
         </div>
-        <div>
-          <label>비밀번호 확인:</label>
-          <input type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
-        </div>
-        <button onClick={handlePasswordChange}>변경</button>
-        {passwordError && <p>{passwordError}</p>}
       </main>
-  </>
-  )
+    </>
+  );
 }
 
 export default PasswordChange;
