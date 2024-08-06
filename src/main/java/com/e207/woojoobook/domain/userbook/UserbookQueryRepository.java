@@ -1,7 +1,9 @@
 package com.e207.woojoobook.domain.userbook;
 
 import static com.e207.woojoobook.domain.book.QBook.*;
+import static com.e207.woojoobook.domain.user.QUser.*;
 import static com.e207.woojoobook.domain.userbook.QUserbook.*;
+import static com.e207.woojoobook.domain.userbook.QWishbook.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -33,37 +35,49 @@ public class UserbookQueryRepository {
 		this.queryFactory = new JPAQueryFactory(em);
 	}
 
-	public Page<Userbook> findTradeablePage(TradeableUserbookCondition condition, Pageable pageable) {
-		BooleanExpression[] tradeableExpressions = {
-			isKeywordInTitleOrAuthor(condition.keyword()),
-			hasRegisterType(condition.registerType()),
-			canExecuteTrade(condition.registerType()),
-			isAreaCodeInList(condition.areaCodeList())
-		};
-		return findPageWithExpressions(pageable, tradeableExpressions);
+	public Page<UserbookWithLikeStatus> findTradeablePage(TradeableUserbookCondition condition, Pageable pageable) {
+		BooleanExpression[] tradeableExpressions = {isKeywordInTitleOrAuthor(condition.keyword()),
+			hasRegisterType(condition.registerType()), canExecuteTrade(condition.registerType()),
+			isAreaCodeInList(condition.areaCodeList())};
+		return findPageWithLikeAndExpressions(condition.userId(), pageable, tradeableExpressions);
 	}
 
 	public Page<Userbook> findMyExchangablePage(MyExchangableUserbookCondition condition, Pageable pageable) {
-		BooleanExpression[] myExchangableExpressions = {
-			hasRegisterType(RegisterType.EXCHANGE),
-			canExecuteTrade(RegisterType.EXCHANGE),
-			isOwnedByUser(condition.userId())
-		};
+		BooleanExpression[] myExchangableExpressions = {hasRegisterType(RegisterType.EXCHANGE),
+			canExecuteTrade(RegisterType.EXCHANGE), isOwnedByUser(condition.userId())};
 		return findPageWithExpressions(pageable, myExchangableExpressions);
 	}
 
 	public Page<Userbook> findMyPage(MyUserbookCondition condition, Pageable pageable) {
-		BooleanExpression[] myUserbookExpressions = {
-			isOwnedByUser(condition.userId()),
-			isTradeStatus(condition.tradeStatus()),
-			isNotInactive()
-		};
+		BooleanExpression[] myUserbookExpressions = {isOwnedByUser(condition.userId()),
+			isTradeStatus(condition.tradeStatus()), isNotInactive()};
 		return findPageWithExpressions(pageable, myUserbookExpressions);
+	}
+
+	private Page<UserbookWithLikeStatus> findPageWithLikeAndExpressions(Long userId, Pageable pageable,
+		BooleanExpression... expressions) {
+		List<UserbookWithLikeStatus> content = this.queryFactory.select(
+				new QUserbookWithLikeStatus(userbook.id, userbook.book, userbook.user, userbook.registerType,
+					userbook.tradeStatus, userbook.qualityStatus, userbook.areaCode, wishbook.isNotNull()))
+			.from(userbook)
+			.join(userbook.book, book)
+			.join(userbook.user, user)
+			.leftJoin(wishbook)
+			.on(wishbook.user.id.eq(userId).and(wishbook.userbook.eq(userbook)))
+			.where(expressions)
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		Long count = this.countWithExpressions(expressions);
+
+		return new PageImpl<>(content, pageable, count);
 	}
 
 	private Page<Userbook> findPageWithExpressions(Pageable pageable, BooleanExpression... expressions) {
 		List<Userbook> content = this.queryFactory.selectFrom(userbook)
 			.join(userbook.book, book)
+			.fetchJoin()
 			.where(expressions)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -74,10 +88,7 @@ public class UserbookQueryRepository {
 	}
 
 	private Long countWithExpressions(BooleanExpression... expressions) {
-		return this.queryFactory.select(userbook.count())
-			.from(userbook)
-			.where(expressions)
-			.fetchOne();
+		return this.queryFactory.select(userbook.count()).from(userbook).where(expressions).fetchOne();
 	}
 
 	private BooleanExpression isKeywordInTitleOrAuthor(String keyword) {
@@ -115,6 +126,6 @@ public class UserbookQueryRepository {
 	}
 
 	private BooleanExpression isTradeStatus(TradeStatus tradeStatus) {
-		return userbook.tradeStatus.eq(tradeStatus);
+		return tradeStatus == null ? null : userbook.tradeStatus.eq(tradeStatus);
 	}
 }

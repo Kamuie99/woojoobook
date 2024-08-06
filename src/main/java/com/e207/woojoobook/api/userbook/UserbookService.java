@@ -22,10 +22,11 @@ import com.e207.woojoobook.domain.userbook.MyExchangableUserbookCondition;
 import com.e207.woojoobook.domain.userbook.MyUserbookCondition;
 import com.e207.woojoobook.domain.userbook.RegisterType;
 import com.e207.woojoobook.domain.userbook.TradeStatus;
-import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.TradeableUserbookCondition;
+import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookReader;
 import com.e207.woojoobook.domain.userbook.UserbookStateManager;
+import com.e207.woojoobook.domain.userbook.UserbookWithLikeStatus;
 import com.e207.woojoobook.global.exception.ErrorCode;
 import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
@@ -53,20 +54,21 @@ public class UserbookService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<UserbookResponse> findUserbookPage(UserbookPageFindRequest request, Pageable pageable) {
+	public Page<UserbookWithLikeResponse> findUserbookPage(UserbookPageFindRequest request, Pageable pageable) {
 		if (request.areaCodeList().size() > MAX_AREA_CODE_SIZE) {
 			throw new ErrorException(ErrorCode.IllegalArgument);
 		}
 
 		User user = userHelper.findCurrentUser();
-		TradeableUserbookCondition condition = request.toCondition();
+		TradeableUserbookCondition condition = new TradeableUserbookCondition(request.keyword(), user.getId(),
+			request.areaCodeList(), request.registerType());
 
 		if (condition.areaCodeList().isEmpty()) {
 			condition.areaCodeList().add(user.getAreaCode());
 		}
-		Page<Userbook> userbookPage = this.userbookReader.findTradeablePage(condition, pageable);
+		Page<UserbookWithLikeStatus> userbookPage = this.userbookReader.findTradeablePageWithLikeStatus(condition, pageable);
 
-		return userbookPage.map(UserbookResponse::of);
+		return userbookPage.map(UserbookWithLikeResponse::of);
 	}
 
 	@Transactional(readOnly = true)

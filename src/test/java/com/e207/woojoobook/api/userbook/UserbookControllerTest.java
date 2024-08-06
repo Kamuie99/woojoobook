@@ -95,7 +95,7 @@ class UserbookControllerTest extends AbstractRestDocsTest {
 		UserbookPageFindRequest request = createFindRequest();
 		String requestJson = objectMapper.writeValueAsString(request);
 
-		Page<UserbookResponse> response = createUserbookPage();
+		Page<UserbookWithLikeResponse> response = createUserbookWithLikePage();
 		String responseJson = objectMapper.writeValueAsString(response);
 		given(userbookService.findUserbookPage(eq(request), any(Pageable.class))).willReturn(response);
 		System.out.println("responseJson = " + responseJson);
@@ -114,11 +114,11 @@ class UserbookControllerTest extends AbstractRestDocsTest {
 			RENTAL_EXCHANGE);
 	}
 
-	private Page<UserbookResponse> createUserbookPage() {
-		List<UserbookResponse> userbookList = new ArrayList<>();
+	private Page<UserbookWithLikeResponse> createUserbookWithLikePage() {
+		List<UserbookWithLikeResponse> userbookList = new ArrayList<>();
 		for (int i = 1; i <= 3; i++) {
 			UserbookResponse response = createUserbookResponse(i);
-			userbookList.add(response);
+			userbookList.add(new UserbookWithLikeResponse(response, false));
 		}
 		return new PageImpl<>(userbookList, PageRequest.of(0, 3), 3);
 	}

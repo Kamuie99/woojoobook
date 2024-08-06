@@ -80,7 +80,7 @@ public class VerificationService {
 
 		this.redisTemplate.opsForHash().put("user;", email, userVerification);
 		UserVerification verification = (UserVerification) this.redisTemplate.opsForHash().get("user;", email);
-		if(userVerification == null) {
+		if(verification == null) {
 			throw new ErrorException(ErrorCode.NotFound);
 		}
 		return verification.getVerificationCode();

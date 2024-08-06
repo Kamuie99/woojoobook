@@ -29,21 +29,22 @@ public class UserbookController {
 	private final UserbookService userbookService;
 
 	@GetMapping
-	public ResponseEntity<Page<UserbookResponse>> findUserbookPageList(
+	public ResponseEntity<Page<UserbookWithLikeResponse>> findUserbookPageList(
 		@ModelAttribute UserbookPageFindRequest request, @PageableDefault(sort = "title") Pageable pageable) {
-		Page<UserbookResponse> userbookPageList = userbookService.findUserbookPage(request, pageable);
-		return ResponseEntity.ok(userbookPageList);
+		Page<UserbookWithLikeResponse> userbookWithLikePage = userbookService.findUserbookPage(request, pageable);
+		return ResponseEntity.ok(userbookWithLikePage);
 	}
 
 	@PostMapping
-	public ResponseEntity<UserbookResponse> createUserbook(@Valid @RequestBody UserbookCreateRequest userbookCreateRequest) {
+	public ResponseEntity<UserbookResponse> createUserbook(
+		@Valid @RequestBody UserbookCreateRequest userbookCreateRequest) {
 		// todo 예외 처리: Validation 예외 처리
 		return ResponseEntity.ok(userbookService.createUserbook(userbookCreateRequest));
 	}
 
 	@PutMapping("/{userbookId}")
-	public ResponseEntity<UserbookResponse> updateUserbook(@Valid @RequestBody UserbookUpdateRequest userbookUpdateRequest,
-		@PathVariable Long userbookId) {
+	public ResponseEntity<UserbookResponse> updateUserbook(
+		@Valid @RequestBody UserbookUpdateRequest userbookUpdateRequest, @PathVariable Long userbookId) {
 		// todo 예외 처리: Validation 예외 처리
 		return ResponseEntity.ok(userbookService.updateUserbook(userbookId, userbookUpdateRequest));
 	}

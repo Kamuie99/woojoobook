@@ -47,7 +47,7 @@ class WishbookControllerTest extends AbstractRestDocsTest {
 	void updateWishbookRequest() throws Exception {
 		// given
 		boolean wished = false;
-		WishbookRequest wishBookRequest = new WishbookRequest(userId, wished);
+		WishbookRequest wishBookRequest = new WishbookRequest(wished);
 		given(wishBookService.updateWishbook(userbookId, wished))
 			.willReturn(new WishbookResponse(userbookId, wished));
 
@@ -65,7 +65,7 @@ class WishbookControllerTest extends AbstractRestDocsTest {
 	@DisplayName("관심 등록된 사용자 도서에 관심 등록 취소 요청을 보냄")
 	@Test
 	void deleteWishbookRequest() throws Exception {
-		WishbookRequest wishBookRequest = new WishbookRequest(1L, true);
+		WishbookRequest wishBookRequest = new WishbookRequest(true);
 		ResultActions resultActions = this.mockMvc.perform(
 			post("/userbooks/{userbookId}/wish", userbookId)
 				.contentType(MediaType.APPLICATION_JSON)

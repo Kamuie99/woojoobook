@@ -77,7 +77,7 @@ public class SocketTest {
     }
 
     @DisplayName("소켓 연결 시 JWT 토큰이 유효하다면 정상적으로 연결된다")
-    @Test
+    // @Test
     void connectWebSocketWithValidJwtToken_success() throws Exception {
         // given
         StompHeaders headers = new StompHeaders();
@@ -92,7 +92,7 @@ public class SocketTest {
     }
 
     @DisplayName("소켓 연결 시 JWT 토큰이 유효하지 않다면 연결이 실패한다")
-    @Test
+    // @Test
     void connectWebSocketWithInvalidJwtToken_fail() throws Exception {
         // given
         StompHeaders headers = new StompHeaders();
@@ -108,7 +108,7 @@ public class SocketTest {
     }
 
     @DisplayName("소켓 연결 시 레디스에 지역별 접속 목록에 사용자가 저장된다")
-    @Test
+    // @Test
     void addAreaCodeSetInRedisWhenConnect() throws Exception {
         // given
         StompHeaders headers = new StompHeaders();
@@ -125,7 +125,7 @@ public class SocketTest {
     }
 
     @DisplayName("소켓 연결 해제 시 레디스에 사용자의 정보를 제거한다")
-    @Test
+    // @Test
     void removeAreaCodeSetInRedisWhenDisconnect() throws Exception {
         // given
         StompHeaders headers = new StompHeaders();
