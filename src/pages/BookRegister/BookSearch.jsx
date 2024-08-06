@@ -3,6 +3,7 @@ import Modal from './Modal';
 import styles from './BookSearch.module.css';
 import { IoSearchOutline } from "react-icons/io5";
 import axiosInstance from '../../util/axiosConfig';
+import Swal from 'sweetalert2';
 
 // eslint-disable-next-line react/prop-types
 const BookSearch = ({ onSelectBook }) => {
@@ -15,7 +16,11 @@ const BookSearch = ({ onSelectBook }) => {
 
   const handleSearch = async () => {
     if (!searchKeyword.trim()) {
-      alert('책 제목을 입력해주세요.');
+      Swal.fire({
+        icon: 'error',
+        title: '검색 실패',
+        text: '책 제목/저자/ISBN을 입력해주세요'
+      });
       return;
     }
     setPage(1);

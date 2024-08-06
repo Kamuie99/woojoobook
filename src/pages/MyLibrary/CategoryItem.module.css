@@ -7,12 +7,17 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   transition: box-shadow 0.3s ease;
   width: 100%;
+  /* height: 300px; */
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5); /* 그림자 추가 */
+  background-color: var(--sub-color);
 }
 
 .categoryItem:hover {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s; /* transform에 대한 transition 추가 */
 }
 
 .header {
@@ -27,6 +32,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: flex;
+  gap: 5px;
+
 }
 
 .buttonGroup {
@@ -60,11 +68,14 @@
   width: calc(20% - 12px);
   text-align: center;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .bookThumbnail {
-  width: 100%;
-  height: auto;
+  width: 100px;
+  height: 150px;
   border-radius: 4px;
   margin-bottom: 5px;
 }
@@ -74,7 +85,6 @@
   margin-bottom: 3px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .bookAuthor {
@@ -83,8 +93,8 @@
 }
 
 .emptyBox {
-  height: 80%;
-  width: calc(20% - 12px);
+  width: 100px;
+  height: 150px;
   border: 1px solid #ddd;
   border-radius: 4px;
   display: flex;

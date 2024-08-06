@@ -1,4 +1,3 @@
-import React from 'react'
 import styles from './Policy.module.css'
 
 const OperationPolicy = () => {

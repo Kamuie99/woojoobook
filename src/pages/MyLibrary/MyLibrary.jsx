@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState, useMemo } from "react"
 import { useParams } from 'react-router-dom';
 import { AuthContext } from "../../contexts/AuthContext"
@@ -9,6 +10,8 @@ import CategoryItem from "./CategoryItem";
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import styles from './MyLibrary.module.css';
+import { LuBookPlus } from "react-icons/lu";
+import { HiOutlineInformationCircle } from "react-icons/hi";
 
 const MyLibrary = () => {
   const {userId} = useParams()
@@ -107,9 +110,24 @@ const MyLibrary = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <Header />
+        <div className={styles.titleDiv}>
+          <LuBookPlus /> 내 서재
+        </div>
         {isOwnLibrary ? (
           <main className={styles.main}>
-            <p className={styles.libraryTitle}>나의 서재</p>
+            <div className={styles.informationBox}>
+              <div className={styles.infoInner}>
+                <div>
+                  <HiOutlineInformationCircle />
+                  <span>보여주고 싶은 책을 보여주세요!</span>
+                </div>
+                <div>
+                  <HiOutlineInformationCircle />
+                  <span>카테고리를 끌어당겨 위치를 바꿀 수 있습니다!</span>
+                </div>
+              </div>
+              <button onClick={handleCreate} className={styles.createButton}>카테고리 생성</button>
+            </div>
             <div className={styles.categoriesContainer}>
               {sortedCategories.map((category, index) => (
                 <CategoryItem
@@ -125,7 +143,6 @@ const MyLibrary = () => {
                 />
               ))}
             </div>
-            <button onClick={handleCreate} className={styles.createButton}>카테고리 생성</button>
 
             <Modal
               isOpen={createModalIsOpen}

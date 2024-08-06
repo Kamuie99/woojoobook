@@ -29,7 +29,6 @@ const Policy = () => {
           <RiCustomerService2Line />이용 약관 / 정책
         </div>
         <div className={styles.titleSub}>
-          <p>안녕하세요?</p>
           <p>우주도서를 이용해 주셔서 감사합니다.</p>
           <p>아래 준비한 약관을 읽어주시면 감사드리겠습니다.</p>
         </div>

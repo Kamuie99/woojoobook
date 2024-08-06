@@ -33,6 +33,11 @@
   align-self: center;
 }
 
+.submitButton.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .submitButton:hover {
   background-color: #45a049;
 }

@@ -1,15 +1,25 @@
 import { FaAngleRight } from "react-icons/fa6";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AreaSelector from "../../components/AreaSelector";
 
 // eslint-disable-next-line react/prop-types
-const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm, nickname, setNickname, setAreaCode, handleFinalSubmit }) => {
+const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm, passwordMismatch, nickname, setNickname, setAreaCode, handleFinalSubmit }) => {
   const [selectedAreaName, setSelectedAreaName] = useState('');
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const handleAreaSelected = (selectedAreaCode, selectedAreaName) => {
     setAreaCode(selectedAreaCode);
     setSelectedAreaName(selectedAreaName);
   };
+
+  useEffect(() => {
+    const isValid = password !== '' &&
+                    passwordConfirm !== '' &&
+                    !passwordMismatch &&
+                    nickname !== '' &&
+                    selectedAreaName !== '';
+    setIsFormValid(isValid);
+  }, [password, passwordConfirm, passwordMismatch, nickname, selectedAreaName]);
   
   return (
     <form onSubmit={handleFinalSubmit}>
@@ -25,6 +35,7 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
         <div>
           <label>비밀번호 확인</label>
           <input type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} required />
+          {passwordMismatch && passwordConfirm !== '' && <span style={{color: 'red', fontSize: '0.8em', marginLeft: '10px'}}>비밀번호가 일치하지 않습니다.</span>}
         </div>
         <div>
           <label>닉네임</label>
@@ -35,9 +46,17 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
             <label>지역</label>
             <AreaSelector onAreaSelected={handleAreaSelected} />
           </div>
-          {selectedAreaName && <div style={{ marginTop: '20px' }}>선택된 지역: {selectedAreaName}</div>}
+          {selectedAreaName ? (
+            <div style={{ marginTop: '20px' }}>선택된 지역: {selectedAreaName}</div>
+          ) : (
+            <div style={{ color: 'red', fontSize: '0.8em', marginTop: '10px' }}>지역을 선택해주세요.</div>
+          )}
         </div>
-        <button className='emailButton2' type="submit"><FaAngleRight color='white' size='25px'/></button>
+        {isFormValid && (
+          <button className='emailButton2' type="submit">
+            <FaAngleRight color='white' size='25px'/>
+          </button>
+        )}
       </div>
     </form>
   );

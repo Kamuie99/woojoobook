@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LuBookPlus } from "react-icons/lu";
 import { useNavigate } from 'react-router-dom';
 import Swal from "sweetalert2";
@@ -13,7 +13,12 @@ const BookRegister = () => {
   const [isRentable, setIsRentable] = useState(false);
   const [isExchangeable, setIsExchangeable] = useState(false);
   const [quality, setQuality] = useState('');
+  const [isFormValid, setIsFormValid] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setIsFormValid(selectedBook && (isRentable || isExchangeable) && quality);
+  }, [selectedBook, isRentable, isExchangeable, quality]);
 
   const getRegisterType = () => {
     if (isRentable && isExchangeable) return 'RENTAL_EXCHANGE';
@@ -23,7 +28,7 @@ const BookRegister = () => {
   };
 
   const handleSubmit = async () => {
-    if (!selectedBook || (!isRentable && !isExchangeable) || !quality) {
+    if (!isFormValid) {
       await Swal.fire({
         title: '입력 오류',
         text: '모든 필드를 입력해주세요.',
@@ -81,6 +86,13 @@ const BookRegister = () => {
     }
   };
 
+  const getButtonTooltip = () => {
+    if (!selectedBook) return "도서를 선택해주세요";
+    if (!isRentable && !isExchangeable) return "등록 정보를 선택해주세요";
+    if (!quality) return "도서 상태를 선택해주세요";
+    return "";
+  };
+
   return (
     <div className={styles.bookRegisterContainer}>
       <Header />
@@ -90,18 +102,25 @@ const BookRegister = () => {
         </div>
         <BookSearch onSelectBook={setSelectedBook} />
         {selectedBook && (
-          <SelectedBook
-            book={selectedBook}
-            isRentable={isRentable}
-            setIsRentable={setIsRentable}
-            isExchangeable={isExchangeable}
-            setIsExchangeable={setIsExchangeable}
-            quality={quality}
-            setQuality={setQuality}
-          />
-        )}
-        {selectedBook && (isRentable || isExchangeable) && quality && (
-          <button onClick={handleSubmit} className={styles.submitButton}>등록하기</button>
+          <>
+            <SelectedBook
+              book={selectedBook}
+              isRentable={isRentable}
+              setIsRentable={setIsRentable}
+              isExchangeable={isExchangeable}
+              setIsExchangeable={setIsExchangeable}
+              quality={quality}
+              setQuality={setQuality}
+            />
+            <button 
+              onClick={handleSubmit} 
+              className={`${styles.submitButton} ${!isFormValid ? styles.disabled : ''}`}
+              disabled={!isFormValid}
+              title={!isFormValid ? getButtonTooltip() : ""}
+            >
+              등록하기
+            </button>
+          </>
         )}
       </main>
     </div>

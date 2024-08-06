@@ -7,6 +7,7 @@ import '../../styles/Register.css';
 import EmailForm from './EmailForm';
 import VerificationForm from './VerificationForm';
 import FinalForm from './FinalForm';
+import Swal from 'sweetalert2';
 
 
 const Register = () => {
@@ -19,6 +20,7 @@ const Register = () => {
   const [nickname, setNickname] = useState('');
   const [areaCode, setAreaCode] = useState('');
   const [emailError, setEmailError] = useState(' ');
+  const [passwordMismatch, setPasswordMismatch] = useState(false);
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
@@ -58,8 +60,11 @@ const Register = () => {
       setStep(3);
     } catch (error) {
       if (error.response) {
-        console.error(error);
-        alert('인증 실패');
+        Swal.fire({
+          icon: 'error',
+          title: '인증번호 불일치',
+          text: '잘못된 인증번호를 입력하셨습니다. 다시 입력해주세요.'
+        })
       }
     }
   };
@@ -92,6 +97,12 @@ const Register = () => {
     }
   };
 
+  const handlePasswordConfirmChange = (e) => {
+    const confirmValue = e.target.value;
+    setPasswordConfirm(confirmValue);
+    setPasswordMismatch(password !== confirmValue);
+  };
+
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -112,7 +123,8 @@ const Register = () => {
           password={password}
           setPassword={setPassword}
           passwordConfirm={passwordConfirm}
-          setPasswordConfirm={setPasswordConfirm}
+          setPasswordConfirm={handlePasswordConfirmChange}
+          passwordMismatch={passwordMismatch}
           nickname={nickname}
           setNickname={setNickname}
           areaCode={areaCode}
@@ -123,6 +135,7 @@ const Register = () => {
         return null;
     }
   };
+  
 
   return (
     <>

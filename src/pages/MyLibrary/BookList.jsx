@@ -1,4 +1,4 @@
-import React from 'react';
+/* eslint-disable react/prop-types */
 import styles from './BookList.module.css';
 
 const BookList = ({ books, onSelect, onRemove, selectable = false }) => (
