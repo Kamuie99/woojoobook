@@ -24,6 +24,7 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -50,8 +51,6 @@ public class SocketTest {
 
     @BeforeEach
     void setup() throws IOException {
-        // redis 초기화
-        redisTemplate.getConnectionFactory().getConnection().flushAll();
         // Stomp Client 설정
         stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
@@ -70,8 +69,11 @@ public class SocketTest {
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDown() throws IOException {
         redisTemplate.getConnectionFactory().getConnection().flushAll();
+        if (stompClient != null) {
+            stompClient.stop();
+        }
     }
 
     @DisplayName("소켓 연결 시 JWT 토큰이 유효하다면 정상적으로 연결된다")
@@ -87,10 +89,9 @@ public class SocketTest {
             this.stompClient.connectAsync(uri, null, headers, new StompSessionHandlerAdapter() {
             }).get(5, TimeUnit.SECONDS );
         });
-        System.out.println(jwt);
     }
 
-    @DisplayName("소켓 연결 시 JWT 토큰이 유효하다면 연결이 실패한다")
+    @DisplayName("소켓 연결 시 JWT 토큰이 유효하지 않다면 연결이 실패한다")
     @Test
     void connectWebSocketWithInvalidJwtToken_fail() throws Exception {
         // given
@@ -137,11 +138,14 @@ public class SocketTest {
         Set<Object> members = redisTemplate.opsForSet().members("area:" + areaCode);
         assertTrue(members.contains(UserOnResponse.toDto(user)));
 
+        CountDownLatch latch = new CountDownLatch(1);
+
         // when
         stompSession.disconnect();
+        latch.await(100, TimeUnit.MILLISECONDS);
+        latch.countDown();
 
         // then
-        Thread.sleep(100);
         members = redisTemplate.opsForSet().members("area:" + areaCode);
         assertFalse(members.contains(UserOnResponse.toDto(user)));
     }

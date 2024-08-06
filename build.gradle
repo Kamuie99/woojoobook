@@ -55,6 +55,7 @@ dependencies {
 
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.github.codemonstur:embedded-redis:1.4.3'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'
@@ -81,7 +82,7 @@ dependencies {
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'com.github.codemonstur:embedded-redis:1.4.3'
+
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
