@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Box, IconButton, Typography, FormControlLabel, Checkbox, Button } from '@mui/material';
+import { Modal, Box, IconButton, Typography, FormControlLabel, Checkbox, Button, Backdrop } from '@mui/material';
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { getEmotionImage } from '../../util/get-emotion-image';
+import Swal from 'sweetalert2'
 import styles from './BookStatusChangeModal.module.css';
 
-const BookStatusChangeModal = ({ isOpen, onClose, registerType, qualityStatus, handleSubmitBookStatusChange }) => {
+const BookStatusChangeModal = ({ isOpen, onClose, registerType, qualityStatus, handleSave }) => {
   const [canRent, setCanRent] = useState(registerType === 'RENTAL');
   const [canExchange, setCanExchange] = useState(registerType === 'EXCHANGE');
   const [quality, setQuality] = useState(qualityStatus);
@@ -18,29 +19,48 @@ const BookStatusChangeModal = ({ isOpen, onClose, registerType, qualityStatus, h
   }, [isOpen, registerType, qualityStatus]);
 
   const getQualityFromCondition = (condition) => {
-    switch(condition) {
-      case 1: return 'VERY_GOOD';
-      case 2: return 'GOOD';
-      case 3: return 'NORMAL';
-      case 4: return 'BAD';
-      case 5: return 'VERY_BAD';
-      default: return '';
+    const qualityMap = {
+      1: 'VERY_GOOD',
+      2: 'GOOD',
+      3: 'NORMAL',
+      4: 'BAD',
+      5: 'VERY_BAD'
     }
+    return qualityMap[condition] || '';
   };
 
   const getQualityText = (quality) => {
-    switch(quality) {
-      case 'VERY_GOOD': return { text: '매우 좋음', color: '#65C964' };
-      case 'GOOD': return { text: '좋음', color: '#9ED672' };
-      case 'NORMAL': return { text: '보통', color: '#FCCE18' };
-      case 'BAD': return { text: '나쁨', color: '#FE8447' };
-      case 'VERY_BAD': return { text: '매우 나쁨', color: '#FD565F' };
-      default: return { text: '', color: '' };
+    const qualityMap = {
+      'VERY_GOOD': { text: '매우 좋음', color: '#65C964' },
+      'GOOD': { text: '좋음', color: '#9ED672' },
+      'NORMAL': { text: '보통', color: '#FCCE18' },
+      'BAD': { text: '나쁨', color: '#FE8447' },
+      'VERY_BAD': { text: '매우 나쁨', color: '#FD565F' }
     }
+    return qualityMap[quality] || { text: '', color: '' };
   };
 
   const onSave = () => {
-    handleSubmitBookStatusChange(canRent, canExchange, quality);
+    Swal.fire({
+      title: "상태를 변경하시겠습니까?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "변경하기",
+      cancelButtonText: "취소하기",
+      customClass: {
+        swalPopup: styles.swalPopup
+      }
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await handleSave(canRent, canExchange, quality);
+        } catch (err) {
+          console.error(err);
+        }
+      } 
+    })
   }
 
   return (
@@ -49,15 +69,13 @@ const BookStatusChangeModal = ({ isOpen, onClose, registerType, qualityStatus, h
       onClose={onClose}
       aria-labelledby="quality-status-modal-title"
       aria-describedby="quality-status-modal-description"
+      style={{zIndex: 1000}}
     >
       <Box className={styles.modalBox}>
         <Box className={styles.modalHeader}>
-          <Typography variant="h6" component="h2" id="quality-status-modal-title">
-            책 상태 변경
+          <Typography variant="h5" component="h2" id="quality-status-modal-title">
+            책 상태 변경하기
           </Typography>
-          <IconButton aria-label="close" onClick={onClose}>
-            <IoMdCloseCircleOutline size={30} />
-          </IconButton>
         </Box>
         <Box className={styles.modalContent}>
           <Box className={styles.checkboxGroup}>
@@ -76,9 +94,7 @@ const BookStatusChangeModal = ({ isOpen, onClose, registerType, qualityStatus, h
               label="교환 가능 여부"
             />
           </Box>
-          <Typography variant="body1" id="quality-status-modal-description">
-            현재 품질 상태: {getQualityText(quality).text}
-          </Typography>
+          <p className={styles.qualityStatus}>현재 품질 상태: {getQualityText(quality).text}</p>
           <Box className={styles.emotionImages}>
             {[1, 2, 3, 4, 5].map((id) => (
               <img
@@ -99,6 +115,7 @@ const BookStatusChangeModal = ({ isOpen, onClose, registerType, qualityStatus, h
             취소
           </Button>
         </Box>
+        <div className={styles.footer}></div>
       </Box>
     </Modal>
   )

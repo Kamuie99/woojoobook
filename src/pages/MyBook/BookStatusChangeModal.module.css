@@ -3,34 +3,43 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: white;
-  border: 2px solid #000;
-  border-radius: 20px;
-  box-shadow: 24px;
+  width: 24em;
+  max-width: 100%;
+  border-radius: 5px;
+  background: #fff;
+  color: #545454;
   padding: 16px;
-  width: 400px;
+  font-size: 18px;
 }
 
 .modalHeader {
+  position: relative;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-}
-
-.modalContent {
-  margin-top: 16px;
+  padding: 20px;
 }
 
 .checkboxGroup {
   display: flex;
-  flex-direction: column;
-  margin-top: 16px;
+  flex-direction: row;
+  justify-content: center;
+  gap: 12%;
+  font-size: 18px;
+  padding: 0 20px;
+}
+
+.qualityStatus {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
 }
 
 .emotionImages {
   display: flex;
-  justify-content: space-around;
-  margin-top: 16px;
+  justify-content: center;
+  gap: 4%;
+  padding: 20px;
 }
 
 .emotionImages img {
@@ -38,7 +47,6 @@
   height: 40px;
   cursor: pointer;
   transition: opacity 0.3s;
-  margin: 10px;
 }
 
 .emotionImages img:not(.selected) {
@@ -49,4 +57,14 @@
   display: flex;
   flex-direction: row;
   width: 100%;
+  justify-content: center;
+  gap: 55%;
 }
+
+.footer {
+  height: 20px;
+}
+
+/* .swalPopup {
+  z-index: 1500;
+} */

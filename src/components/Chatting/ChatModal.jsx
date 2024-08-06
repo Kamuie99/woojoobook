@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Modal, Box, IconButton, CircularProgress } from '@mui/material';
+import { Modal, Box, IconButton, CircularProgress, Backdrop } from '@mui/material';
 import { IoChatbubblesOutline } from "react-icons/io5";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { FaExchangeAlt } from "react-icons/fa";
@@ -76,6 +76,10 @@ const ChatModal = ({ open, handleClose, isClosing, isLoading, handleAnimationEnd
       onClose={handleClose}
       aria-labelledby={styles.chat_modal_title}
       aria-describedby={styles.chat_modal_description}
+      BackdropProps={{
+        style: { backgroundColor: 'transparent' },
+        invisible: true
+      }}
     >
       <Box
         className={`

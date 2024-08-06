@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useContext } from "react";
 import { useSearch } from '../../contexts/SearchContext';
 import { LuBookPlus } from "react-icons/lu";
-import { CiHeart } from "react-icons/ci";
-import { FaHeart } from "react-icons/fa";
+import { IoHeartOutline, IoHeartSharp } from "react-icons/io5";
 import { getEmotionImage } from '../../util/get-emotion-image';
 import { AuthContext } from '../../contexts/AuthContext';
 import { FiMapPin } from "react-icons/fi";
@@ -10,6 +9,7 @@ import Header from "../../components/Header"
 import axiosInstance from './../../util/axiosConfig';
 import AreaSelector from "../../components/AreaSelector";
 import BookModal from './BookModal';
+import Swal from 'sweetalert2'
 import styles from './BookList.module.css';
 
 const BookList = () => {
@@ -22,7 +22,7 @@ const BookList = () => {
   const [areaNames, setAreaNames] = useState({});
   const [selectedAreaCode, setSelectedAreaCode] = useState('');
   const [userAreaName, setUserAreaName] = useState('');
-  const { user } = useContext(AuthContext);
+  const { user, sub: userId } = useContext(AuthContext);
   const [selectedBook, setSelectedBook] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -151,9 +151,30 @@ const BookList = () => {
     return firstAuthor;
   };
   
-  const toggleWish = (bookId) => {
-    console.log(bookId);
-    axiosInstance.post(`/userbooks/${bookId}/wish`,)
+  const toggleWish = async (bookId, wished) => {
+    if (wished) {
+      const result = await Swal.fire({
+        title: "관심 등록을 취소하시겠습니까?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "관심 해제",
+        cancelButtonText: "취소"
+      });
+  
+      if (!result.isConfirmed) {
+        return; // 사용자가 취소하거나 다른 행동을 한 경우 함수 종료
+      }
+    }
+    try {
+      await axiosInstance.post(`/userbooks/${bookId}/wish`, {userId, wished})
+      setBooks(prev => prev.map(book =>
+        book.userbook.id === bookId ? {...book, like: !book.like } : book
+      ));
+    } catch (err) {
+      console.error('toggle wish 에러 :', err);
+    }
   }
 
   return (
@@ -219,8 +240,12 @@ const BookList = () => {
                   </div>
                   <div className={styles.status}>
                     <div className={styles.statusIcon}>
-                      <button onClick={() => toggleWish(book.userbook.id)} style={{paddingRight: '2px'}}>
-                        {book.like ? <FaHeart size={'28px'} /> : <CiHeart size={'35px'}/>}
+                      <button
+                        onClick={() => toggleWish(book.userbook.id, book.like)}
+                        style={{ color: 'var(--contrast-color)' }}
+                        className={`${styles.heartIcon} ${book.like ? styles.liked : ''}`}
+                        >
+                        {book.like ? <IoHeartSharp size={'30px'} /> : <IoHeartOutline size={'30px'}/>}
                       </button>
                     </div>
                     <div className={styles.statusDong}>

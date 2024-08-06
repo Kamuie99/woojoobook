@@ -1,3 +1,13 @@
+.main {
+  padding: 20px;
+  height: calc(100vh - 240px);
+  overflow-y: auto;
+}
+
+.main::-webkit-scrollbar {
+  display: none;
+}
+
 .title {
   padding: 10px 20px;
   display: flex;
@@ -14,12 +24,6 @@
   gap: 10px;
 }
 
-.main {
-  padding: 20px;
-  height: calc(100vh - 240px);
-  overflow-y: auto;
-}
-
 .selector {
   display: flex;
   width: 100%;
@@ -27,6 +31,7 @@
   overflow: hidden;
   position: relative;
   gap: 25px;
+  padding: 10px;
 }
 
 .selectButton {

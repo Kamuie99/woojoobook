@@ -8,9 +8,9 @@
   width: 1px;
 }
 
-:global(.MuiBackdrop-root) {
+/* :global(.MuiBackdrop-root) {
   background-color: rgba(0, 0, 0, 0) !important;
-}
+} */
 
 :global(.MuiListItem-root:hover) {
   background-color: #f0f0f0;

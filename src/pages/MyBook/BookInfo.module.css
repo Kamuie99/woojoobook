@@ -1,12 +1,9 @@
-.bookInfo {
+.item {
   display: flex;
   padding: 20px;
   position: relative;
-}
-
-.imageContainer {
-  position: relative;
-  display: inline-block;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .qualityEmoticon {
@@ -17,55 +14,64 @@
   height: 30px;
 }
 
-.bookInfoDetail {
+.imageContainer {
   position: relative;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display: inline-block;
 }
 
-.bookInfoDetail > h3 {
+.bookInfo {
+  display: flex;
+  width: 50%;
+  flex-grow: 0.78;
+  flex-direction: column;
+  justify-content: center;
+  word-break: break-word;
+}
+
+.bookInfo > h3 {
   font-size: 20px;
   font-weight: bolder;
   margin: 10px;
+  white-space: normal;
 }
 
-.bookInfoDetail > h4 {
+.bookInfo > h4 {
   margin: 10px;
   font-size: 18px;
 }
 
-.bookInfoDetail strong {
+.bookInfo strong {
   font-weight: normal;
   color: var(--contrast-color);
 }
 
+.status {
+  display: flex;
+  justify-content: end;
+  width: 20%;
+}
+
 .giveBackSubmitButton {
   position: absolute;
-  right: -5px;
-  bottom: 0px;
+  bottom: 15px;
+  width: fit-content;
   font-size: 18px;
   margin-left: 10px;
-  width: fit-content;
   padding: 8px;
-  color: var(--main-color);
   border-radius: 12px;
+  color: var(--main-color);
   background-color: var(--accent-color);
   cursor: pointer;
 }
 
-.wishButton {
-  position: absolute;
-  right: -5px;
-  top: 0px;
+.likedButton {
+  color: var(--contrast-color);
   background-color: var(--sub-color);
   border: none;
   cursor: pointer;
 }
 
 .bookStatusEdit {
-  position: absolute;
   right: -5px;
   top: 0px;
   cursor: pointer;

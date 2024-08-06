@@ -44,8 +44,13 @@ const Liked = () => {
     fetchLikedUserbooks();
   }
 
+  const handleWishChange = (bookId) => {
+    setLikedUserbooks(prevBooks => prevBooks.filter(book => book.id !== bookId));
+    setLikedUserbooksCount(prevCount => prevCount - 1);
+  }
+
   return (
-    <div className={styles.likedContainer}>
+    <>
       <h2 className={styles.liked}><strong>내가 관심 등록한 책 | </strong> {likedUserbooksCount}</h2>
       <InfiniteScroll
         dataLength={likedUserbooks.length}
@@ -61,12 +66,13 @@ const Liked = () => {
             <>
               <BookInfo
                 item={item}
+                onWishChange={handleWishChange}
               />
             </>
           )}
         />
       </InfiniteScroll>
-    </div>
+    </>
   )
 }
 

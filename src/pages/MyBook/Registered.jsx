@@ -46,7 +46,8 @@ const Registered = () => {
   }
 
   return (
-    <div className={styles.registeredContainer}>
+    <>
+    {/* TODO: 내가 등록한 책 중에서, 전체 / 대여중 / 비 대여중 필터 선택할 수 있게 */}
       <h2 className={styles.registered}><strong>내가 등록한 책 | </strong> {registeredUserbooksCount}권</h2>
       <InfiniteScroll
         dataLength={registeredUserbooks.length}
@@ -67,7 +68,7 @@ const Registered = () => {
           )}
         />
       </InfiniteScroll>
-    </div>
+    </>
   )
 }
 

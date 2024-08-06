@@ -64,7 +64,7 @@ const MyBook = () => {
   if (!isLoggedIn || user === null) {
     return <div>Loading...</div>
   }
-
+  // TODO: 책 상세페이지 모달 ?
   const renderContent = () => {
     switch (activeContent) {
       case 'registered':
