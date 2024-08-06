@@ -26,19 +26,16 @@ const Registered = () => {
           size: 10
         }
       });
-      console.log(response.data);
-
       const newItems = response.data.content;
+      console.log(newItems);
       if (init) {
         setRegisteredUserbooks(newItems);
-        setRegisteredUserbooksCount(response.data.numberOfElements);
         setPage(0);
       } else {
         setRegisteredUserbooks(prev => [...prev,...newItems]);
-        setRegisteredUserbooksCount(newItems.data.numberOfElements);
         setPage(prev => prev + 1);
       }
-
+      setRegisteredUserbooksCount(response.data.numberOfElements);
     } catch (error) {
       console.error(error);
     }
@@ -50,7 +47,7 @@ const Registered = () => {
 
   return (
     <div className={styles.registeredContainer}>
-      <p>Registered {registeredUserbooksCount}</p>
+      <h2 className={styles.registered}><strong>내가 등록한 책 | </strong> {registeredUserbooksCount}권</h2>
       <InfiniteScroll
         dataLength={registeredUserbooks.length}
         next={loadMoreRegisteredUserbooks}

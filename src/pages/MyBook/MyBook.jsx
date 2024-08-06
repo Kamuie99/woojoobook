@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { AuthContext } from "../../contexts/AuthContext"
+import { FaBook } from "react-icons/fa";
 import Header from '../../components/Header'
 import Registered from './Registered'
 import Liked from './Liked'
 import Swal from 'sweetalert2'
+import styles from './MyBook.module.css';
 
 
 const MyBook = () => {
@@ -77,15 +79,26 @@ const MyBook = () => {
   return (
     <>
       <Header />
-      <main>
-        <div>
+      <div className={styles.title}>
+        <div className={styles.titleDiv}>
+          <FaBook /> 내 책 관리
+        </div>
+      </div>
+      <div className={styles.selector}>
+        <button
+          className={`${styles.selectButton} ${activeContent === 'registered' ? styles.activeButton : ''}`}
+          onClick={() => setActiveContent('registered')}
+        >
           내 책 관리
-        </div>
-        <div>
-          <button onClick={() => setActiveContent('registered')}>내 책 관리</button>
-          <button onClick={() => setActiveContent('liked')}>관심 등록된 책</button>
-        </div>
-
+        </button>
+        <button
+          className={`${styles.selectButton} ${activeContent === 'liked' ? styles.activeButton : ''}`}
+          onClick={() => setActiveContent('liked')}
+        >
+          관심 등록된 책
+        </button>
+      </div>
+      <main className={styles.main}>
         {renderContent()}
       </main>
     </>

@@ -7,3 +7,14 @@
   padding: 20px;
   color: #888;
 }
+
+.registered {
+  width: 80%;
+  font-size: 20px;
+  padding: 20px;
+}
+
+.registered > strong {
+  font-weight: normal;
+  color: var(--contrast-color);
+}

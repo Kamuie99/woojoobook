@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useContext } from "react";
 import { useSearch } from '../../contexts/SearchContext';
 import { FaSpaceAwesome } from "react-icons/fa6";
 import { CiHeart } from "react-icons/ci";
+import { FaHeart } from "react-icons/fa";
 import { getEmotionImage } from '../../util/get-emotion-image';
 import { AuthContext } from '../../contexts/AuthContext';
 import { FiMapPin } from "react-icons/fi";
@@ -21,7 +22,7 @@ const BookList = () => {
   const [areaNames, setAreaNames] = useState({});
   const [selectedAreaCode, setSelectedAreaCode] = useState('');
   const [userAreaName, setUserAreaName] = useState('');
-  const { user } = useContext(AuthContext);
+  const { user, sub: userId } = useContext(AuthContext);
   const [selectedBook, setSelectedBook] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -147,6 +148,20 @@ const BookList = () => {
     const firstAuthor = author.split('^')[0];
     return firstAuthor;
   };
+  
+  const toggleWish = async (bookId, wished) => {
+    console.log(bookId);
+    try {
+      const response = await axiosInstance.post(`/userbooks/${bookId}/wish`, {
+        userId,
+        wished
+      })
+      console.log(response);
+    } catch {
+      console.log(error);
+      console.error(error);
+    }
+  }
 
   return (
     <>
@@ -211,7 +226,9 @@ const BookList = () => {
                   </div>
                   <div className={styles.status}>
                     <div className={styles.statusIcon}>
-                      <button><CiHeart size={'35px'}/></button>
+                      <button onClick={() => toggleWish(book.id, book.like)} style={{paddingRight: '2px'}}>
+                        {book.like ? <FaHeart size={'26px'} style={{margin:'3px'}}/> : <CiHeart size={'35px'}/>}
+                      </button>
                     </div>
                     <div className={styles.statusDong}>
                       <button className={styles.region}>

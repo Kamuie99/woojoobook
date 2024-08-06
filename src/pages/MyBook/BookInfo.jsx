@@ -1,42 +1,39 @@
 import React, { useState, useEffect } from "react";
-import { HiOutlinePencilSquare } from "react-icons/hi2";
 import { getEmotionImage } from '../../util/get-emotion-image';
+import { HiOutlinePencilSquare } from "react-icons/hi2";
+import { CiHeart } from "react-icons/ci";
 import styles from './BookInfo.module.css';
 import axiosInstance from "../../util/axiosConfig";
 import BookStatusChangeModal from "./BookStatusChangeModal";
 
 const BookInfo = ({ item }) => {
   const [open, setOpen] = useState(false);
-  const [qualityStatus, setQualityStatus] = useState(item.qualityStatus);
-  const [registerType, setRegisterType] = useState(item.registerType);
-  const [tradeStatus, setTradeStatus] = useState(item.tradeStatus);
   const [bookInfo, setBookInfo] = useState(item);
+  const [editable, setEditable] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem('myBookActiveContent') === 'registered') {
+      setEditable(true);
+    };
+  }, []);
 
   const renderRegisterType = (registerType) => {
-    switch (registerType) {
-      case 'RENTAL':
-        return '대여';
-      case 'EXCHANGE':
-        return '교환';
-      case 'RENTAL_EXCHANGE':
-        return '대여, 교환';
-      default:
-        return registerType;
-    }
+    const typeMap = {
+      'RENTAL': '대여',
+      'EXCHANGE': '교환',
+      'RENTAL_EXCHANGE': '대여, 교환'
+    };
+    return typeMap[registerType] || registerType;
   };
 
   const renderTradeStatus = (tradeStatus) => {
-    switch (tradeStatus) {
-      case 'RENTAL_AVAILABLE':
-        return '대여 가능'
-      case 'EXCHANGE_AVAILABLE':
-        return '교환 가능'
-      case 'RENTAL_EXCHANGE_AVAILABLE':
-        return '대여, 교환 가능'
-      default:
-        return tradeStatus;
-    }
-  }
+    const statusMap = {
+      'RENTAL_AVAILABLE': '대여 가능',
+      'EXCHANGE_AVAILABLE': '교환 가능',
+      'RENTAL_EXCHANGE_AVAILABLE': '대여, 교환 가능'
+    };
+    return statusMap[tradeStatus] || tradeStatus;
+  };
 
   const fetchEmotionImage = (qualityStatus) => {
     switch (qualityStatus) {
@@ -68,11 +65,11 @@ const BookInfo = ({ item }) => {
       canRent && canExchange ? 'RENTAL_EXCHANGE' :
       canRent ? 'RENTAL' : canExchange ? 'EXCHANGE' : '';
     const newTradeStatus =
-      canRent ? 'RENTAL_AVAILABLE' :
-      canExchange ? 'EXCHANGE_AVAILABLE' : 'RENTAL_EXCHANGE_AVAILABLE';
+      canRent && canExchange? 'RENTAL_EXCHANGE_AVAILABLE' :
+      canRent ? 'RENTAL_AVAILABLE' : canExchange ? 'EXCHANGE_AVAILABLE' : '';
 
     try {
-      const response = await axiosInstance.put(`/userbooks/${item.id}`, {
+      await axiosInstance.put(`/userbooks/${item.id}`, {
         canRent, canExchange, quality
       });
       setBookInfo((prev) => ({
@@ -87,28 +84,63 @@ const BookInfo = ({ item }) => {
     }
   }
 
+  const giveBack = async () => {
+    console.log(1)
+    // TODO: rentalId가 필요함
+    try {
+      // const response = await axiosInstance.put(`/rentals/${rentalId}/return`)
+      const response = await axiosInstance.get(`/rentals`, {
+        params: {
+          page: 0,
+          size: 10
+        }
+      });
+      console.log(response.data)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <div className={styles.bookInfo}>
-      <img src={item.bookInfo.thumbnail} alt=""/>
-      <div className={styles.bookInfoDetail}>
-        <div>{item.bookInfo.title}</div>
-        <div>등록 목적: {renderRegisterType(bookInfo.registerType)}</div>
-        <div>상태: {renderTradeStatus(bookInfo.tradeStatus)}</div>
-        <div>반납 확인</div>
-        <div className={styles.bookStatus}>
-          <img src={fetchEmotionImage(bookInfo.qualityStatus)} alt=""/>
-        </div>
-        <HiOutlinePencilSquare
-          onClick={toggleModal}
-          className={styles.bookStatusEdit}
-          size={30}
+      <div className={styles.imageContainer}>
+        <img
+          src={fetchEmotionImage(bookInfo.qualityStatus)}
+          alt={bookInfo.qualityStatus}
+          className={styles.qualityEmoticon}
         />
+        <img
+          src={item.bookInfo.thumbnail}
+          alt={item.bookInfo.title}
+          style={{ width: '100px', height: '140px' }}
+        />
+      </div>
+      <div className={styles.bookInfoDetail}>
+        <h3>{item.bookInfo.title}</h3>
+        <h4><strong>등록 상태 |</strong> {renderRegisterType(bookInfo.registerType)}</h4>
+        <h4><strong>현재 상태 |</strong> {renderTradeStatus(bookInfo.tradeStatus)}</h4>
+        {editable && (
+          <div className={styles.giveBackSubmitButton} onClick={() => giveBack()}>
+            반납 확인
+          </div>
+        )}
+        {!editable && (
+          <div className={styles.statusIcon}>
+            <button className={styles.wishButton}><CiHeart size={'35px'}/></button>
+          </div>
+        )}
+        {editable && (
+          <HiOutlinePencilSquare
+            onClick={toggleModal}
+            className={styles.bookStatusEdit}
+            size={30}
+          />
+        )}
         <BookStatusChangeModal
           isOpen={open}
           onClose={closeModal}
           registerType={bookInfo.registerType}
           qualityStatus={bookInfo.qualityStatus}
-          setQualityStatus={setQualityStatus}
           handleSubmitBookStatusChange={handleSubmitBookStatusChange}
         />
       </div>

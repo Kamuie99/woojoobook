@@ -1,40 +1,73 @@
 .bookInfo {
   display: flex;
-  margin: 20px;
-  width: 100%;
+  padding: 20px;
   position: relative;
 }
 
-.bookInfo > img {
-  width: 20%;
+.imageContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.qualityEmoticon {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 30px !important;
+  height: 30px;
 }
 
 .bookInfoDetail {
-  position: relative; /* Ensure the parent container is positioned */
+  position: relative;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-.bookInfoDetail > div {
+.bookInfoDetail > h3 {
+  font-size: 20px;
+  font-weight: bolder;
   margin: 10px;
 }
 
-.bookInfoDetail > * > img {
-  width: 50px;
+.bookInfoDetail > h4 {
+  margin: 10px;
+  font-size: 18px;
 }
 
-.bookStatus {
-  position: relative;
-  bottom: 0;
+.bookInfoDetail strong {
+  font-weight: normal;
+  color: var(--contrast-color);
+}
 
+.giveBackSubmitButton {
+  position: absolute;
+  right: -5px;
+  bottom: 0px;
+  font-size: 18px;
+  margin-left: 10px;
+  width: fit-content;
+  padding: 8px;
+  color: var(--main-color);
+  border-radius: 12px;
+  background-color: var(--accent-color);
+  cursor: pointer;
+}
+
+.wishButton {
+  position: absolute;
+  right: -5px;
+  top: 0px;
+  background-color: var(--sub-color);
+  border: none;
+  cursor: pointer;
 }
 
 .bookStatusEdit {
   position: absolute;
-  right: 25px;
-  bottom: 10px;
+  right: -5px;
+  top: 0px;
   cursor: pointer;
 }
 

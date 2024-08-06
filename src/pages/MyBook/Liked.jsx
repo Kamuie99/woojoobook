@@ -2,36 +2,23 @@ import React, {useState, useEffect } from 'react';
 import axiosInstance from '../../util/axiosConfig'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import styles from './Liked.module.css';
+import BookInfo from './BookInfo';
 import ListComponent from './ListComponent'
 
 const Liked = () => {
   const [likedUserbooks, setLikedUserbooks] = useState([]);
   const [likedUserbooksCount, setLikedUserbooksCount] = useState(0);
   const [page, setPage] = useState(0);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchInitialUserbooks = async () => {
-      try {
-        const { data } = await axiosInstance.get(`/users/userbooks/likes`, {
-          params: {
-            page,
-            size: 10
-          }
-        });
+    fetchLikedUserbooks(true);
+  }, []);
 
-        setLikedUserbooks(prev => [...prev, ...data.content]);
-        setLikedUserbooksCount(data.totalElements);
-        setPage(prev => prev + 1);
-        setLoading(false)
-      } catch (error) {
-        console.error(error);
-      }
-      fetchInitialUserbooks();
-    }
-  }, [])
+  useEffect(() => {
+    console.log(likedUserbooks);
+  }, [likedUserbooks]);
 
-  const fetchLikedUserbooks = async (reset = false) => {
+  const fetchLikedUserbooks = async (init = false) => {
     try {
       const response = await axiosInstance.get(`/users/userbooks/likes`, {
         params: {
@@ -39,20 +26,15 @@ const Liked = () => {
           size: 10
         }
       });
-
       const newItems = response.data.content;
-
-      if (reset) {
+      if (init) {
         setLikedUserbooks(newItems);
         setPage(0);
       } else {
-        setLikedUserbooks(prev => {
-          return [...prev, ...newItems];
-        });
+        setLikedUserbooks(prev => [...prev,...newItems]);
+        setPage(prev => prev + 1);
       };
-
-      setLikedUserbooksCount(response.data.totalElements);
-      setPage(prev => prev + 1);
+      setLikedUserbooksCount(response.data.numberOfElements);
     } catch (error) {
       console.error(error);
     }
@@ -63,8 +45,8 @@ const Liked = () => {
   }
 
   return (
-    <div className={styles.liked_container}>
-      Liked
+    <div className={styles.likedContainer}>
+      <h2 className={styles.liked}><strong>내가 관심 등록한 책 | </strong> {likedUserbooksCount}</h2>
       <InfiniteScroll
         dataLength={likedUserbooks.length}
         next={loadMoreLikedUserbooks}
@@ -75,11 +57,13 @@ const Liked = () => {
         <ListComponent
           items={likedUserbooks}
           emptyMessage="목록이 없습니다"
-          renderItem={(book) => {
+          renderItem={(item) => (
             <>
-              <div>{book}</div>
+              <BookInfo
+                item={item}
+              />
             </>
-          }}
+          )}
         />
       </InfiniteScroll>
     </div>

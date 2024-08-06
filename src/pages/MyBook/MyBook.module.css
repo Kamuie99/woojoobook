@@ -1,0 +1,54 @@
+.title {
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.titleDiv {
+  font-size: 22px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+}
+
+.main {
+  padding: 20px;
+  height: calc(100vh - 240px);
+  overflow-y: auto;
+}
+
+.selector {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  gap: 25px;
+}
+
+.selectButton {
+  width: 200px;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  background-color: var(--accent-sub-color);
+  transition: background-color 0.5s ease;
+  position: relative;
+  z-index: 1;
+  border-radius: 12px;
+}
+
+.selectButton:hover {
+  /* font-weight: bold; */
+  color: var(--main-color);
+  font-weight: bold;
+}
+
+.activeButton {
+  font-weight: bold;
+  background-color: var(--accent-color);
+}

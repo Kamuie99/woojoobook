@@ -4,7 +4,7 @@ import { IoMdCloseCircleOutline } from "react-icons/io";
 import { getEmotionImage } from '../../util/get-emotion-image';
 import styles from './BookStatusChangeModal.module.css';
 
-const BookStatusChangeModal = ({ isOpen, onClose, registerType, qualityStatus, setQualityStatus, handleSubmitBookStatusChange }) => {
+const BookStatusChangeModal = ({ isOpen, onClose, registerType, qualityStatus, handleSubmitBookStatusChange }) => {
   const [canRent, setCanRent] = useState(registerType === 'RENTAL');
   const [canExchange, setCanExchange] = useState(registerType === 'EXCHANGE');
   const [quality, setQuality] = useState(qualityStatus);
@@ -41,7 +41,6 @@ const BookStatusChangeModal = ({ isOpen, onClose, registerType, qualityStatus, s
 
   const onSave = () => {
     handleSubmitBookStatusChange(canRent, canExchange, quality);
-    setQualityStatus(quality);
   }
 
   return (

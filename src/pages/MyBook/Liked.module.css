@@ -1,4 +1,4 @@
-.liked_container {
+.likedContainer {
   padding: 20px;
 }
 
@@ -6,4 +6,15 @@
   text-align: center;
   padding: 20px;
   color: #888;
+}
+
+.liked {
+  width: 80%;
+  font-size: 20px;
+  padding: 20px
+}
+
+.liked > strong {
+  font-weight: normal;
+  color: var(--contrast-color);
 }

@@ -19,4 +19,4 @@ const ListComponent = ({ items, renderItem, emptyMessage }) => {
   )
 }
 
-export default ListComponent
+export default ListComponent;

@@ -1,20 +1,19 @@
 .listContainer {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  height: 500px;
+  gap: 20px;
+  align-items: center;
   overflow-y: auto;
-  border: 1px solid #ddd;
   border-radius: 4px;
 }
 
 .listItem {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 20px;
+  width: 90%;
+  border-radius: 15px;
+  background-color: var(--sub-color);
 }
 
 .listItemContent {
