@@ -1,10 +1,9 @@
-import React from 'react'
 import styles from './Policy.module.css'
 
 const PrivacyPolicy = () => {
   // 개인정보처리방침
   return (
-    <div>
+    <>
       <div className={styles.section}>
         <h3>1. 수집하는 개인정보의 항목 및 수집방법</h3>
         <p>회사는 회원가입 시 다음과 같은 개인정보를 수집합니다.</p>
@@ -58,7 +57,7 @@ const PrivacyPolicy = () => {
         <h3>8. 개인정보 처리방침의 변경</h3>
         <p>본 개인정보처리방침은 법령, 정책 또는 보안기술의 변경에 따라 내용의 추가, 삭제 및 수정이 있을 시 홈페이지를 통해 공지하도록 하겠습니다.</p>
       </div>
-    </div>
+    </>
   )
 }
 

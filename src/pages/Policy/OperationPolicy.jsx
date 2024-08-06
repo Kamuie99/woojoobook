@@ -3,7 +3,7 @@ import styles from './Policy.module.css'
 const OperationPolicy = () => {
   // 운영정책
   return (
-    <div>
+    <>
       <div className={styles.section}>
         <h3>1. 서비스 이용 원칙</h3>
         <p>- 회원은 타인의 권리를 존중하고 실제로 보유한 도서만을 등록해야 합니다.</p>
@@ -52,7 +52,7 @@ const OperationPolicy = () => {
         <h3>7. 정책 변경</h3>
         <p>본 운영정책은 서비스의 변화에 따라 수정될 수 있으며, 중요한 변경사항이 있을 경우 공지사항을 통해 안내드리겠습니다.</p>
       </div>
-    </div>
+    </>
   )
 }
 

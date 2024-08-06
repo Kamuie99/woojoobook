@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useContext } from "react";
 import { useSearch } from '../../contexts/SearchContext';
-import { LuBookPlus } from "react-icons/lu";
+import { FaSpaceAwesome } from "react-icons/fa6";
 import { CiHeart } from "react-icons/ci";
 import { getEmotionImage } from '../../util/get-emotion-image';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -153,7 +153,7 @@ const BookList = () => {
       <Header />
       <div className={styles.titleAndSearch}>
         <div className={styles.titleDiv}>
-          <LuBookPlus /> 우주 도서 ({userAreaName || '지역 정보 로딩 중...'})
+          <FaSpaceAwesome /> 우주 도서 ({userAreaName || '지역 정보 로딩 중...'})
         </div>
       </div>
       <div className={styles.areaSelectorContainer}>

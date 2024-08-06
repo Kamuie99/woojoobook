@@ -14,19 +14,19 @@ const LinkList = () => {
   return (
     <div className="LinkList">
       <LinkItem icon={<LuBookPlus color='black' size='40' />} 
-        text={'내 책 등록하기'} 
+        text={'우주도서 등록'} 
         to='/bookregister'
       />
       <LinkItem icon={<FaBook color='black' size='40'/>} 
-        text={'내 책 관리하기'} 
+        text={'우주도서 관리'} 
         to={`/${sub}/mybook`}
       />
       <LinkItem icon={<IoLibraryOutline color='black' size='40' />} 
-        text={'내 서재로 이동'}
+        text={'나의 서재'}
         to={`/${sub}/mylibrary`}
       />
       <LinkItem icon={<BsFillPersonLinesFill color='black' size='40'/>} 
-        text={'내 활동으로 이동'}
+        text={'나의 활동'}
         to={`/${sub}/myactivity`}
       />
     </div>

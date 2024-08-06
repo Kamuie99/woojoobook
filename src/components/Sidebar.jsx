@@ -5,6 +5,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { IoMenu } from "react-icons/io5";
 import { AuthContext } from '../contexts/AuthContext';
+import { FaSpaceAwesome } from "react-icons/fa6";
+import { CgPlayListSearch } from "react-icons/cg";
+import { IoLibraryOutline } from "react-icons/io5";
+import { BsFillPersonLinesFill } from "react-icons/bs";
+import { RiCustomerService2Line } from "react-icons/ri";
 
 import { IoIosLogIn, IoIosLogOut } from "react-icons/io";
 import '../styles/Sidebar.css';
@@ -56,15 +61,20 @@ const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles 
               )}
             </div>
           </div>
-          <MenuItem component={<Link to='/booklist' />}>우주 도서</MenuItem>
-          <SubMenu label="나의 도서">
-            <MenuItem component={<Link to='/bookregister' />}>나의 도서 등록하기 </MenuItem>
-            <MenuItem component={<Link to={`/${sub}/mybook`} />}>나의 도서 관리하기 </MenuItem>
+          <MenuItem component={<Link to='/booklist' />} icon={<CgPlayListSearch size={'25px'}/>}>우주 도서 검색</MenuItem>
+          <SubMenu label="나의 우주도서" icon={<FaSpaceAwesome size={'18px'}/>}>
+            <MenuItem component={<Link to='/bookregister' />}>우주도서 등록 </MenuItem>
+            <MenuItem component={<Link to={`/${sub}/mybook`} />}>우주도서 관리 </MenuItem>
           </SubMenu>
-          <MenuItem component={<Link to={`/${sub}/myactivity`} />}> 나의 활동 </MenuItem>
-          <MenuItem component={<Link to={`/${sub}/mylibrary`} />}> 나의 서재 </MenuItem>
+          <MenuItem 
+            component={<Link to={`/${sub}/mylibrary`} />} 
+            icon={<IoLibraryOutline size={'21px'}/>}
+          > 
+            나의 서재 
+          </MenuItem>
+          <MenuItem component={<Link to={`/${sub}/myactivity`} />} icon={<BsFillPersonLinesFill size={'20px'} /> }> 나의 활동 </MenuItem>
           
-          <MenuItem component={<Link to='/policy' />}> 이용 안내/정책 </MenuItem>
+          <MenuItem component={<Link to='/policy' />} icon={<RiCustomerService2Line size={'20px'}/>}> 이용 안내/정책 </MenuItem>
         </Menu>
 
       </ProSidebar>

@@ -53,8 +53,9 @@ const Policy = () => {
               운영정책
             </button>
           </div>
-          
-          {renderContent()}
+          <div className={styles.PolicyInner}>
+            {renderContent()}
+          </div>
         </div>
       </main>
   </>

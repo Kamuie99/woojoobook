@@ -42,3 +42,22 @@
   font-weight: bold;
   margin-bottom: 5px;
 }
+
+.PolicyInner {
+  height: calc(100vh - 240px); /* 계산된 높이 */
+  overflow-y: auto;
+}
+
+/* WebKit browsers (Chrome, Safari) */
+.PolicyInner::-webkit-scrollbar {
+  width: 10px;
+}
+
+.PolicyInner::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 10px;
+}
+
+.PolicyInner::-webkit-scrollbar-track {
+  background: var(--main-color);
+}

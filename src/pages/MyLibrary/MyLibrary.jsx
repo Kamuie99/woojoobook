@@ -10,7 +10,7 @@ import CategoryItem from "./CategoryItem";
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import styles from './MyLibrary.module.css';
-import { LuBookPlus } from "react-icons/lu";
+import { IoLibraryOutline } from "react-icons/io5";
 import { HiOutlineInformationCircle } from "react-icons/hi";
 
 const MyLibrary = () => {
@@ -111,7 +111,7 @@ const MyLibrary = () => {
     <DndProvider backend={HTML5Backend}>
       <Header />
         <div className={styles.titleDiv}>
-          <LuBookPlus /> 내 서재
+        <IoLibraryOutline /> 나의 서재
         </div>
         {isOwnLibrary ? (
           <main className={styles.main}>

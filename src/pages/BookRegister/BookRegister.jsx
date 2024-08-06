@@ -98,7 +98,7 @@ const BookRegister = () => {
       <Header />
       <main className={styles.bookRegister}>
         <div className={styles.titleDiv}>
-          <LuBookPlus /> 내 책 등록하기
+          <LuBookPlus /> 우주도서 등록
         </div>
         <BookSearch onSelectBook={setSelectedBook} />
         {selectedBook && (

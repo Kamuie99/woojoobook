@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react'
+import { useState, useEffect, useContext, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import Header from "../../components/Header"
 import Proceed from './Proceed'
 import History from './History'
-import { MdPendingActions } from "react-icons/md";
+import { BsFillPersonLinesFill } from "react-icons/bs";
 import { AuthContext } from "../../contexts/AuthContext"
 import styles from './MyActivity.module.css'
 
@@ -58,6 +58,7 @@ const MyActivity = () => {
         clearLocalStorage();
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, clearLocalStorage]);
 
   if (!isLoggedIn || user === null) {
@@ -82,7 +83,7 @@ const MyActivity = () => {
       <Header />
       <main>
         <div className={styles.titleDiv}>
-          <MdPendingActions /> 내 활동
+          <BsFillPersonLinesFill /> 나의 활동
         </div>
         <div className={styles.contentDiv}>
           <div className={styles.buttons}>
