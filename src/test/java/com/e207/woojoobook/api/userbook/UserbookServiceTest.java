@@ -95,7 +95,7 @@ class UserbookServiceTest {
 		UserbookPageFindRequest request = new UserbookPageFindRequest(null, areaCodeList, null);
 
 		// when
-		ThrowableAssert.ThrowingCallable expectException = () -> userbookService.findUserbookPageList(request,
+		ThrowableAssert.ThrowingCallable expectException = () -> userbookService.findUserbookPage(request,
 			pageable);
 
 		// then
@@ -187,7 +187,7 @@ class UserbookServiceTest {
 			.toList();
 
 		// when
-		Page<UserbookResponse> result = userbookService.findOwnedUserbookPage(RegisterType.RENTAL, Pageable.ofSize(10));
+		Page<UserbookResponse> result = userbookService.findMyExchangableUserbookPage(Pageable.ofSize(10));
 
 		// then
 		List<UserbookResponse> content = result.getContent();

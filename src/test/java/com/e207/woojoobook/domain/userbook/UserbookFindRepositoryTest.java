@@ -15,19 +15,19 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import net.bytebuddy.utility.RandomString;
 
 import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.user.User;
-import com.e207.woojoobook.global.util.DynamicQueryHelper;
 
-@Import({DynamicQueryHelper.class})
+@Import(UserbookQueryRepository.class)
 @DataJpaTest
-class UserbookFindRepositoryTest {
+class UserbookQueryRepositoryTest {
 
 	@Autowired
-	UserbookRepository userbookRepository;
+	UserbookQueryRepository userbookQueryRepository;
 	@Autowired
 	TestEntityManager em;
 
@@ -37,7 +37,7 @@ class UserbookFindRepositoryTest {
 		// given
 		String expectedKeyword = "우주";
 
-		UserbookFindCondition condition = new UserbookFindCondition(expectedKeyword, List.of(), null, null);
+		TradeableUserbookCondition condition = new TradeableUserbookCondition(expectedKeyword, List.of(), null);
 
 		List<Book> bookList = List.of(createBookByKeywordInTitle(expectedKeyword),
 			createBookByKeywordInAuthor(expectedKeyword), createBookByKeywordInTitle("지구"));
@@ -55,7 +55,7 @@ class UserbookFindRepositoryTest {
 		userbookList.forEach(em::persist);
 
 		// when
-		Page<Userbook> pageResult = userbookRepository.findUserbookListByPage(condition, PageRequest.of(0, 10));
+		Page<Userbook> pageResult = userbookQueryRepository.findTradeablePage(condition, PageRequest.of(0, 10));
 		List<Userbook> result = pageResult.getContent();
 
 		// then
@@ -69,7 +69,7 @@ class UserbookFindRepositoryTest {
 	void findUserbookPageListByAreaCode() {
 		// given
 		List<String> expectedAreaCodeList = List.of("대구", "대전");
-		UserbookFindCondition condition = new UserbookFindCondition(null, expectedAreaCodeList, null, null);
+		TradeableUserbookCondition condition = new TradeableUserbookCondition(null, expectedAreaCodeList, null);
 
 		List<Book> bookList = Stream.generate(this::createRandomBook).limit(5).toList();
 		bookList.forEach(em::persist);
@@ -89,7 +89,7 @@ class UserbookFindRepositoryTest {
 		userbookList.forEach(em::persist);
 
 		// when
-		Page<Userbook> pageResult = userbookRepository.findUserbookListByPage(condition, PageRequest.of(0, 10));
+		Page<Userbook> pageResult = userbookQueryRepository.findTradeablePage(condition, PageRequest.of(0, 10));
 		List<Userbook> result = pageResult.getContent();
 
 		// then
@@ -105,7 +105,7 @@ class UserbookFindRepositoryTest {
 		Set<RegisterType> expectedRegisterTypes = Set.of(RegisterType.RENTAL, RegisterType.RENTAL_EXCHANGE);
 		Set<TradeStatus> expectedTradeStatus = Set.of(TradeStatus.RENTAL_AVAILABLE,
 			TradeStatus.RENTAL_EXCHANGE_AVAILABLE);
-		UserbookFindCondition condition = new UserbookFindCondition(null, List.of(), registerRental, null);
+		TradeableUserbookCondition condition = new TradeableUserbookCondition(null, List.of(), registerRental);
 
 		List<Book> bookList = Stream.generate(this::createRandomBook).limit(6).toList();
 		bookList.forEach(em::persist);
@@ -131,21 +131,72 @@ class UserbookFindRepositoryTest {
 		userbookList.forEach(em::persist);
 
 		// when
-		Page<Userbook> pageResult = userbookRepository.findUserbookListByPage(condition, PageRequest.of(0, 10));
+		Page<Userbook> pageResult = userbookQueryRepository.findTradeablePage(condition, PageRequest.of(0, 10));
 		List<Userbook> result = pageResult.getContent();
 
 		// then
 		assertThat(result).isNotEmpty();
-		assertThat(result).map(Userbook::getRegisterType)
-			.allMatch(registerTypes -> expectedRegisterTypes.contains(registerTypes));
-		assertThat(result).map(Userbook::getTradeStatus)
-			.allMatch(tradeStatus -> expectedTradeStatus.contains(tradeStatus));
+		assertThat(result).map(Userbook::getRegisterType).allMatch(expectedRegisterTypes::contains);
+		assertThat(result).map(Userbook::getTradeStatus).allMatch(expectedTradeStatus::contains);
 	}
 
 	@DisplayName("사용자 등록 도서 조회 시, 사용자와 책 정보도 함께 조회한다.")
 	@Test
 	void findByIdWithUserAndBookSuccess() {
 		// TODO <jhl221123> 테스트
+	}
+
+	@DisplayName("내가 등록한 도서 조회 시, 거래 상태로 필터링할 수 있다.")
+	@Test
+	void findUserbookFilteredTradeStatus() {
+		// given
+		User user = createRandomUser();
+		em.persist(user);
+		List<Book> bookList = Stream.generate(this::createRandomBook).limit(6).map(em::persist).toList();
+		bookList.stream()
+			.limit(3)
+			.map(book -> createUserbook(user, book, RegisterType.RENTAL, TradeStatus.RENTED))
+			.forEach(em::persist);
+		bookList.stream()
+			.skip(3)
+			.map(book -> createUserbook(user, book, RegisterType.EXCHANGE, TradeStatus.EXCHANGE_AVAILABLE))
+			.forEach(em::persist);
+
+		MyUserbookCondition condition = new MyUserbookCondition(user.getId(), TradeStatus.RENTED);
+
+		// when
+		Page<Userbook> result = userbookQueryRepository.findMyPage(condition, Pageable.ofSize(10));
+		List<Userbook> content = result.getContent();
+
+		// then
+		assertThat(content).isNotEmpty().allMatch(userbook -> userbook.getTradeStatus() == TradeStatus.RENTED);
+	}
+
+	@DisplayName("내 교환 가능한 사용자 도서 조회를 할 수 있다.")
+	@Test
+	void findMyExchangeableUserbook() {
+		// given
+		User user = createRandomUser();
+		em.persist(user);
+		List<Book> bookList = Stream.generate(this::createRandomBook).limit(6).map(em::persist).toList();
+		bookList.stream()
+			.limit(3)
+			.map(book -> createUserbook(user, book, RegisterType.RENTAL, TradeStatus.RENTED))
+			.forEach(em::persist);
+		bookList.stream()
+			.skip(3)
+			.map(book -> createUserbook(user, book, RegisterType.EXCHANGE, TradeStatus.EXCHANGE_AVAILABLE))
+			.forEach(em::persist);
+
+		MyExchangableUserbookCondition condition = new MyExchangableUserbookCondition(user.getId());
+
+		// when
+		Page<Userbook> result = userbookQueryRepository.findMyExchangablePage(condition,
+			Pageable.ofSize(10));
+		List<Userbook> content = result.getContent();
+
+		// then
+		assertThat(content).isNotEmpty().allMatch(userbook -> userbook.getTradeStatus() == TradeStatus.EXCHANGE_AVAILABLE);
 	}
 
 	private User createUserByAreaCode(String areaCode) {

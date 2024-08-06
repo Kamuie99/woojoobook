@@ -16,10 +16,19 @@ import lombok.AllArgsConstructor;
 public class UserbookReader {
 
 	private final UserbookRepository userbookRepository;
+	private final UserbookQueryRepository userbookQueryRepository;
 	private final WishbookRepository wishbookRepository;
 
-	public Page<Userbook> findPage(UserbookFindCondition condition, Pageable pageable) {
-		return this.userbookRepository.findUserbookListByPage(condition, pageable);
+	public Page<Userbook> findTradeablePage(TradeableUserbookCondition condition, Pageable pageable) {
+		return this.userbookQueryRepository.findTradeablePage(condition, pageable);
+	}
+
+	public Page<Userbook> findMyExchangablePage(MyExchangableUserbookCondition condition, Pageable pageable) {
+		return this.userbookQueryRepository.findMyExchangablePage(condition, pageable);
+	}
+
+	public Page<Userbook> findMyUserbookPage(MyUserbookCondition condition, Pageable pageable) {
+		return this.userbookQueryRepository.findMyPage(condition, pageable);
 	}
 
 	public Page<Userbook> findLikedPageByUser(User user, Pageable pageable) {

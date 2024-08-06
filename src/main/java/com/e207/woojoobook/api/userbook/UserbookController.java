@@ -30,8 +30,8 @@ public class UserbookController {
 
 	@GetMapping
 	public ResponseEntity<Page<UserbookResponse>> findUserbookPageList(
-		@ModelAttribute UserbookPageFindRequest condition, @PageableDefault(sort = "title") Pageable pageable) {
-		Page<UserbookResponse> userbookPageList = userbookService.findUserbookPageList(condition, pageable);
+		@ModelAttribute UserbookPageFindRequest request, @PageableDefault(sort = "title") Pageable pageable) {
+		Page<UserbookResponse> userbookPageList = userbookService.findUserbookPage(request, pageable);
 		return ResponseEntity.ok(userbookPageList);
 	}
 

@@ -13,9 +13,7 @@ import org.springframework.context.annotation.Import;
 
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
-import com.e207.woojoobook.global.util.DynamicQueryHelper;
 
-@Import({DynamicQueryHelper.class})
 @DataJpaTest
 class PointRepositoryTest {
 	@Autowired

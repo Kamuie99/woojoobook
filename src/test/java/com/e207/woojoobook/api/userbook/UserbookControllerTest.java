@@ -97,7 +97,7 @@ class UserbookControllerTest extends AbstractRestDocsTest {
 
 		Page<UserbookResponse> response = createUserbookPage();
 		String responseJson = objectMapper.writeValueAsString(response);
-		given(userbookService.findUserbookPageList(eq(request), any(Pageable.class))).willReturn(response);
+		given(userbookService.findUserbookPage(eq(request), any(Pageable.class))).willReturn(response);
 		System.out.println("responseJson = " + responseJson);
 
 		// expected

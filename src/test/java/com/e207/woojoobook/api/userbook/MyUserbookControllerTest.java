@@ -10,6 +10,8 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -32,6 +34,7 @@ import com.e207.woojoobook.domain.userbook.RegisterType;
 import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@ExtendWith(MockitoExtension.class)
 @WebMvcTest(MyUserbookController.class)
 class MyUserbookControllerTest {
 
@@ -49,7 +52,8 @@ class MyUserbookControllerTest {
 		// given
 		UserResponse otherUser = createUser(2L);
 		List<BookResponse> bookList = List.of(createBook(), createBook());
-		List<UserbookResponse> otherUserbookList = createUserbookList(bookList, otherUser);
+		List<UserbookResponse> otherUserbookList = createUserbookList(bookList, otherUser,
+			RegisterType.RENTAL_EXCHANGE);
 		Page<UserbookResponse> expectResponse = new PageImpl<>(otherUserbookList);
 		String expectResponseJson = objectMapper.writeValueAsString(expectResponse);
 
@@ -59,8 +63,7 @@ class MyUserbookControllerTest {
 		ResultActions action = mvc.perform(get("/users/userbooks/likes"));
 
 		// then
-		action.andExpect(status().isOk());
-		action.andExpect(content().json(expectResponseJson));
+		action.andExpect(status().isOk()).andExpect(content().json(expectResponseJson));
 	}
 
 	@WithMockUser
@@ -70,15 +73,36 @@ class MyUserbookControllerTest {
 		// given
 		UserResponse currentUser = createUser(1L);
 		List<BookResponse> bookList = Stream.generate(this::createBook).limit(3).toList();
-		List<UserbookResponse> currentUserbookList = createUserbookList(bookList, currentUser);
+		List<UserbookResponse> currentUserbookList = createUserbookList(bookList, currentUser,
+			RegisterType.RENTAL_EXCHANGE);
 		PageImpl<UserbookResponse> expectedResponse = new PageImpl<>(currentUserbookList);
 		String expectedResponseJson = objectMapper.writeValueAsString(expectedResponse);
 
-		given(userbookService.findOwnedUserbookPage(any(RegisterType.class), any(Pageable.class))).willReturn(
+		given(userbookService.findMyUserbookPage(isNull(), any(Pageable.class))).willReturn(
 			expectedResponse);
 
 		// when
-		ResultActions action = mvc.perform(get("/users/userbooks/registered").param("registerType", "RENTAL"));
+		ResultActions action = mvc.perform(get("/users/userbooks/registered"));
+
+		// then
+		action.andExpect(status().isOk()).andExpect(content().json(expectedResponseJson));
+	}
+
+	@WithMockUser
+	@DisplayName("내 사용자 도서 중 교환 가능한 도서를 페이지로 조회한다.")
+	@Test
+	void When_FindMyExchangableUserbook_Expect_ReturnExchangableUserbookPage() throws Exception {
+		// given
+		UserResponse currentUser = createUser(1L);
+		List<BookResponse> bookList = Stream.generate(this::createBook).limit(3).toList();
+		List<UserbookResponse> currentUserbookList = createUserbookList(bookList, currentUser, RegisterType.EXCHANGE);
+		PageImpl<UserbookResponse> expectedResponse = new PageImpl<>(currentUserbookList);
+		String expectedResponseJson = objectMapper.writeValueAsString(expectedResponse);
+
+		given(userbookService.findMyExchangableUserbookPage(any(Pageable.class))).willReturn(expectedResponse);
+
+		// when
+		ResultActions action = mvc.perform(get("/users/userbooks/exchangable"));
 
 		// then
 		action.andExpect(status().isOk());
@@ -95,20 +119,22 @@ class MyUserbookControllerTest {
 		return BookResponse.of(book);
 	}
 
-	private List<UserbookResponse> createUserbookList(List<BookResponse> bookList, UserResponse user) {
+	private List<UserbookResponse> createUserbookList(List<BookResponse> bookList, UserResponse user,
+		RegisterType registerType) {
 		return Stream.iterate(0, (id) -> id + 1)
 			.limit(bookList.size() - 1)
-			.map((id) -> createUserbookResponse(id.longValue(), user, bookList.get(id)))
+			.map((id) -> createUserbookResponse(id.longValue(), user, bookList.get(id), registerType))
 			.toList();
 	}
 
-	private UserbookResponse createUserbookResponse(Long id, UserResponse owner, BookResponse book) {
+	private UserbookResponse createUserbookResponse(Long id, UserResponse owner, BookResponse book,
+		RegisterType registerType) {
 		return UserbookResponse.builder()
 			.id(id)
 			.ownerInfo(owner)
 			.bookInfo(book)
-			.registerType(RegisterType.RENTAL_EXCHANGE)
-			.tradeStatus(TradeStatus.RENTAL_AVAILABLE)
+			.registerType(registerType)
+			.tradeStatus(registerType.getDefaultTradeStatus())
 			.qualityStatus(QualityStatus.VERY_GOOD)
 			.areaCode(RandomString.make(10))
 			.build();

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.e207.woojoobook.domain.userbook.RegisterType;
-import com.e207.woojoobook.domain.userbook.UserbookFindCondition;
+import com.e207.woojoobook.domain.userbook.TradeableUserbookCondition;
 
 public record UserbookPageFindRequest(String keyword, List<String> areaCodeList, RegisterType registerType) {
 
@@ -15,8 +15,8 @@ public record UserbookPageFindRequest(String keyword, List<String> areaCodeList,
 		}
 	}
 
-	public UserbookFindCondition toCondition() {
-		return UserbookFindCondition.builder()
+	public TradeableUserbookCondition toCondition() {
+		return TradeableUserbookCondition.builder()
 			.keyword(keyword)
 			.areaCodeList(areaCodeList)
 			.registerType(registerType)

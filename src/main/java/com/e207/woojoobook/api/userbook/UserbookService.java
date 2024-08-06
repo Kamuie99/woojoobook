@@ -1,7 +1,5 @@
 package com.e207.woojoobook.api.userbook;
 
-import java.util.Collections;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -17,13 +15,15 @@ import com.e207.woojoobook.api.userbook.request.UserbookUpdateRequest;
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
 import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.book.BookReader;
-import com.e207.woojoobook.domain.rental.RentalStatus;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.experience.ExperienceHistory;
 import com.e207.woojoobook.domain.user.point.PointHistory;
+import com.e207.woojoobook.domain.userbook.MyExchangableUserbookCondition;
+import com.e207.woojoobook.domain.userbook.MyUserbookCondition;
 import com.e207.woojoobook.domain.userbook.RegisterType;
+import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.domain.userbook.Userbook;
-import com.e207.woojoobook.domain.userbook.UserbookFindCondition;
+import com.e207.woojoobook.domain.userbook.TradeableUserbookCondition;
 import com.e207.woojoobook.domain.userbook.UserbookReader;
 import com.e207.woojoobook.domain.userbook.UserbookStateManager;
 import com.e207.woojoobook.global.exception.ErrorCode;
@@ -53,33 +53,38 @@ public class UserbookService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<UserbookResponse> findUserbookPageList(UserbookPageFindRequest request, Pageable pageable) {
+	public Page<UserbookResponse> findUserbookPage(UserbookPageFindRequest request, Pageable pageable) {
 		if (request.areaCodeList().size() > MAX_AREA_CODE_SIZE) {
 			throw new ErrorException(ErrorCode.IllegalArgument);
 		}
 
 		User user = userHelper.findCurrentUser();
-		UserbookFindCondition condition = request.toCondition();
+		TradeableUserbookCondition condition = request.toCondition();
 
 		if (condition.areaCodeList().isEmpty()) {
 			condition.areaCodeList().add(user.getAreaCode());
 		}
-		Page<Userbook> userbookListByPage = this.userbookReader.findPage(condition, pageable);
+		Page<Userbook> userbookPage = this.userbookReader.findTradeablePage(condition, pageable);
 
-		return userbookListByPage.map(UserbookResponse::of);
+		return userbookPage.map(UserbookResponse::of);
 	}
 
 	@Transactional(readOnly = true)
-	public Page<UserbookResponse> findOwnedUserbookPage(RegisterType registerType, Pageable pageable) {
+	public Page<UserbookResponse> findMyExchangableUserbookPage(Pageable pageable) {
 		User user = userHelper.findCurrentUser();
-		UserbookFindCondition condition = UserbookFindCondition.builder()
-			.areaCodeList(Collections.emptyList())
-			.registerType(registerType)
-			.userId(user.getId())
-			.build();
+		MyExchangableUserbookCondition condition = new MyExchangableUserbookCondition(user.getId());
 
-		Page<Userbook> userbookListByPage = this.userbookReader.findPage(condition, pageable);
-		return userbookListByPage.map(UserbookResponse::of);
+		Page<Userbook> userbookPage = this.userbookReader.findMyExchangablePage(condition, pageable);
+		return userbookPage.map(UserbookResponse::of);
+	}
+
+	@Transactional(readOnly = true)
+	public Page<UserbookResponse> findMyUserbookPage(TradeStatus tradeStatus, Pageable pageable) {
+		User user = userHelper.findCurrentUser();
+		MyUserbookCondition condition = new MyUserbookCondition(user.getId(), tradeStatus);
+
+		Page<Userbook> userbookPage = this.userbookReader.findMyUserbookPage(condition, pageable);
+		return userbookPage.map(UserbookResponse::of);
 	}
 
 	@Transactional(readOnly = true)
