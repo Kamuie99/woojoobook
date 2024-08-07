@@ -1,15 +1,26 @@
 import { FaAngleRight } from "react-icons/fa6";
 import { useState, useEffect } from 'react';
 import AreaSelector from "../../components/AreaSelector";
+import PrivacyModal from "./PrivacyModal";
 
 // eslint-disable-next-line react/prop-types
 const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm, passwordMismatch, nickname, setNickname, setAreaCode, handleFinalSubmit }) => {
   const [selectedAreaName, setSelectedAreaName] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [siSelected, setSiSelected] = useState(false);
 
-  const handleAreaSelected = (selectedAreaCode, selectedAreaName) => {
-    setAreaCode(selectedAreaCode);
-    setSelectedAreaName(selectedAreaName);
+  const handleAreaSelected = (selectedArea) => {
+    if (selectedArea) {
+      setAreaCode(selectedArea.areaCode);
+      setSelectedAreaName(`${selectedArea.siName} ${selectedArea.guName} ${selectedArea.dongName}`);
+      setSiSelected(true);
+    } else {
+      setAreaCode('');
+      setSelectedAreaName('');
+      setSiSelected(false);
+    }
   };
 
   useEffect(() => {
@@ -17,10 +28,15 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
                     passwordConfirm !== '' &&
                     !passwordMismatch &&
                     nickname !== '' &&
-                    selectedAreaName !== '';
+                    selectedAreaName !== '' &&
+                    privacyAgreed;
     setIsFormValid(isValid);
-  }, [password, passwordConfirm, passwordMismatch, nickname, selectedAreaName]);
-  
+  }, [password, passwordConfirm, passwordMismatch, nickname, selectedAreaName, privacyAgreed]);
+
+  const handleShowPrivacy = async () => {
+    setShowPrivacyModal(true)
+  };
+
   return (
     <form onSubmit={handleFinalSubmit}>
       <div className='titleBox'>
@@ -35,8 +51,12 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
         <div>
           <label>비밀번호 확인</label>
           <input type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} required />
-          {passwordMismatch && passwordConfirm !== '' && <span style={{color: 'red', fontSize: '0.8em', marginLeft: '10px'}}>비밀번호가 일치하지 않습니다.</span>}
         </div>
+        {passwordMismatch && passwordConfirm !== '' && (
+          <div style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+            비밀번호가 일치하지 않습니다.
+          </div>
+        )}
         <div>
           <label>닉네임</label>
           <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} required />
@@ -46,11 +66,24 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
             <label>지역</label>
             <AreaSelector onAreaSelected={handleAreaSelected} />
           </div>
-          {selectedAreaName ? (
-            <div style={{ marginTop: '20px' }}>선택된 지역: {selectedAreaName}</div>
-          ) : (
-            <div style={{ color: 'red', fontSize: '0.8em', marginTop: '10px' }}>지역을 선택해주세요.</div>
-          )}
+          {siSelected ? (
+            selectedAreaName ? (
+              <div style={{ marginTop: '20px' }}>선택된 지역: {selectedAreaName}</div>
+            ) : (
+              <div style={{ color: 'red', fontSize: '0.8em', marginTop: '10px' }}>지역을 선택해주세요.</div>
+            )
+          ) : null}
+        </div>
+        <div className="privacy-agreement">
+          <input
+            type="checkbox"
+            id="privacyCheck"
+            checked={privacyAgreed}
+            onChange={(e) => setPrivacyAgreed(e.target.checked)}
+            required
+          />
+          <label htmlFor="privacyCheck">(필수)개인정보 수집·이용에 동의합니다.</label>
+          <button type="button" onClick={handleShowPrivacy}>내용보기</button>
         </div>
         {isFormValid && (
           <button className='emailButton2' type="submit">
@@ -58,6 +91,7 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
           </button>
         )}
       </div>
+      <PrivacyModal isOpen={showPrivacyModal} onClose={() => setShowPrivacyModal(false)} />
     </form>
   );
 };

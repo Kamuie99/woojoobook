@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../../util/axiosConfig';
 import Header2 from '../../components/Header2';
@@ -21,6 +21,10 @@ const Register = () => {
   const [areaCode, setAreaCode] = useState('');
   const [emailError, setEmailError] = useState(' ');
   const [passwordMismatch, setPasswordMismatch] = useState(false);
+
+  useEffect(() => {
+    setPasswordMismatch(password !== passwordConfirm);
+  }, [password, passwordConfirm]);
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
@@ -116,12 +120,6 @@ const Register = () => {
     }
   };
 
-  const handlePasswordConfirmChange = (e) => {
-    const confirmValue = e.target.value;
-    setPasswordConfirm(confirmValue);
-    setPasswordMismatch(password !== confirmValue);
-  };
-
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -142,7 +140,7 @@ const Register = () => {
           password={password}
           setPassword={setPassword}
           passwordConfirm={passwordConfirm}
-          setPasswordConfirm={handlePasswordConfirmChange}
+          setPasswordConfirm={setPasswordConfirm}
           passwordMismatch={passwordMismatch}
           nickname={nickname}
           setNickname={setNickname}

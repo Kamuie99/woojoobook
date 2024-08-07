@@ -1,0 +1,45 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalContent {
+  width: 500px;
+  height: 600px;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 20px;
+  text-align: left;
+  overflow-y: auto;
+}
+
+.modalContent::-webkit-scrollbar {
+  display: none;
+}
+
+.contentDiv {
+  margin: 10px 0;
+}
+
+.contentTitle {
+  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.contentDiv > h2 {
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.contentDiv > h3 {
+  font-weight: bold;
+}
