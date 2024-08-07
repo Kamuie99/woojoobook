@@ -13,19 +13,46 @@ import Swal from 'sweetalert2'
 import styles from './BookList.module.css';
 
 const BookList = () => {
-  const { searchTerm: initialSearchTerm  } = useSearch();
+  const { searchTerm: initialSearchTerm } = useSearch();
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [inputValue, setInputValue] = useState(initialSearchTerm || '');
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [areaNames, setAreaNames] = useState({});
-  const [selectedAreaCode, setSelectedAreaCode] = useState('');
-  const [userAreaName, setUserAreaName] = useState('');
-  const { user, sub: userId } = useContext(AuthContext);
+  const [selectedArea, setSelectedArea] = useState(null);
+  const { user } = useContext(AuthContext);
   const [selectedBook, setSelectedBook] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [userAreaName, setUserAreaName] = useState('');
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
+
+  const fetchUserInfo = async () => {
+    try {
+      setIsLoading(true);
+      const userResponse = await axiosInstance.get('/users');
+      const userData = userResponse.data;
+
+      const areaResponse = await axiosInstance.get(`/area?areaCode=${userData.areaCode}`);
+      const areaData = areaResponse.data;
+      setSelectedArea({
+        siName: areaData.siName,
+        guName: areaData.guName,
+        dongName: areaData.dongName,
+        areaCode: userData.areaCode
+      });
+      setUserAreaName(areaData.dongName);
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const fetchBooks = useCallback(async () => {
     setLoading(true);
@@ -36,8 +63,8 @@ const BookList = () => {
         page: currentPage,
         size: 10
       };
-      if (selectedAreaCode) {
-        params.areaCodeList = selectedAreaCode;
+      if (selectedArea && selectedArea.areaCode) {
+        params.areaCodeList = selectedArea.areaCode;
       }
       const response = await axiosInstance.get('/userbooks', { params });
       setBooks(response.data.content);
@@ -49,7 +76,17 @@ const BookList = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, selectedAreaCode, currentPage]);
+  }, [searchTerm, selectedArea, currentPage]);
+
+  useEffect(() => {
+    if (selectedArea) {
+      fetchBooks().then(fetchedBooks => {
+        if (fetchedBooks) {
+          fetchAreaNames(fetchedBooks);
+        }
+      });
+    }
+  }, [fetchBooks, currentPage, selectedArea]);
 
   const fetchAreaName = useCallback(async (areaCode) => {
     console.log(areaCode);
@@ -113,13 +150,11 @@ const BookList = () => {
     }
   };
 
-  const handleAreaSelected = async (areaCode) => {
-    console.log(areaCode)
-    setSelectedAreaCode(areaCode);
+  const handleAreaSelected = (area) => {
+    setSelectedArea(area);
+    setUserAreaName(area ? area.dongName : '');
     setBooks([]);
     setCurrentPage(0);
-    const areaName = await fetchAreaName(areaCode);
-    setUserAreaName(areaName);
   };
 
   const openModal = (book) => {
@@ -185,22 +220,26 @@ const BookList = () => {
           <LuBookPlus /> 우주 도서 ({userAreaName || '지역 정보 로딩 중...'})
         </div>
       </div>
-      <div className={styles.areaSelectorContainer}>
-        <div>
-          <AreaSelector onAreaSelected={handleAreaSelected} />
+      {isLoading ? (
+        <div>로딩 중...</div>
+      ) : (
+        <div className={styles.areaSelectorContainer}>
+          <div>
+            <AreaSelector onAreaSelected={handleAreaSelected} initialArea={selectedArea} />
+          </div>
+          <div className={styles.searchBox}>
+            <input
+              type="text"
+              value={inputValue}
+              onChange={handleInputChange}
+              onKeyPress={handleKeyPress}
+              placeholder="책 제목 또는 저자를 검색"
+              style={{ padding: '10px', borderRadius: '10px' }}
+            />
+            <button onClick={handleSearch} style={{ padding: '5px 10px' }}>검색</button>
+          </div>  
         </div>
-        <div className={styles.searchBox}>
-          <input
-            type="text"
-            value={inputValue}
-            onChange={handleInputChange}
-            onKeyPress={handleKeyPress}
-            placeholder="책 제목 또는 저자를 검색"
-            style={{ padding: '10px', borderRadius: '10px' }}
-          />
-          <button onClick={handleSearch} style={{ padding: '5px 10px' }}>검색</button>
-        </div>  
-      </div>
+      )}
       <main className={styles.main}>
         {loading && <p>로딩중...</p>}
         {error && <p>{error}</p>}
