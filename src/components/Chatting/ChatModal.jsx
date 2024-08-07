@@ -32,6 +32,10 @@ const ChatModal = ({ open, handleClose, isClosing, isLoading, handleAnimationEnd
   const handleNewChatSubmit = async (e, newReceiverId) => {
     e.preventDefault();
     setReceiverId(newReceiverId);
+    if (userId == newReceiverId) {
+      console.log('sender와 receiver id가 같습니다.')
+      return;
+    }
     try {
       const response = await axiosInstance.get('chatrooms/check', {
         params: {
@@ -39,9 +43,6 @@ const ChatModal = ({ open, handleClose, isClosing, isLoading, handleAnimationEnd
           receiverId: newReceiverId,
         },
       });
-      if (userId == newReceiverId) {
-        return;
-      }
       const data = await response.data;
       if (data.isExist) {
         const roomResponse = await axiosInstance.get(`chatrooms/${userId}/${newReceiverId}`);

@@ -6,10 +6,19 @@ import axiosInstance from '../../util/axiosConfig';
 import { AuthContext } from '../../contexts/AuthContext';
 import Swal from 'sweetalert2';
 import ExchangeModal from './ExchangeModal';
+import ChatModal from '../../components/Chatting/ChatModal';
 
 const BookModal = ({ book, onClose }) => {
-  const { user } = useContext(AuthContext);
+  const { user, sub: userId } = useContext(AuthContext);
   const [showExchangeModal, setShowExchangeModal] = useState(false);
+  const [chatRoomId, setChatRoomId] = useState('');
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [receiverId, setReceiverId] = useState('');
+  const [chatRooms, setChatRooms] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [open, setOpen] = useState(false);
+
   const userbook = book.userbook;
   const getQualityEmoticon = (qualityStatus) => {
     switch (qualityStatus) {
@@ -79,6 +88,58 @@ const BookModal = ({ book, onClose }) => {
     }
   };
 
+  const handleChatRequest = async (e, ownerId) => {
+    e.preventDefault();
+    setShowChatModal(true);
+    setOpen(true);
+    if (userId == ownerId) {
+      console.log('본인 id에 채팅 요청 불가능')
+    }
+    try {
+      const response = await axiosInstance.get('chatrooms/check', {
+        params: {
+          senderId: userId,
+          receiverId: ownerId,
+        }
+      });
+      const data = await response.data;
+      if (data.isExist) {
+        const roomResponse = await axiosInstance.get(`chatrooms/${userId}/${ownerId}`);
+        const roomData = await roomResponse.data;
+        setChatRoomId(roomData.id);
+      } else {
+        const newRoomResponse = await axiosInstance.post('chatrooms', {
+          senderId: userId,
+          receiverId: ownerId
+        });
+        const newRoomData = await newRoomResponse.data;
+        setChatRoomId(newRoomData.id);
+      }
+      setTimeout(() => {
+        setReceiverId(ownerId);
+      }, 200);
+    } catch (error) {
+      console.error('채팅 룸 조회/생성 중 오류 발생: ', error)
+    }
+  }
+
+  const handleChatModalClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      setShowChatModal(false);
+      setOpen(false);
+    }, 500);
+  };
+
+  const handleAnimationEnd = () => {
+    if (isClosing) {
+      setTimeout(() => {
+        setIsLoading(true);
+      }, 500);
+    }
+  };
+
   return (
     <div className={styles.modalBackdrop} onClick={onClose}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
@@ -128,13 +189,25 @@ const BookModal = ({ book, onClose }) => {
               </div>
             </>
           )}
-          <button onClick={() => console.log('채팅하기')} className={styles.tochatButton}>채팅하기</button>
+          <button onClick={(e) => handleChatRequest(e, userbook.ownerInfo.id)} className={styles.tochatButton}>채팅하기</button>
         </div>
       </div>
       {showExchangeModal && (
         <ExchangeModal 
           receiverBook={userbook} 
           onClose={() => setShowExchangeModal(false)} 
+        />
+      )}
+      {showChatModal && (
+        <ChatModal
+          open={open}
+          handleClose={handleChatModalClose}
+          isClosing={isClosing}
+          isLoading={isLoading}
+          handleAnimationEnd={handleAnimationEnd}
+          chatRooms={chatRooms}
+          chatRoomId={chatRoomId}
+          setChatRoomId={setChatRoomId}
         />
       )}
     </div>

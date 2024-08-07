@@ -9,11 +9,18 @@ const BookModal = ({ book, onClose }) => {
 
   useEffect(() => {
     setIsOpen(true);
-    setTimeout(() => setIsBookOpen(true), 500);
+    // setTimeout(() => setIsBookOpen(true), 500);
   }, []);
 
+  const handleBookOpen = () => {
+    setIsBookOpen(true);
+  };
+
   const handleClose = () => {
-    setIsBookOpen(false);
+    if (isBookOpen) {
+      setIsBookOpen(false);
+      return;
+    }
     setTimeout(() => {
       setIsOpen(false);
       onClose();
@@ -23,7 +30,7 @@ const BookModal = ({ book, onClose }) => {
   return (
     <div className={`${styles.modalOverlay} ${isOpen ? styles.open : ''}`} onClick={handleClose}>
       <div className={`${styles.book} ${isBookOpen ? styles.bookOpen : ''}`} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.bookCover}>
+        <div className={styles.bookCover} onClick={handleBookOpen}>
           <img src={book.thumbnail} alt={book.title} />
         </div>
         <div className={styles.bookContent}>

@@ -25,6 +25,7 @@ const Chatting = () => {
         params: { userId },
       });
       const data = await response.data;
+      console.log(data.content)
       setChatRooms(Array.isArray(data.content) ? data.content : []);
     } catch (error) {
       console.error('채팅 룸 목록 조회 중 오류 발생:', error);

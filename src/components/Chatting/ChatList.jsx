@@ -6,6 +6,19 @@ import styles from './ChatList.module.css';
 const ChatList = ({ chatRooms, userId, onSelectRoom, handleNewChatSubmit }) => {
   const receiverIdRef = useRef(null);
 
+  // const fetchOtherUserNickname = async () => {
+  //   // 다른 사람 닉네임 받아오는 api 필요
+  //   // 방 자체에 nickname이 담겨서 올듯
+  //   try {
+  //     const response = await axiosInstance.get(`/users`, {
+  //       params: { userId: otherUserId }
+  //     });
+  //     console.log(response.data)
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
   return (
     <div className={styles.chat_list}>
       <List>
@@ -14,18 +27,6 @@ const ChatList = ({ chatRooms, userId, onSelectRoom, handleNewChatSubmit }) => {
             <ListItem onClick={() => { 
               let otherUserId = room.receiverId;
               if (otherUserId == userId) otherUserId = room.senderId;
-              const fetchOtherUserNickname = async () => {
-                // 다른 사람 닉네임 받아오는 api 필요
-                try {
-                  const response = await axiosInstance.get(`/users`, {
-                    params: { userId: otherUserId }
-                  });
-                  console.log(response.data)
-                } catch (error) {
-                  console.log(error);
-                }
-              }
-              fetchOtherUserNickname();
               
               onSelectRoom(otherUserId, room.id);
             }}>

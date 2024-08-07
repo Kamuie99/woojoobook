@@ -56,4 +56,5 @@
 .activeButton {
   font-weight: bold;
   background-color: var(--accent-color);
+  color: var(--main-color);
 }
