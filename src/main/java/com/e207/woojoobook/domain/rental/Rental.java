@@ -6,6 +6,8 @@ import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.userbook.Userbook;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,6 +30,8 @@ public class Rental {
 	private Userbook userbook;
 	private LocalDateTime startDate;
 	private LocalDateTime endDate;
+
+	@Enumerated(EnumType.STRING)
 	private RentalStatus rentalStatus;
 	private int extensionCount;
 

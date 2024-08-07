@@ -8,6 +8,8 @@ import com.e207.woojoobook.domain.rental.Rental;
 import com.querydsl.core.annotations.QueryInit;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,6 +30,8 @@ public class Extension {
 	@QueryInit({"user", "userbook.user"})
 	private Rental rental;
 	private LocalDateTime createdAt;
+
+	@Enumerated(EnumType.STRING)
 	private ExtensionStatus extensionStatus;
 
 	@Builder

@@ -8,6 +8,8 @@ import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.userbook.Userbook;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,6 +45,7 @@ public class Exchange {
 
 	private LocalDateTime exchangeDate;
 
+	@Enumerated(EnumType.STRING)
 	private ExchangeStatus exchangeStatus;
 
 	@Builder
