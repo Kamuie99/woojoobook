@@ -3,6 +3,7 @@ package com.e207.woojoobook.api.chatroom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.e207.woojoobook.api.chatroom.request.ChatRoomRequest;
 import com.e207.woojoobook.api.chatroom.response.ChatRoomCheckResponse;
@@ -25,6 +26,7 @@ public class ChatRoomService {
 	private final ChatRoomRepository chatRoomRepository;
 	private final UserService userService;
 
+	@Transactional
 	public ChatRoomResponse create(ChatRoomRequest request) {
 		User sender = userService.findDomainById(request.senderId());
 		User receiver = userService.findDomainById(request.receiverId());
@@ -34,6 +36,7 @@ public class ChatRoomService {
 		return ChatRoomResponse.of(createdChatRoom);
 	}
 
+	@Transactional(readOnly = true)
 	public ChatRoomCheckResponse checkExistByUserIds(Long senderId, Long receiverId) {
 		User sender = userService.findDomainById(senderId);
 		User receiver = userService.findDomainById(receiverId);
@@ -41,6 +44,7 @@ public class ChatRoomService {
 		return ChatRoomCheckResponse.of(count >= 1); // TODO <jhl221123> 동시성 문제 발생
 	}
 
+	@Transactional(readOnly = true)
 	public ChatRoomResponse findByUserIds(Long senderId, Long receiverId) {
 		User sender = userService.findDomainById(senderId);
 		User receiver = userService.findDomainById(receiverId);
@@ -48,12 +52,14 @@ public class ChatRoomService {
 		return ChatRoomResponse.of(chatRoom);
 	}
 
+	@Transactional(readOnly = true)
 	public Page<ChatRoomResponse> findPageByUserId(Long userId, Pageable pageable) {
 		User user = userService.findDomainById(userId);
 		return chatRoomRepository.findPageBySenderOrReceiver(user, pageable)
 			.map(ChatRoomResponse::of);
 	}
 
+	@Transactional(readOnly = true)
 	public ChatRoom findDomainById(Long id) {
 		return chatRoomRepository.findById(id)
 			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
