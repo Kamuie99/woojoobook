@@ -25,7 +25,7 @@ class ChatRoomRepositoryTest {
 
 	@DisplayName("수신자와 발신자가 참여 중인 채팅룸을 조회한다.")
 	@Test
-	void findBySenderAndReceiverSuccess() {
+	void findBySenderAndReceiverWithUsersSuccess() {
 		//given
 		User sender = createUser("sender");
 		User receiver = createUser("receiver");
@@ -40,7 +40,7 @@ class ChatRoomRepositoryTest {
 		chatRoomRepository.save(chatRoom2);
 
 		//when
-		ChatRoom result = chatRoomRepository.findBySenderAndReceiver(sender, receiver).get();
+		ChatRoom result = chatRoomRepository.findBySenderAndReceiverWithUsers(sender, receiver).get();
 
 		//then
 		assertThat(result.getSender().getNickname()).isEqualTo("sender");
@@ -49,7 +49,7 @@ class ChatRoomRepositoryTest {
 
 	@DisplayName("수신자와 발신자의 채팅룸이 없다면 조회되지 않는다.")
 	@Test
-	void findBySenderAndReceiverFail() {
+	void findBySenderAndReceiverWithUsersFail() {
 		//given
 		User sender = createUser("sender");
 		User receiver = createUser("receiver");
@@ -57,7 +57,7 @@ class ChatRoomRepositoryTest {
 		userRepository.save(receiver);
 
 		//when
-		Optional<ChatRoom> result = chatRoomRepository.findBySenderAndReceiver(sender, receiver);
+		Optional<ChatRoom> result = chatRoomRepository.findBySenderAndReceiverWithUsers(sender, receiver);
 
 		//then
 		assertThat(result).isEmpty();

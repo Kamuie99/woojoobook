@@ -87,6 +87,7 @@ class ChatRoomServiceTest {
 		assertThat(result2.isExist()).isTrue();
 	}
 
+	@Transactional
 	@DisplayName("수신자와 발신자가 참여중인 채팅룸을 조회한다.")
 	@Test
 	void findByUserIdsSuccess() {
@@ -122,6 +123,7 @@ class ChatRoomServiceTest {
 				RuntimeException.class);
 	}
 
+	@Transactional
 	@DisplayName("사용자가 참여중인 채팅룸 목록을 페이지로 조회한다.")
 	@Test
 	void findPageByUserIdSuccess() {

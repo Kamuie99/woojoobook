@@ -67,7 +67,7 @@ public class ChatRoomService {
 	}
 
 	private ChatRoom findDomainBySenderAndReceiver(User sender, User receiver) {
-		return chatRoomRepository.findBySenderAndReceiver(sender, receiver)
+		return chatRoomRepository.findBySenderAndReceiverWithUsers(sender, receiver)
 			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
 
