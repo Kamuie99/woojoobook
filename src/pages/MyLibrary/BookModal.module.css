@@ -30,7 +30,6 @@
   transition: transform 0.5s ease-in-out;
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   position: relative;
-  perspective: 2000px;
 }
 
 .bookOpen {
