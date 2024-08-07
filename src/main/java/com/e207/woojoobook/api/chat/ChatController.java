@@ -52,7 +52,7 @@ public class ChatController {
 		messageOperations.convertAndSend("/topic/user_" + receiverId, chatResponse);
 	}
 
-	// @Scheduled(fixedDelay = 5000)
+	@Scheduled(fixedDelay = 5000)
 	public void sendUserListToSubscribers() {
 		Set<String> allAreaCodes = getAllAreaCodes();
 		for(String areaCode : allAreaCodes) {
