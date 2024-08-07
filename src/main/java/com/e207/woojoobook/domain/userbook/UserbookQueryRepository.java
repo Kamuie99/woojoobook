@@ -126,6 +126,25 @@ public class UserbookQueryRepository {
 	}
 
 	private BooleanExpression isTradeStatus(TradeStatus tradeStatus) {
-		return tradeStatus == null ? null : userbook.tradeStatus.eq(tradeStatus);
+		if (tradeStatus == null) {
+			return null;
+		}
+
+		boolean canRent = tradeStatus.canRent();
+		boolean canExchange = tradeStatus.canExchange();
+
+		if (canRent && canExchange) {
+			return ALL_TRADE_EXPRESSION;
+		}
+
+		if (canExchange) {
+			return EXCHANGE_TRADE_EXPRESSION;
+		}
+
+		if (canRent) {
+			return RENTAL_TRADE_EXPRESSION;
+		}
+
+		return userbook.tradeStatus.eq(tradeStatus);
 	}
 }
