@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Swal from 'sweetalert2'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import axiosInstance from '../../util/axiosConfig'
 import ListComponent from './ListComponent'
 import Modal from '../BookRegister/Modal'
 import styles from './Rental.module.css'
+import { FiList } from "react-icons/fi";
 
 const MODAL_TYPES = {
   CURRENT_RENT: 'CURRENT_RENT',
@@ -32,6 +33,7 @@ const Rental = () => {
   
   useEffect(() => {
     fetchRentalList()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchRentalList = async () => {
@@ -431,99 +433,110 @@ const Rental = () => {
 
   return (
     <div className={styles.rentalContainer}>
-      <h2>대여 중인 목록 (총 {currentRentCnt}개)</h2>
-      <div className={styles.listHeader}>
-        <div>제목</div>
-        <div>책권자</div>
-      </div>
-      <InfiniteScroll
-        dataLength={currentRent.length}
-        next={loadMoreCurrentRent}
-        hasMore={currentRent.length < currentRentCnt}
-        loader={<h4>Loading...</h4>}
-        scrollableTarget="currentRentList"
-      >
-        <ListComponent
-          items={currentRent}
-          emptyMessage="목록이 없습니다"
-          renderItem={(item) => (
-            <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.CURRENT_RENT)} style={{cursor: 'pointer'}}>
-              <div>{item.userbook.bookInfo.title}</div>
-              <div>{item.userbook.ownerInfo.nickname}</div>
-            </div>
-          )}
-        />
-      </InfiniteScroll>
 
-      <h2>대여 신청한 목록 (총 {rentalRequestsCnt}개)</h2>
-      <div className={styles.listHeader}>
-        <div>제목</div>
-        <div>책권자</div>
+      <div className={styles.rentalContainerInner}>
+        <h2><FiList /> 대여 중인 목록 (총 {currentRentCnt}개)</h2>
+        <div className={styles.listHeader}>
+          <div>제목</div>
+          <div>책권자</div>
+        </div>
+        <InfiniteScroll
+          dataLength={currentRent.length}
+          next={loadMoreCurrentRent}
+          hasMore={currentRent.length < currentRentCnt}
+          loader={<h4>Loading...</h4>}
+          scrollableTarget="currentRentList"
+        >
+          <ListComponent
+            items={currentRent}
+            emptyMessage="목록이 없습니다"
+            renderItem={(item) => (
+              <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.CURRENT_RENT)} style={{cursor: 'pointer'}}>
+                <div>{item.userbook.bookInfo.title}</div>
+                <div>{item.userbook.ownerInfo.nickname}</div>
+              </div>
+            )}
+          />
+        </InfiniteScroll>
       </div>
-      <InfiniteScroll
-        dataLength={rentalRequests.length}
-        next={loadMoreRentalRequests}
-        hasMore={rentalRequests.length < rentalRequestsCnt}
-        loader={<h4>Loading...</h4>}
-        scrollableTarget="rentalRequestsList"
-      >
-        <ListComponent
-          items={rentalRequests}
-          emptyMessage="목록이 없습니다"
-          renderItem={(item) => (
-            <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RENTAL_REQUEST)} style={{cursor: 'pointer'}}>
-              <div>{item.userbook.bookInfo.title}</div>
-              <div>{item.userbook.ownerInfo.nickname}</div>
-            </div>
-          )}
-        />
-      </InfiniteScroll>
 
-      <h2>대여 신청 받은 목록 (총 {receivedRentalRequestsCnt}개)</h2>
-      <div className={styles.listHeader}>
-        <div>제목</div>
-        <div>신청자</div>
-      </div>
-      <InfiniteScroll
-        dataLength={receivedRentalRequests.length}
-        next={loadMoreReceivedRentalRequests}
-        hasMore={receivedRentalRequests.length < receivedRentalRequestsCnt}
-        loader={<h4>Loading...</h4>}
-        scrollableTarget="receivedRentalRequestsList"
-      >
-        <ListComponent
-          items={receivedRentalRequests}
-          emptyMessage="목록이 없습니다"
-          renderItem={(item) => (
-            <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{cursor: 'pointer'}}>
-              <div>{item.userbook.bookInfo.title}</div>
-              <div>{item.user.nickname}</div>
-            </div>
-          )}
-        />
-      </InfiniteScroll>
 
-      <h2>대여 신청 거절당한 목록 (총 {rejectedRentalRequestsCnt}개)</h2>
-      <div className={styles.listHeader}>
-        <div>제목</div>
+      <div className={styles.rentalContainerInner}>
+        <h2><FiList /> 대여 신청한 목록 (총 {rentalRequestsCnt}개)</h2>
+        <div className={styles.listHeader}>
+          <div>제목</div>
+          <div>책권자</div>
+        </div>
+        <InfiniteScroll
+          dataLength={rentalRequests.length}
+          next={loadMoreRentalRequests}
+          hasMore={rentalRequests.length < rentalRequestsCnt}
+          loader={<h4>Loading...</h4>}
+          scrollableTarget="rentalRequestsList"
+        >
+          <ListComponent
+            items={rentalRequests}
+            emptyMessage="목록이 없습니다"
+            renderItem={(item) => (
+              <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RENTAL_REQUEST)} style={{cursor: 'pointer'}}>
+                <div>{item.userbook.bookInfo.title}</div>
+                <div>{item.userbook.ownerInfo.nickname}</div>
+              </div>
+            )}
+          />
+        </InfiniteScroll>
       </div>
-      <InfiniteScroll
-        dataLength={rejectedRentalRequests.length}
-        next={loadMoreRejectedRentalRequests}
-        hasMore={rejectedRentalRequests.length < rejectedRentalRequestsCnt}
-        loader={<h4>Loading...</h4>}
-        scrollableTarget="rejectedRentalRequestsList"
-      >
-        <ListComponent
-          items={rejectedRentalRequests}
-          emptyMessage="목록이 없습니다"
-          renderItem={(item) => (
-            <div className={styles.listItem}>
-              <div>{item.userbook.bookInfo.title}</div>
-            </div>
-          )}
-        />
-      </InfiniteScroll>
+
+      <div className={styles.rentalContainerInner}>
+        <h2><FiList /> 대여 신청 받은 목록 (총 {receivedRentalRequestsCnt}개)</h2>
+        <div className={styles.listHeader}>
+          <div>제목</div>
+          <div>신청자</div>
+        </div>
+        <InfiniteScroll
+          dataLength={receivedRentalRequests.length}
+          next={loadMoreReceivedRentalRequests}
+          hasMore={receivedRentalRequests.length < receivedRentalRequestsCnt}
+          loader={<h4>Loading...</h4>}
+          scrollableTarget="receivedRentalRequestsList"
+        >
+          <ListComponent
+            items={receivedRentalRequests}
+            emptyMessage="목록이 없습니다"
+            renderItem={(item) => (
+              <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{cursor: 'pointer'}}>
+                <div>{item.userbook.bookInfo.title}</div>
+                <div>{item.user.nickname}</div>
+              </div>
+            )}
+          />
+        </InfiniteScroll>
+      </div>
+      <div className={styles.rentalContainerInner}>
+
+
+        <h2><FiList /> 대여 신청 거절당한 목록 (총 {rejectedRentalRequestsCnt}개)</h2>
+        <div className={styles.listHeader}>
+          <div>제목</div>
+        </div>
+        <InfiniteScroll
+          dataLength={rejectedRentalRequests.length}
+          next={loadMoreRejectedRentalRequests}
+          hasMore={rejectedRentalRequests.length < rejectedRentalRequestsCnt}
+          loader={<h4>Loading...</h4>}
+          scrollableTarget="rejectedRentalRequestsList"
+        >
+          <ListComponent
+            items={rejectedRentalRequests}
+            emptyMessage="목록이 없습니다"
+            renderItem={(item) => (
+              <div className={styles.listItem}>
+                <div>{item.userbook.bookInfo.title}</div>
+              </div>
+            )}
+          />
+        </InfiniteScroll>
+      </div>
 
       <Modal
         isOpen={isModalOpen}

@@ -68,6 +68,20 @@
 .listHeader {
   display: flex;
   justify-content: space-between;
-  font-weight: bold;
   padding: 10px 20px;
+}
+
+.rentalContainerInner {
+  background-color: var(--sub-color);
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 40px;
+}
+
+.rentalContainerInner > h2 {
+  font-size: 20px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }

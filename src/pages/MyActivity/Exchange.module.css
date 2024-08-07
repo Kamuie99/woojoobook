@@ -68,6 +68,21 @@
 .listHeader {
   display: flex;
   justify-content: space-between;
-  font-weight: bold;
+  /* font-weight: bold; */
   padding: 10px 20px;
+}
+
+.exchangeContainerInner {
+  background-color: var(--sub-color);
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 40px;
+}
+
+.exchangeContainerInner > h2 {
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }

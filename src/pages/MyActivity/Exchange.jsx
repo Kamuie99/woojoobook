@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Swal from 'sweetalert2'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import axiosInstance from '../../util/axiosConfig'
 import ListComponent from './ListComponent'
 import Modal from '../BookRegister/Modal'
 import styles from './Exchange.module.css'
+import { FaExchangeAlt } from "react-icons/fa";
 
 const MODAL_TYPES = {
   EXCHANGE_REQUEST: 'EXCHANGE_REQUEST',
@@ -343,77 +344,84 @@ const Exchange = () => {
 
   return (
     <div className={styles.exchangeContainer}>
-      <h2>교환 신청한 목록 (총 {exchangeRequestsCnt}개)</h2>
-      <div className={styles.listHeader}>
-        <div>상대 책</div>
-        <div>내 책</div>
+      <div className={styles.exchangeContainerInner}>
+        <h2><FaExchangeAlt size={'15px'} /> 교환 신청한 목록 (총 {exchangeRequestsCnt}개)</h2>
+        <div className={styles.listHeader}>
+          <div>상대 책</div>
+          <div>내 책</div>
+        </div>
+        <InfiniteScroll
+          dataLength={exchangeRequests.length}
+          next={loadMoreExchangeRequests}
+          hasMore={exchangeRequests.length < exchangeRequestsCnt}
+          loader={<h4>Loading...</h4>}
+          scrollableTarget="exchangeRequestsList"
+        >
+          <ListComponent
+            items={exchangeRequests}
+            emptyMessage="목록이 없습니다"
+            renderItem={(item) => (
+              <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.EXCHANGE_REQUEST)} style={{cursor: 'pointer'}}>
+                <div className={styles.senderBook}>{item.receiverBook.bookInfo.title}</div>
+                <div className={styles.receiverBook}>{item.senderBook.bookInfo.title}</div>
+              </div>
+            )}
+          />
+        </InfiniteScroll>
       </div>
-      <InfiniteScroll
-        dataLength={exchangeRequests.length}
-        next={loadMoreExchangeRequests}
-        hasMore={exchangeRequests.length < exchangeRequestsCnt}
-        loader={<h4>Loading...</h4>}
-        scrollableTarget="exchangeRequestsList"
-      >
-        <ListComponent
-          items={exchangeRequests}
-          emptyMessage="목록이 없습니다"
-          renderItem={(item) => (
-            <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.EXCHANGE_REQUEST)} style={{cursor: 'pointer'}}>
-              <div className={styles.senderBook}>{item.receiverBook.bookInfo.title}</div>
-              <div className={styles.receiverBook}>{item.senderBook.bookInfo.title}</div>
-            </div>
-          )}
-        />
-      </InfiniteScroll>
 
-      <h2>교환 신청 받은 목록 (총 {receivedExchangeRequestsCnt}개)</h2>
-      <div className={styles.listHeader}>
-        <div>상대 책</div>
-        <div>내 책</div>
+
+      <div className={styles.exchangeContainerInner}>
+        <h2><FaExchangeAlt size={'15px'} /> 교환 신청 받은 목록 (총 {receivedExchangeRequestsCnt}개)</h2>
+        <div className={styles.listHeader}>
+          <div>상대 책</div>
+          <div>내 책</div>
+        </div>
+        <InfiniteScroll
+          dataLength={receivedExchangeRequests.length}
+          next={loadMoreReceivedExchangeRequests}
+          hasMore={receivedExchangeRequests.length < receivedExchangeRequestsCnt}
+          loader={<h4>Loading...</h4>}
+          scrollableTarget="receivedExchangeRequestsList"
+        >
+          <ListComponent
+            items={receivedExchangeRequests}
+            emptyMessage="목록이 없습니다"
+            renderItem={(item) => (
+              <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{cursor: 'pointer'}}>
+                <div className={styles.senderBook}>{item.senderBook.bookInfo.title}</div>
+                <div className={styles.receiverBook}>{item.receiverBook.bookInfo.title}</div>
+              </div>
+            )}
+          />
+        </InfiniteScroll>
       </div>
-      <InfiniteScroll
-        dataLength={receivedExchangeRequests.length}
-        next={loadMoreReceivedExchangeRequests}
-        hasMore={receivedExchangeRequests.length < receivedExchangeRequestsCnt}
-        loader={<h4>Loading...</h4>}
-        scrollableTarget="receivedExchangeRequestsList"
-      >
-        <ListComponent
-          items={receivedExchangeRequests}
-          emptyMessage="목록이 없습니다"
-          renderItem={(item) => (
-            <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{cursor: 'pointer'}}>
-              <div className={styles.senderBook}>{item.senderBook.bookInfo.title}</div>
-              <div className={styles.receiverBook}>{item.receiverBook.bookInfo.title}</div>
-            </div>
-          )}
-        />
-      </InfiniteScroll>
       
-      <h2>교환 신청 거절 당한 내역 (총 {rejectedExchangeRequestsCnt}개)</h2>
-      <div className={styles.listHeader}>
-        <div>상대 책</div>
-        <div>내 책</div>
+      <div className={styles.exchangeContainerInner}>
+        <h2><FaExchangeAlt size={'15px'} /> 교환 신청 거절 당한 내역 (총 {rejectedExchangeRequestsCnt}개)</h2>
+        <div className={styles.listHeader}>
+          <div>상대 책</div>
+          <div>내 책</div>
+        </div>
+        <InfiniteScroll
+          dataLength={rejectedExchangeRequests.length}
+          next={loadMoreRejectedExchangeRequests}
+          hasMore={rejectedExchangeRequests.length < rejectedExchangeRequestsCnt}
+          loader={<h4>Loding...</h4>}
+          scrollableTarget="rejectedExchangeRequestsList"
+        >
+          <ListComponent
+            items={rejectedExchangeRequests}
+            emptyMessage="목록이 없습니다"
+            renderItem={(item) => (
+              <div className={styles.exchangeBook}>
+                <div className={styles.senderBook}>{item.receiverBook.bookInfo.title}</div>
+                <div className={styles.receiverBook}>{item.senderBook.bookInfo.title}</div>
+              </div>
+            )}
+          />
+        </InfiniteScroll>
       </div>
-      <InfiniteScroll
-        dataLength={rejectedExchangeRequests.length}
-        next={loadMoreRejectedExchangeRequests}
-        hasMore={rejectedExchangeRequests.length < rejectedExchangeRequestsCnt}
-        loader={<h4>Loding...</h4>}
-        scrollableTarget="rejectedExchangeRequestsList"
-      >
-        <ListComponent
-          items={rejectedExchangeRequests}
-          emptyMessage="목록이 없습니다"
-          renderItem={(item) => (
-            <div className={styles.exchangeBook}>
-              <div className={styles.senderBook}>{item.receiverBook.bookInfo.title}</div>
-              <div className={styles.receiverBook}>{item.senderBook.bookInfo.title}</div>
-            </div>
-          )}
-        />
-      </InfiniteScroll>
 
       <Modal
         isOpen={isModalOpen}

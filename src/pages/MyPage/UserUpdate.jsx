@@ -81,9 +81,9 @@ const UserUpdate = () => {
         });
 
         Swal.fire({
-          title: '정보가 성공적으로 저장되었습니다.',
-          confirmButtonText: '확인',
-          icon: 'success'
+          title: "회원정보 수정성공",
+          text: "회원정보가 성공적으로 변경되었습니다.",
+          icon: "success"
         });
         navigate(`/${userId}/mypage`);
       } else {

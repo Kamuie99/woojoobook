@@ -1,5 +1,22 @@
 .historyContainer {
-  padding: 10px 0;
+  padding: 10px 20px;
+  overflow-y: auto;
+  height: calc(100vh - 165px);
+}
+
+/* WebKit browsers (Chrome, Safari) */
+.historyContainer::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.historyContainer::-webkit-scrollbar-thumb {
+  background: var(--accent-sub-color);
+  border-radius: 10px;
+}
+
+.historyContainer::-webkit-scrollbar-track {
+  background: var(--main-color);
 }
 
 .emptyList {
@@ -93,4 +110,19 @@
   justify-content: space-between;
   font-weight: bold;
   padding: 10px 20px;
+}
+
+.historyContainerInner {
+  background-color: var(--sub-color);
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 40px;
+}
+
+.historyContainerInner > h2 {
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }

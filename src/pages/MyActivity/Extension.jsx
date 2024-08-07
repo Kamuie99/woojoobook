@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Swal from 'sweetalert2'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import axiosInstance from '../../util/axiosConfig'
 import ListComponent from './ListComponent'
 import Modal from '../BookRegister/Modal'
 import styles from './Extension.module.css'
+import { SiGitextensions } from "react-icons/si";
 
 const MODAL_TYPES = {
   EXTENSION_REQUEST: 'EXTENSION_REQUEST',
@@ -335,76 +336,81 @@ const Extension = () => {
 
   return (
     <div className={styles.extensionContainer}>
-      <h2>연장 신청한 목록 (총 {extensionRequestsCnt}개)</h2>
-      <div className={styles.listHeader}>
-        <div>제목</div>
-        <div>책권자</div>
+      <div className={styles.extensionContainerInner}>
+        <h2><SiGitextensions size={'17px'}/> 연장 신청한 목록 (총 {extensionRequestsCnt}개)</h2>
+        <div className={styles.listHeader}>
+          <div>제목</div>
+          <div>책권자</div>
+        </div>
+        <InfiniteScroll
+          dataLength={extensionRequests.length}
+          next={loadMoreExtensionRequests}
+          hasMore={extensionRequests.length < extensionRequestsCnt}
+          loader={<h4>Loading...</h4>}
+          scrollableTarget="extensionRequestsList"
+        >
+          <ListComponent
+            items={extensionRequests}
+            emptyMessage="목록이 없습니다"
+            renderItem={(item) => (
+              <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.EXTENSION_REQUEST)} style={{cursor: 'pointer'}}>
+                <div>{item.rentalResponse.userbook.bookInfo.title}</div>
+                <div>{item.rentalResponse.userbook.ownerInfo.nickname}</div>
+              </div>
+            )}
+          />
+        </InfiniteScroll>
       </div>
-      <InfiniteScroll
-        dataLength={extensionRequests.length}
-        next={loadMoreExtensionRequests}
-        hasMore={extensionRequests.length < extensionRequestsCnt}
-        loader={<h4>Loading...</h4>}
-        scrollableTarget="extensionRequestsList"
-      >
-        <ListComponent
-          items={extensionRequests}
-          emptyMessage="목록이 없습니다"
-          renderItem={(item) => (
-            <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.EXTENSION_REQUEST)} style={{cursor: 'pointer'}}>
-              <div>{item.rentalResponse.userbook.bookInfo.title}</div>
-              <div>{item.rentalResponse.userbook.ownerInfo.nickname}</div>
-            </div>
-          )}
-        />
-      </InfiniteScroll>
-
-      <h2>연장 신청 받은 목록 (총 {receivedExtensionRequestsCnt}개)</h2>
-      <div className={styles.listHeader}>
-        <div>제목</div>
-        <div>신청자</div>
+          
+      <div className={styles.extensionContainerInner}>
+        <h2><SiGitextensions size={'17px'}/> 연장 신청 받은 목록 (총 {receivedExtensionRequestsCnt}개)</h2>
+        <div className={styles.listHeader}>
+          <div>제목</div>
+          <div>신청자</div>
+        </div>
+        <InfiniteScroll
+          dataLength={receivedExtensionRequests.length}
+          next={loadMoreReceivedExtensionRequests}
+          hasMore={receivedExtensionRequests.length < receivedExtensionRequestsCnt}
+          loader={<h4>Loading...</h4>}
+          scrollableTarget="receivedExtensionRequestsList"
+        >
+          <ListComponent
+            items={receivedExtensionRequests}
+            emptyMessage="목록이 없습니다"
+            renderItem={(item) => (
+              <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{cursor: 'pointer'}}>
+                <div>{item.rentalResponse.userbook.bookInfo.title}</div>
+                <div>{item.rentalResponse.user.nickname}</div>
+              </div>
+            )}
+          />
+        </InfiniteScroll>
       </div>
-      <InfiniteScroll
-        dataLength={receivedExtensionRequests.length}
-        next={loadMoreReceivedExtensionRequests}
-        hasMore={receivedExtensionRequests.length < receivedExtensionRequestsCnt}
-        loader={<h4>Loading...</h4>}
-        scrollableTarget="receivedExtensionRequestsList"
-      >
-        <ListComponent
-          items={receivedExtensionRequests}
-          emptyMessage="목록이 없습니다"
-          renderItem={(item) => (
-            <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{cursor: 'pointer'}}>
-              <div>{item.rentalResponse.userbook.bookInfo.title}</div>
-              <div>{item.rentalResponse.user.nickname}</div>
-            </div>
-          )}
-
-        />
-      </InfiniteScroll>
       
-      <h2>연장 신청 거절 당한 목록 (총 {rejectedExtensionRequestsCnt}개)</h2>
-      <div className={styles.listHeader}>
-        <div>제목</div>
+      <div className={styles.extensionContainerInner}>
+        <h2><SiGitextensions size={'17px'}/> 연장 신청 거절 당한 목록 (총 {rejectedExtensionRequestsCnt}개)</h2>
+        <div className={styles.listHeader}>
+          <div>제목</div>
+        </div>
+        <InfiniteScroll
+          dataLength={rejectedExtensionRequests.length}
+          next={loadMoreRejectedExtensionRequests}
+          hasMore={rejectedExtensionRequests.length < rejectedExtensionRequestsCnt}
+          loader={<h4>Loading...</h4>}
+          scrollableTarget="rejectedExtensionRequestsList"
+        >
+          <ListComponent
+            items={rejectedExtensionRequests}
+            emptyMessage="목록이 없습니다"
+            renderItem={(item) => (
+              <div className={styles.listItem}>
+                <div>{item.rentalResponse.userbook.bookInfo.title}</div>
+              </div>
+            )}
+          />
+        </InfiniteScroll>
       </div>
-      <InfiniteScroll
-        dataLength={rejectedExtensionRequests.length}
-        next={loadMoreRejectedExtensionRequests}
-        hasMore={rejectedExtensionRequests.length < rejectedExtensionRequestsCnt}
-        loader={<h4>Loading...</h4>}
-        scrollableTarget="rejectedExtensionRequestsList"
-      >
-        <ListComponent
-          items={rejectedExtensionRequests}
-          emptyMessage="목록이 없습니다"
-          renderItem={(item) => (
-            <div className={styles.listItem}>
-              <div>{item.rentalResponse.userbook.bookInfo.title}</div>
-            </div>
-          )}
-        />
-      </InfiniteScroll>
 
       <Modal
         isOpen={isModalOpen}

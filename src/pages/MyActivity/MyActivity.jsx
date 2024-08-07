@@ -100,7 +100,7 @@ const MyActivity = () => {
               히스토리
             </button>
           </div>
-          {renderContent()}
+            {renderContent()}
         </div>
       </main>
   </>

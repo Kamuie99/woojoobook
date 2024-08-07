@@ -1,0 +1,32 @@
+.bigContainer {
+  padding: 0 20px;
+  overflow-y: auto;
+  height: calc(100vh - 165px);
+}
+
+/* WebKit browsers (Chrome, Safari) */
+.bigContainer::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.bigContainer::-webkit-scrollbar-thumb {
+  background: var(--accent-sub-color);
+  border-radius: 10px;
+}
+
+.bigContainer::-webkit-scrollbar-track {
+  background: var(--main-color);
+}
+
+select {
+  width: 100px;
+  height: 30px;
+  border-radius: 5px;
+  padding: 0px 10px;
+}
+
+.selectBox {
+  display: flex;
+  justify-content: flex-end;
+}
