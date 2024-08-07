@@ -114,11 +114,11 @@ const BookList = () => {
   };
 
   const handleAreaSelected = async (areaCode) => {
-    console.log(areaCode.areaCode)
-    setSelectedAreaCode(areaCode.areaCode);
+    console.log(areaCode)
+    setSelectedAreaCode(areaCode);
     setBooks([]);
     setCurrentPage(0);
-    const areaName = await fetchAreaName(areaCode.areaCode);
+    const areaName = await fetchAreaName(areaCode);
     setUserAreaName(areaName);
   };
 

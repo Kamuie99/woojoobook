@@ -4,13 +4,10 @@
   font-family: "samsungGodik" !important;
   text-decoration: none !important;
 }
+
 :global(.MuiModal-root) {
   width: 1px;
 }
-
-/* :global(.MuiBackdrop-root) {
-  background-color: rgba(0, 0, 0, 0) !important;
-} */
 
 :global(.MuiListItem-root:hover) {
   background-color: #f0f0f0;
@@ -114,5 +111,4 @@
   align-items: center;
   justify-content: space-between;
   background-color: inherit;
-  /* background-color: var(--main-color); */
 }

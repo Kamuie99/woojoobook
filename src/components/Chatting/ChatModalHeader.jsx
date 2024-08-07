@@ -1,16 +1,28 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
 import { IconButton } from '@mui/material';
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import styles from './ChatModalHeader.module.css';
 
-const ChatModalHeader = ({chatRoomId, handleBack, receiverId}) => {
+const ChatModalHeader = ({chatRoom, handleBack}) => {
+  const { sub: userId } = useContext(AuthContext);
+  const [receiverNickname, setReceiverNickname] = useState('');
+  useEffect(() => {
+    if (chatRoom) {
+      if (chatRoom.senderId == userId) {
+        setReceiverNickname(chatRoom.receiverNickname);
+      } else {
+        setReceiverNickname(chatRoom.senderNickname);
+      }
+    } else {
+      setReceiverNickname('');
+    }
+  }, [chatRoom]);
+
   return (
     <div className={styles.modal_header}>
-      {chatRoomId ? (
-        <IconButton
-          aria-label="back"
-          onClick={handleBack}
-        >
+      {chatRoom ? (
+        <IconButton aria-label="back" onClick={handleBack}>
           <MdKeyboardArrowLeft size={30} />
         </IconButton>
       ) : (
@@ -18,8 +30,8 @@ const ChatModalHeader = ({chatRoomId, handleBack, receiverId}) => {
       )}
       <div className={styles.modal_title}>
         <p>
-          {chatRoomId ?
-            `${receiverId } 님과의 채팅` : '전체 채팅 목록'
+          {chatRoom ?
+            `${receiverNickname} 님과의 채팅` : '전체 채팅 목록'
           }
         </p>
       </div>

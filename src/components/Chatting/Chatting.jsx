@@ -12,7 +12,7 @@ const Chatting = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState('');
   const [receiverId, setReceiverId] = useState('');
-  const [chatRoomId, setChatRoomId] = useState('');
+  const [chatRoom, setChatRoom] = useState('');
   const [messages, setMessages] = useState([]);
   const [chatRooms, setChatRooms] = useState([]);
 
@@ -22,7 +22,7 @@ const Chatting = () => {
   const fetchChatRooms = async () => {
     try {
       const response = await axiosInstance.get('chatrooms', {
-        params: { userId },
+        params: { userId, page:0, size:10 },
       });
       const data = await response.data;
       console.log(data.content)
@@ -49,14 +49,14 @@ const Chatting = () => {
   const handleOpen = () => {
     setOpen(true);
     setMessages([]);
-    setChatRoomId('');
+    setChatRoom('');
     fetchChatRooms();
     document.body.style.overflow = 'hidden';
   }
 
   const handleClose = () => {
     setMessages([]);
-    setChatRoomId('');
+    setChatRoom('');
     setReceiverId('');
     setIsClosing(true);
   };
@@ -86,8 +86,8 @@ const Chatting = () => {
         isLoading={isLoading}
         handleAnimationEnd={handleAnimationEnd}
         chatRooms={chatRooms}
-        chatRoomId={chatRoomId}
-        setChatRoomId={setChatRoomId}
+        chatRoom={chatRoom}
+        setChatRoom={setChatRoom}
       />
     </div>
   );

@@ -30,6 +30,7 @@
   transition: transform 0.5s ease-in-out;
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   position: relative;
+  perspective: 2000px;
 }
 
 .bookOpen {
@@ -60,6 +61,10 @@
   object-fit: cover;
 }
 
+.bookCover.flutter {
+  animation: flutter 4s ease-in-out infinite;
+}
+
 .bookContent {
   width: 100%;
   height: 100%;
@@ -78,4 +83,13 @@
   font-size: 16px;
   cursor: pointer;
   z-index: 3;
+}
+
+@keyframes flutter {
+  0%, 100% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(-15deg);
+  }
 }

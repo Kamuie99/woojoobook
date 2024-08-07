@@ -12,7 +12,7 @@ import ChatRoom from './ChatRoom';
 import PhoneTopBar from './PhoneTopBar';
 import ChatModalHeader from './ChatModalHeader';
 
-const ChatModal = ({ open, handleClose, isClosing, isLoading, handleAnimationEnd, chatRooms, chatRoomId, setChatRoomId }) => {
+const ChatModal = ({ open, handleClose, isClosing, isLoading, handleAnimationEnd, chatRooms, chatRoom, setChatRoom }) => {
   const { isLoggedIn, sub } = useContext(AuthContext);
   const [userId, setUserId] = useState('');
   const [receiverId, setReceiverId] = useState('');
@@ -25,9 +25,9 @@ const ChatModal = ({ open, handleClose, isClosing, isLoading, handleAnimationEnd
 
   useEffect(() => {
     if (open) {
-      setChatRoomId('');
+      setChatRoom('');
     }
-  }, [open, setChatRoomId]);
+  }, [open, setChatRoom]);
 
   const handleNewChatSubmit = async (e, newReceiverId) => {
     e.preventDefault();
@@ -47,28 +47,28 @@ const ChatModal = ({ open, handleClose, isClosing, isLoading, handleAnimationEnd
       if (data.isExist) {
         const roomResponse = await axiosInstance.get(`chatrooms/${userId}/${newReceiverId}`);
         const roomData = await roomResponse.data;
-        setChatRoomId(roomData.id);
+        setChatRoom(roomData);
       } else {
         const newRoomResponse = await axiosInstance.post('chatrooms', {
           senderId: userId,
           receiverId: newReceiverId,
         });
         const newRoomData = await newRoomResponse.data;
-        setChatRoomId(newRoomData.id);
+        setChatRoom(newRoomData);
       }
     } catch (error) {
       console.error('채팅 룸 조회/생성 중 오류 발생:', error);
     }
   };
 
-  const handleSelectRoom = (receiverId, chatRoomId) => {
+  const handleSelectRoom = (receiverId, chatRoom) => {
     setReceiverId(receiverId);
-    setChatRoomId(chatRoomId);
+    setChatRoom(chatRoom);
   };
 
   const handleBack = () => {
     setReceiverId('');
-    setChatRoomId('');
+    setChatRoom('');
   };
 
   return (
@@ -92,19 +92,18 @@ const ChatModal = ({ open, handleClose, isClosing, isLoading, handleAnimationEnd
       >
         <PhoneTopBar />
         <ChatModalHeader
-          chatRoomId={chatRoomId}
+          chatRoom={chatRoom}
           handleBack={handleBack}
-          receiverId={receiverId}
         />
         {isLoading ? (
           <div className={styles.loading}>
             <CircularProgress />
           </div>
         ) : (
-          chatRoomId ? (
+          chatRoom ? (
             <ChatRoom
               userId={userId}
-              chatRoomId={chatRoomId}
+              chatRoom={chatRoom}
               receiverId={receiverId}
             />
           ) : (

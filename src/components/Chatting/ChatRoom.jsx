@@ -6,7 +6,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import axiosInstance from '../../util/axiosConfig';
 import styles from './ChatRoom.module.css';
 
-const ChatRoom = ({ chatRoomId, receiverId }) => {
+const ChatRoom = ({ chatRoom, receiverId }) => {
   const { isLoggedIn, sub, client } = useContext(AuthContext);
   const [userId, setUserId] = useState('');
   const [chat, setChat] = useState('');
@@ -26,7 +26,7 @@ const ChatRoom = ({ chatRoomId, receiverId }) => {
 
   useEffect(() => {
     let subscription;
-    if (client.current && chatRoomId) {
+    if (client.current && chatRoom) {
       const destination = `/topic/user_${userId}`;
       subscription = client.current.subscribe(destination, (message) => {
         console.log('수신된 메시지:', message.body);
@@ -50,7 +50,7 @@ const ChatRoom = ({ chatRoomId, receiverId }) => {
   
   useEffect(() => {
     fetchChatMessages(0, true);
-  }, [chatRoomId]);
+  }, [chatRoom]);
 
   
   useRef(() => {
@@ -95,7 +95,7 @@ const ChatRoom = ({ chatRoomId, receiverId }) => {
       const previousScrollTop = scrollableDiv.scrollTop;
 
       const page = reset ? 0 : currentPage;
-      const response = await axiosInstance.get(`chat/${chatRoomId}`, {
+      const response = await axiosInstance.get(`chat/${chatRoom.id}`, {
         params: { page, size: 20 }
       })
       const newChats = response.data.content || [];
@@ -134,7 +134,7 @@ const ChatRoom = ({ chatRoomId, receiverId }) => {
       console.log('WebSocket is connected');
       const newMessage = {
         content: chat,
-        chatRoomId,
+        chatRoomId: chatRoom.id,
         senderId: userId,
         receiverId,
       }
