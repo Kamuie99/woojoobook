@@ -1,0 +1,252 @@
+
+
+.section {
+  width: 100%;
+  float: left;
+  box-sizing: border-box;
+}
+
+
+.tit {
+  font-size: 28px;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 30px;
+  padding-top: 50px;
+  position: relative;
+}
+
+.sec01 .grid_wrap {
+  font-size: 0;
+  position: relative;
+  overflow: hidden;
+  padding-top: 30px;
+  height: calc(100vh - 420px);
+}
+
+.sec01 .grid_l {
+  display: inline-block;
+  width: calc(50% - 0px); /* - 50px */
+  font-size: 15px;
+  box-sizing: border-box;
+  /* float: left; */
+  padding-bottom: 80px;
+  padding-right: 30px;
+  background-image: url(../assets/sec01_l_bg.png);
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  background-size: 100% 270px;
+  /* margin-right: 50px; */
+  position: relative;
+}
+
+.sec01 .grid_l .block {
+  width: 360px;
+  display: block;
+  border: solid 7px #0166cc;
+  float: right;
+  min-height: 300px;
+}
+
+.sec01 .grid_l h5 {
+  font-size: 24px;
+  font-weight: 500;
+  display: block;
+  width: 100%;
+  margin-top: -22px;
+  margin-left: 50px;
+  padding-left: 10px;
+  background: #fff;
+  text-align: left;
+  padding-right: 10px;
+  box-sizing: border-box;
+  color: #0166cc;
+}
+
+.sec01 .grid_l .txt, .sec01 .grid_l .tel {
+  margin-right: -20px;
+  background: #fff;
+  text-align: left;
+  width: 90%;
+  box-sizing: border-box;
+  word-break: keep-all;
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: 300;
+  margin-left: 60px;
+  color: #333;
+}
+
+.sec01 .grid_l .tel {
+  color: #000;
+  font-weight: 500;
+  padding-top: 5px;
+}
+
+.sec01 .grid_l .count_wrap {
+  padding: 20px;
+  text-align: right;
+  margin-top: 20px;
+}
+
+.sec01 .grid_l .count_wrap h6 {
+  color: #000;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+  text-align: left;
+  padding-left: 50%;
+}
+
+.sec01 .grid_l .count_wrap h6 span {
+  display: block;
+}
+
+.sec01 .grid_l .count_wrap p {
+  color: #000;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: left;
+  padding-left: 50%;
+}
+
+.sec01 .grid_l .count_wrap p span {
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.sec01 .grid_l .count_wrap button {
+  display: inline-block;
+  /* padding: 5px 40px 5px 20px; */
+  background: #0166cc;
+  color: #fff;
+  font-size: 16px;
+  margin-top: 20px;
+  background-image: url();
+  background-repeat: no-repeat;
+  background-position: 90% center;
+  background-size: 6px;
+  width: 150px;
+  height: 30px;
+  border: none;
+}
+
+.sec01 .grid_r {
+  display: inline-block;
+  width: calc(50% - 0px);
+  font-size: 15px;
+  box-sizing: border-box;
+  /* float: left; */
+  padding-bottom: 80px;
+  padding-left: 30px;
+  background-image: url(../assets/sec01_r_bg.png);
+  background-repeat: no-repeat;
+  background-position: bottom left;
+  background-size: 100% 270px;
+  /* margin-left: 50px; */
+}
+
+.sec01 .grid_r .block {
+  width: 360px;
+  display: block;
+  /* border: solid 7px #00a3ac; */
+  border: solid 7px #00828C;
+  float: left; /* 오른쪽 블록은 왼쪽으로 붙임 */
+}
+
+.sec01 .grid_r h5 {
+  font-size: 24px;
+  font-weight: 500;
+  display: block;
+  width: 90%;
+  margin-top: -22px;
+  margin-left: -20px;
+  background: #fff;
+  text-align: right;
+  padding-right: 10px;
+  box-sizing: border-box;
+  /* color: #00a3ac; */
+  color: #00828C;
+}
+
+.sec01 .grid_r .txt, .sec01 .grid_r .tel {
+  margin-left: -20px;
+  background: #fff;
+  text-align: right;
+  width: 88%;
+  box-sizing: border-box;
+  word-break: keep-all;
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: 300;
+  color: #333;
+}
+
+.sec01 .grid_r .tel {
+  color: #000;
+  font-weight: 500;
+  padding-top: 5px;
+}
+
+.sec01 .grid_r .count_wrap {
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.sec01 .grid_r .count_wrap h6 {
+  color: #000;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.sec01 .grid_r .count_wrap h6 span {
+  display: block;
+}
+
+.sec01 .grid_r .count_wrap p {
+  color: #000;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.sec01 .grid_r .count_wrap p span {
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.sec01 .grid_r .count_wrap button {
+  display: inline-block;
+  /* padding: 5px 40px 5px 20px; */
+  /* background: #00a3ac; */
+  background: #00828C;
+  color: #fff;
+  font-size: 16px;
+  margin-top: 20px;
+  background-image: url();
+  background-repeat: no-repeat;
+  background-position: 90% center;
+  background-size: 6px;
+
+  width: 150px;
+  height: 30px;
+  border: none;
+}
+
+/* .sec01 .grid_l:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  right: -50px;
+  width: 1px;
+  height: 100%;
+  background-color: #ccc;
+} */
+
+.right_wrap > h6 {
+  text-align: right !important;
+}
+.right_wrap > p {
+  text-align: right !important;
+}
