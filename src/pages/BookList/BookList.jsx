@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useContext } from "react";
+import { Link } from 'react-router-dom';
 import { useSearch } from '../../contexts/SearchContext';
 import { LuBookPlus } from "react-icons/lu";
 import { IoHeartOutline, IoHeartSharp } from "react-icons/io5";
@@ -21,7 +22,7 @@ const BookList = () => {
   const [error, setError] = useState(null);
   const [areaNames, setAreaNames] = useState({});
   const [selectedArea, setSelectedArea] = useState(null);
-  const { user } = useContext(AuthContext);
+  const { user, sub: userId } = useContext(AuthContext);
   const [selectedBook, setSelectedBook] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -53,6 +54,10 @@ const BookList = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    console.log(books);
+  }, [books])
 
   const fetchBooks = useCallback(async () => {
     setLoading(true);
@@ -257,14 +262,25 @@ const BookList = () => {
                     <img 
                       src={book.userbook.bookInfo.thumbnail} 
                       alt={book.userbook.bookInfo.title} 
-                      style={{ width: '100px', height: '140px' }} 
+                      style={{ width: '100px', height: '140px' }}
+                      className={styles.thumbnail}
+                      onClick={() => openModal(book)}
                     />
                   </div>
-                  <div className={styles.description} onClick={() => openModal(book)}>
-                    <h3>{book.userbook.bookInfo.title}</h3>
+                  <div className={styles.description}>
+                    <h3 onClick={() => openModal(book)} >{book.userbook.bookInfo.title}</h3>
                     <div className={styles.innerBox}>
                       <p><strong>저자 |</strong> {truncateAuthor(book.userbook.bookInfo.author)}</p>
-                      <p><strong>책권자 |</strong> {book.userbook.ownerInfo.nickname}</p>
+                      <div className={styles.tooltipContainer}>
+                        <p className={styles.ownerNickname}>
+                          <Link to={`/${book.userbook.ownerInfo.id}/mylibrary`}>
+                            <strong>책권자 |</strong> {book.userbook.ownerInfo.nickname}
+                          </Link>
+                        </p>
+                        {<span className={styles.tooltip}>
+                          {book.userbook.ownerInfo.nickname} 님의 서재로 이동하기
+                        </span>}
+                      </div>
                       <p>책 ID {book.userbook.id}</p>
                     </div>
                     <div className={styles.innerBox}>
@@ -275,6 +291,7 @@ const BookList = () => {
                       {book.userbook.tradeStatus === 'RENTAL_AVAILABLE' && <p className={styles.statusMessage}>대여가능</p>}
                       {book.userbook.tradeStatus === 'EXCHANGE_AVAILABLE' && <p className={styles.statusMessage}>교환가능</p>}
                       {book.userbook.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE' && <p className={styles.statusMessage}>대여, 교환가능</p>}
+                      {book.userbook.tradeStatus === 'RENTED' && <p className={styles.statusMessage2}>대여중</p>}
                     </div>
                   </div>
                   <div className={styles.status}>
@@ -301,6 +318,7 @@ const BookList = () => {
           )
         )}
       </main>
+      {totalPages > 1 && (
       <div className={styles.pagination}>
         <button 
           onClick={() => handlePageChange(currentPage - 1)} 
@@ -326,6 +344,7 @@ const BookList = () => {
           다음
         </button>
       </div>
+      )}
       {selectedBook && <BookModal book={selectedBook} onClose={closeModal} />}
     </>
   )

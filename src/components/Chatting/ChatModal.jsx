@@ -12,17 +12,26 @@ import ChatRoom from './ChatRoom';
 import PhoneTopBar from './PhoneTopBar';
 import ChatModalHeader from './ChatModalHeader';
 
-const ChatModal = ({ open, handleClose, isClosing, isLoading, handleAnimationEnd, chatRooms, chatRoom, setChatRoom }) => {
+const ChatModal = ({ open, receiverId, setReceiverId, handleClose, isClosing, isLoading, handleAnimationEnd, chatRooms, chatRoom, setChatRoom }) => {
   const { isLoggedIn, sub: userId } = useContext(AuthContext);
-  const [receiverId, setReceiverId] = useState('');
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (open) {
       setChatRoom('');
+      setTimeout(() => {
+        setIsVisible(true);
+      }, 800);
     }
   }, [open, setChatRoom]);
 
-  const handleNewChatSubmit = async (newReceiverId) => {
+  useEffect(() => {
+    if (receiverId) {
+      fetchOrCreateChatRoom(receiverId);
+    }
+  }, [receiverId]);
+
+  const fetchOrCreateChatRoom = async (newReceiverId) => {
     setReceiverId(newReceiverId);
     if (userId == newReceiverId) {
       console.log('sender와 receiver id가 같습니다.')
@@ -103,7 +112,7 @@ const ChatModal = ({ open, handleClose, isClosing, isLoading, handleAnimationEnd
               chatRooms={chatRooms}
               userId={userId}
               onSelectRoom={handleSelectRoom}
-              handleNewChatSubmit={handleNewChatSubmit}
+              fetchOrCreateChatRoom={fetchOrCreateChatRoom}
             />
           )
         )}

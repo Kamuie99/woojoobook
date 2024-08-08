@@ -24,17 +24,28 @@
   align-self: flex-end;
 }
 
-.sent > p {
-  background-color: var(--sub-color);
-}
-
 .received {
   justify-content: flex-start;
   align-self: flex-start;
 }
 
+@keyframes fadeInBackground {
+  0% {
+    background-color: black;
+  }
+  100% {
+    background-color: var(--sub-color);
+  }
+}
+
+.sent > p {
+  background-color: var(--sub-color);
+  animation: visible 1s forwards;
+}
+
 .received > p {
   background-color: var(--sub-color);
+  animation: visible 1s forwards;
 }
 
 .message > p {
@@ -60,6 +71,16 @@
   bottom: 65px;
   width: calc(100% - 32px);
   background-color: var(--main-color);
+  animation: visible 1.2s forwards;
+}
+
+@keyframes visible {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .message_input_button {

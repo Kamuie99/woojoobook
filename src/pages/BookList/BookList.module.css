@@ -27,18 +27,22 @@
   justify-content: space-between;
 }
 
+.thumbnail {
+  cursor: pointer;
+}
+
 .description {
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 10px;
   width: 50%;
-  cursor: pointer;
 }
 
 .description > h3 {
   font-size: 20px;
   font-weight: bolder;
+  cursor: pointer;
 }
 
 .description strong {
@@ -50,9 +54,61 @@
   color: var(--accent-sub-color);
 }
 
+.ownerNickname {
+  cursor: pointer;
+}
+
+.ownerNickname > a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.tooltipContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  visibility: hidden;
+  width: 18em;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -100px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltipContainer:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
 .statusMessage {
   color: var(--accent-color);
 }
+
+.statusMessage2 {
+  color: #F27474;
+}
+
 
 .titleDiv {
   font-size: 22px;

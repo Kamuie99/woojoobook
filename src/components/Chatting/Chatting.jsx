@@ -5,12 +5,11 @@ import axiosInstance from '../../util/axiosConfig';
 import ChatButton from './ChatButton';
 import ChatModal from './ChatModal';
 
-const Chatting = () => {
-  const { isLoggedIn, sub } = useContext(AuthContext);
+const Chatting = ({directMessage = null}) => {
+  const { isLoggedIn, sub: userId } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [userId, setUserId] = useState('');
   const [receiverId, setReceiverId] = useState('');
   const [chatRoom, setChatRoom] = useState('');
   const [messages, setMessages] = useState([]);
@@ -35,16 +34,14 @@ const Chatting = () => {
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
-      setUserId(sub);
+    if (directMessage) {
+      console.log(directMessage)
+      setOpen(true);
+      setTimeout(() => {
+        setReceiverId(directMessage);
+      }, 100);
     }
-  }, [isLoggedIn, sub]);
-  
-  useEffect(() => {
-    if (receiverId) {
-      fetchOrCreateChatRoom();
-    }
-  }, [receiverId]);
+  }, [directMessage]);
 
   const handleOpen = () => {
     setOpen(true);
@@ -81,6 +78,8 @@ const Chatting = () => {
       }
       <ChatModal
         open={open}
+        receiverId={receiverId}
+        setReceiverId={setReceiverId}
         handleClose={handleClose}
         isClosing={isClosing}
         isLoading={isLoading}

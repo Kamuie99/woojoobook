@@ -171,7 +171,9 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
           ))}
         <div ref={messagesEndRef}/>
       </div>
-      <div className={styles.message_input_container}>
+      <div className={`
+        ${styles.message_input_container}
+      `}>
         <TextField
           value={chat}
           onChange={(e) => setChat(e.target.value)}

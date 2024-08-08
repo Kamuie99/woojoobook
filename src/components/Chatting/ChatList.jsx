@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { List, ListItem, ListItemText, Divider, TextField, Button } from '@mui/material';
+import { CiMenuKebab } from "react-icons/ci";
 import styles from './ChatList.module.css';
 
 const ChatList = ({ chatRooms, userId, onSelectRoom, handleNewChatSubmit }) => {
+  const [openMenus, setOpenMenus] = useState({});
   const receiverIdRef = useRef(null);
   
   const handleNewChat = (e) => {
@@ -13,22 +15,54 @@ const ChatList = ({ chatRooms, userId, onSelectRoom, handleNewChatSubmit }) => {
     }
   }
 
+  const toggleSideMenu = (e, roomId) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setOpenMenus((prevOpenMenus) => ({
+      ...prevOpenMenus,
+      [roomId]: !prevOpenMenus[roomId],
+    }));
+  }
+
+  const closeSideMenu = (e, roomId) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setOpenMenus((prevOpenMenus) => ({
+      ...prevOpenMenus,
+      [roomId]: false,
+    }));
+  }
+
   return (
-    <div className={styles.chat_list}>
+    <div className={styles.chatList}>
       <List>
         {chatRooms.map((room) => (
           <React.Fragment key={room.id}>
-            <ListItem onClick={() => { 
-              let otherUserId = room.receiverId;
-              if (otherUserId == userId) otherUserId = room.senderId;
-              onSelectRoom(otherUserId, room);
-              console.log(room)
-            }}>
-              {/* TODO: 상대 유저 닉네임 받아오기 */}
+            <ListItem
+              className={`${styles.chatListItem} ${openMenus[room.id] ? styles.open : ''}`}
+              onClick={() => { 
+                let otherUserId = room.receiverId;
+                if (otherUserId == userId) otherUserId = room.senderId;
+                onSelectRoom(otherUserId, room);
+                console.log(room)
+              }}
+            >
               <ListItemText primary={`
                 ${userId == room.receiverId ?
                   room.senderNickname : room.receiverNickname} 님과의 채팅방
               `} />
+              <CiMenuKebab
+                className={styles.sideMenuButton}
+                onClick={(e) => {toggleSideMenu(e, room.id)}}
+              />
+              {openMenus[room.id] && (
+                <div
+                  className={styles.sideMenu}
+                  onMouseLeave={() => closeSideMenu(room.id)}
+                >
+                  <Button onClick={(e) => closeSideMenu(e, room.id)}>방 나가기</Button>
+                </div>
+              )}
             </ListItem>
             <Divider />
           </React.Fragment>

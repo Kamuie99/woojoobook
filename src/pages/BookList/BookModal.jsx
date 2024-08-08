@@ -6,18 +6,13 @@ import axiosInstance from '../../util/axiosConfig';
 import { AuthContext } from '../../contexts/AuthContext';
 import Swal from 'sweetalert2';
 import ExchangeModal from './ExchangeModal';
-import ChatModal from '../../components/Chatting/ChatModal';
+import Chatting from '../../components/Chatting/Chatting';
 
 const BookModal = ({ book, onClose }) => {
   const { user, sub: userId } = useContext(AuthContext);
   const [showExchangeModal, setShowExchangeModal] = useState(false);
-  const [chatRoom, setChatRoom] = useState('');
   const [showChatModal, setShowChatModal] = useState(false);
-  const [receiverId, setReceiverId] = useState('');
-  const [chatRooms, setChatRooms] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [chatRoom, setChatRoom] = useState('');
 
   const userbook = book.userbook;
   const getQualityEmoticon = (qualityStatus) => {
@@ -76,10 +71,13 @@ const BookModal = ({ book, onClose }) => {
 
           onClose();
         } catch (error) {
-          console.error('대여 신청 실패:', error);
+          console.error('대여 신청 실패:', error.response.data);
+          const errMsg = error.response.data === '이미 존재합니다.' ?
+            '이미 대여 신청을 보냈습니다.' :
+            '대여 신청 중 오류가 발생했습니다.'
           Swal.fire({
             title: '오류',
-            text: '대여 신청 중 오류가 발생했습니다.',
+            text: errMsg,
             confirmButtonText: '확인',
             icon: 'warning'
           });
@@ -87,56 +85,41 @@ const BookModal = ({ book, onClose }) => {
       }
     }
   };
-
-  const handleChatRequest = async (e, ownerId) => {
+  
+  const handleNewChat = (e, ownerId) => {
     e.preventDefault();
     setShowChatModal(true);
-    setOpen(true);
-    if (userId == ownerId) {
-      console.log('본인 id에 채팅 요청 불가능')
+    setChatRoom(ownerId);
+  }
+
+  const handleNewChatSubmit = async (newReceiverId) => {
+    setReceiverId(newReceiverId);
+    if (userId == newReceiverId) {
+      console.log('sender와 receiver id가 같습니다.')
+      return;
     }
     try {
       const response = await axiosInstance.get('chatrooms/check', {
         params: {
           senderId: userId,
-          receiverId: ownerId,
-        }
+          receiverId: newReceiverId,
+        },
       });
       const data = await response.data;
       if (data.isExist) {
-        const roomResponse = await axiosInstance.get(`chatrooms/${userId}/${ownerId}`);
+        const roomResponse = await axiosInstance.get(`chatrooms/${userId}/${newReceiverId}`);
         const roomData = await roomResponse.data;
         setChatRoom(roomData);
       } else {
         const newRoomResponse = await axiosInstance.post('chatrooms', {
           senderId: userId,
-          receiverId: ownerId
+          receiverId: newReceiverId,
         });
         const newRoomData = await newRoomResponse.data;
         setChatRoom(newRoomData);
       }
-      setTimeout(() => {
-        setReceiverId(ownerId);
-      }, 200);
     } catch (error) {
-      console.error('채팅 룸 조회/생성 중 오류 발생: ', error)
-    }
-  }
-
-  const handleChatModalClose = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setIsClosing(false);
-      setShowChatModal(false);
-      setOpen(false);
-    }, 500);
-  };
-
-  const handleAnimationEnd = () => {
-    if (isClosing) {
-      setTimeout(() => {
-        setIsLoading(true);
-      }, 500);
+      console.error('채팅 룸 조회/생성 중 오류 발생:', error);
     }
   };
 
@@ -189,7 +172,7 @@ const BookModal = ({ book, onClose }) => {
               </div>
             </>
           )}
-          <button onClick={(e) => handleChatRequest(e, userbook.ownerInfo.id)} className={styles.tochatButton}>채팅하기</button>
+          <button onClick={(e) => handleNewChat(e, userbook.ownerInfo.id)} className={styles.tochatButton}>채팅하기</button>
         </div>
       </div>
       {showExchangeModal && (
@@ -199,15 +182,8 @@ const BookModal = ({ book, onClose }) => {
         />
       )}
       {showChatModal && (
-        <ChatModal
-          open={open}
-          handleClose={handleChatModalClose}
-          isClosing={isClosing}
-          isLoading={isLoading}
-          handleAnimationEnd={handleAnimationEnd}
-          chatRooms={chatRooms}
-          chatRoom={chatRoom}
-          setChatRoom={setChatRoom}
+        <Chatting
+          directMessage={chatRoom}
         />
       )}
     </div>
