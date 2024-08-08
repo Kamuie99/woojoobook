@@ -42,7 +42,7 @@ public class VerificationService {
 	@Transactional(readOnly = true)
 	public UserVerification findByEmail(String email) {
 		return this.userVerificationRepository.findByEmail(email)
-			.orElseThrow(() -> new ErrorException(ErrorCode.InternalServer));
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
 
 	@Transactional

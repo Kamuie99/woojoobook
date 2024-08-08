@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import lombok.Getter;
 public class UserVerification implements Serializable {
 	@Id
 	private String id;
+	@Indexed
 	private String email;
 	private String verificationCode;
 	private boolean isVerified;
