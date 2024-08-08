@@ -87,6 +87,12 @@ const MyLibrary = () => {
     try {
       const response = await axiosInstance.post(`/users/${userId}/libraries/categories`, newCategory)
       setCategories([...categories, response.data])
+      Swal.fire({
+        title: '생성 완료',
+        text: '카테고리를 생성했습니다.',
+        confirmButtonText: '확인',
+        icon:'success'
+      })
       setCreateModalIsOpen(false);
     } catch (error) {
       console.log(error)
@@ -98,6 +104,12 @@ const MyLibrary = () => {
       const response = await axiosInstance.put(`/users/${userId}/libraries/categories/${selectedCategory.id}`, updatedCategory)
       setCategories(categories.map(cat => cat.id === selectedCategory.id ? response.data : cat))
       setUpdateModalIsOpen(false)
+      Swal.fire({
+        title: '수정 완료',
+        text: '카테고리를 수정했습니다.',
+        confirmButtonText: '확인',
+        icon:'success'
+      })
       setSelectedCategory(null)
     } catch (error) {
       console.log(error)
