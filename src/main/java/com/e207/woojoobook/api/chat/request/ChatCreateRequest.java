@@ -11,10 +11,10 @@ import lombok.Builder;
 public record ChatCreateRequest(@NotNull Long chatRoomId, @NotNull Long senderId, @NotNull Long receiverId,
 								@NotNull String content) {
 
-	public Chat toEntity(ChatRoom chatRoom, User sender) {
+	public Chat toEntity(ChatRoom chatRoom, Long userId) {
 		return Chat.builder()
 			.chatRoom(chatRoom)
-			.sender(sender)
+			.userId(userId)
 			.content(content)
 			.build();
 	}

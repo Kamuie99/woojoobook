@@ -38,8 +38,8 @@ class ChatRepositoryTest {
 		ChatRoom chatRoom = createChatRoom(sender, receiver);
 		chatRoomRepository.save(chatRoom);
 
-		Chat chat1 = createChat(chatRoom, sender, "sender to receiver");
-		Chat chat2 = createChat(chatRoom, receiver, "receiver to sender");
+		Chat chat1 = createChat(chatRoom, sender.getId(), "sender to receiver");
+		Chat chat2 = createChat(chatRoom, receiver.getId(), "receiver to sender");
 		chatRepository.save(chat1);
 		chatRepository.save(chat2);
 
@@ -52,10 +52,10 @@ class ChatRepositoryTest {
 			.containsExactlyInAnyOrder("sender to receiver", "receiver to sender");
 	}
 
-	private Chat createChat(ChatRoom chatRoom, User sender, String content) {
+	private Chat createChat(ChatRoom chatRoom, Long userId, String content) {
 		return Chat.builder()
 			.chatRoom(chatRoom)
-			.sender(sender)
+			.userId(userId)
 			.content(content)
 			.build();
 	}

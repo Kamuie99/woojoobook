@@ -3,7 +3,6 @@ package com.e207.woojoobook.domain.chat;
 import java.time.LocalDateTime;
 
 import com.e207.woojoobook.domain.chatroom.ChatRoom;
-import com.e207.woojoobook.domain.user.User;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,18 +27,17 @@ public class Chat {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private ChatRoom chatRoom;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	private User sender;
+	private Long userId;
 
 	private String content;
 
 	private LocalDateTime createdAt;
 
 	@Builder
-	private Chat(Long id, ChatRoom chatRoom, User sender, String content) {
+	private Chat(Long id, ChatRoom chatRoom, Long userId, String content) {
 		this.id = id;
 		this.chatRoom = chatRoom;
-		this.sender = sender;
+		this.userId = userId;
 		this.content = content;
 		this.createdAt = LocalDateTime.now();
 	}

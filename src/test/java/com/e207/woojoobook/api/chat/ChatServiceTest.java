@@ -55,7 +55,7 @@ class ChatServiceTest {
 
 		//then
 		Chat createdChat = chatRepository.findById(result.id()).get();
-		assertThat(result).extracting("id", "chatRoomId", "senderId", "content")
+		assertThat(result).extracting("id", "chatRoomId", "userId", "content")
 			.containsExactly(createdChat.getId(), chatRoom.getId(), sender.getId(), "chat content");
 
 	}
@@ -97,8 +97,8 @@ class ChatServiceTest {
 		ChatRoom chatRoom = createChatRoom(sender, receiver);
 		chatRoomRepository.save(chatRoom);
 
-		Chat chat1 = createChat(chatRoom, sender, "sender to receiver");
-		Chat chat2 = createChat(chatRoom, receiver, "receiver to sender");
+		Chat chat1 = createChat(chatRoom, sender.getId(), "sender to receiver");
+		Chat chat2 = createChat(chatRoom, receiver.getId(), "receiver to sender");
 		chatRepository.save(chat1);
 		chatRepository.save(chat2);
 
@@ -111,10 +111,10 @@ class ChatServiceTest {
 			.containsExactlyInAnyOrder("sender to receiver", "receiver to sender");
 	}
 
-	private Chat createChat(ChatRoom chatRoom, User sender, String content) {
+	private Chat createChat(ChatRoom chatRoom, Long userId, String content) {
 		return Chat.builder()
 			.chatRoom(chatRoom)
-			.sender(sender)
+			.userId(userId)
 			.content(content)
 			.build();
 	}

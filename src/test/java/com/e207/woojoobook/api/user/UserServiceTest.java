@@ -78,10 +78,16 @@ class UserServiceTest {
 		savedPoint = this.pointRepository.save(savedPoint);
 		Rental savedRental = createRental(savedUserbook, savedUser);
 		savedRental = this.rentalRepository.save(savedRental);
-		User testUser = this.userRepository.save(createUser("test"));
+		User testUser1 = this.userRepository.save(createUser("test"));
+		User testUser2 = this.userRepository.save(createUser("testUser2"));
 		ChatRoom chatRoom = this.chatRoomRepository.save(ChatRoom.builder()
 			.sender(savedUser)
-			.receiver(testUser)
+			.receiver(testUser1)
+			.build());
+
+		ChatRoom chatRoom2 = this.chatRoomRepository.save(ChatRoom.builder()
+			.sender(testUser2)
+			.receiver(savedUser)
 			.build());
 
 		given(this.userHelper.findCurrentUser()).willReturn(savedUser);
@@ -94,6 +100,7 @@ class UserServiceTest {
 		Long pointId = savedPoint.getId();
 		Long rentalId = savedRental.getId();
 		Long chatRoomId = chatRoom.getId();
+		Long chatRoom2Id = chatRoom2.getId();
 
 		// when
 		this.userService.deleteUser(new UserDeleteRequest(password));
@@ -105,6 +112,8 @@ class UserServiceTest {
 		assertTrue(this.pointRepository.findById(pointId).isEmpty());
 		Optional<Rental> rental = this.rentalRepository.findById(rentalId);
 		Optional<ChatRoom> byId = this.chatRoomRepository.findById(chatRoomId);
+		ChatRoom chatRoom1 = this.chatRoomRepository.findById(chatRoom2Id).get();
+		assertEquals(chatRoom1.getReceiver(), null);
 		assertTrue(byId.isPresent());
 		assertTrue(rental.isPresent());
 		assertEquals(byId.get().getSender(), null);

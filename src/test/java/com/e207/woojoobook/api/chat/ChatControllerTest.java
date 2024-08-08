@@ -61,11 +61,11 @@ class ChatControllerTest extends AbstractRestDocsTest {
 			.andExpect(content().json(responseJson));
 	}
 
-	private ChatResponse createChatResponse(Long id, Long chatRoomId, Long senderId, String content) {
+	private ChatResponse createChatResponse(Long id, Long chatRoomId, Long userId, String content) {
 		return ChatResponse.builder()
 			.id(id)
 			.chatRoomId(chatRoomId)
-			.senderId(senderId)
+			.userId(userId)
 			.content(content)
 			.build();
 	}

@@ -14,7 +14,6 @@ import com.e207.woojoobook.api.user.UserService;
 import com.e207.woojoobook.domain.chat.Chat;
 import com.e207.woojoobook.domain.chat.ChatRepository;
 import com.e207.woojoobook.domain.chatroom.ChatRoom;
-import com.e207.woojoobook.domain.user.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,8 +28,8 @@ public class ChatService {
 	@Transactional
 	public ChatResponse create(ChatCreateRequest request) {
 		ChatRoom chatRoom = chatRoomService.findDomainById(request.chatRoomId());
-		User sender = userService.findDomainById(request.senderId());
-		Chat chat = request.toEntity(chatRoom, sender);
+
+		Chat chat = request.toEntity(chatRoom, request.senderId());
 		Chat savedChat = chatRepository.save(chat);
 		chatRoom.changeModifiedAt(LocalDateTime.now());
 		return ChatResponse.of(savedChat);
