@@ -11,7 +11,7 @@ import ChatModal from '../../components/Chatting/ChatModal';
 const BookModal = ({ book, onClose }) => {
   const { user, sub: userId } = useContext(AuthContext);
   const [showExchangeModal, setShowExchangeModal] = useState(false);
-  const [chatRoomId, setChatRoomId] = useState('');
+  const [chatRoom, setChatRoom] = useState('');
   const [showChatModal, setShowChatModal] = useState(false);
   const [receiverId, setReceiverId] = useState('');
   const [chatRooms, setChatRooms] = useState([]);
@@ -106,14 +106,14 @@ const BookModal = ({ book, onClose }) => {
       if (data.isExist) {
         const roomResponse = await axiosInstance.get(`chatrooms/${userId}/${ownerId}`);
         const roomData = await roomResponse.data;
-        setChatRoomId(roomData.id);
+        setChatRoom(roomData);
       } else {
         const newRoomResponse = await axiosInstance.post('chatrooms', {
           senderId: userId,
           receiverId: ownerId
         });
         const newRoomData = await newRoomResponse.data;
-        setChatRoomId(newRoomData.id);
+        setChatRoom(newRoomData);
       }
       setTimeout(() => {
         setReceiverId(ownerId);
@@ -206,8 +206,8 @@ const BookModal = ({ book, onClose }) => {
           isLoading={isLoading}
           handleAnimationEnd={handleAnimationEnd}
           chatRooms={chatRooms}
-          chatRoomId={chatRoomId}
-          setChatRoomId={setChatRoomId}
+          chatRoom={chatRoom}
+          setChatRoom={setChatRoom}
         />
       )}
     </div>

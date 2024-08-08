@@ -22,19 +22,19 @@ const Liked = () => {
     try {
       const response = await axiosInstance.get(`/users/userbooks/likes`, {
         params: {
-          page,
+          page: init ? 0 : page,
           size: 10
         }
       });
       const newItems = response.data.content;
       if (init) {
         setLikedUserbooks(newItems);
-        setPage(0);
+        setPage(1);
       } else {
         setLikedUserbooks(prev => [...prev,...newItems]);
         setPage(prev => prev + 1);
       };
-      setLikedUserbooksCount(response.data.numberOfElements);
+      setLikedUserbooksCount(response.data.totalElements);
     } catch (error) {
       console.error(error);
     }
@@ -51,7 +51,8 @@ const Liked = () => {
 
   return (
     <>
-      <h2 className={styles.liked}><strong>내가 관심 등록한 책 | </strong> {likedUserbooksCount}</h2>
+    <h2 className={styles.liked}><strong>내가 관심 등록한 책 | </strong> {likedUserbooksCount}</h2>
+    <div className={styles.LikedUserbooksList} id="LikedUserbooksList" style={{ height: '80vh', overflow: 'auto' }}>
       <InfiniteScroll
         dataLength={likedUserbooks.length}
         next={loadMoreLikedUserbooks}
@@ -72,6 +73,7 @@ const Liked = () => {
           )}
         />
       </InfiniteScroll>
+    </div>
     </>
   )
 }

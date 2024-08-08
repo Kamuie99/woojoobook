@@ -14,14 +14,14 @@ const Proceed = () => {
     localStorage.setItem('proceedActiveContent', activeContent);
   }, [activeContent]);
 
-  const handelSelectChange = (e) => {
+  const handleSelectChange = (e) => {
     setActiveContent(e.target.value)
   }
 
   return (
     <div className={styles.bigContainer}>
       <div className={styles.selectBox}>
-        <select value={activeContent} onChange={handelSelectChange}>
+        <select value={activeContent} onChange={handleSelectChange}>
           <option value="rental">대여</option>
           <option value="exchange">교환</option>
           <option value="extension">연장</option>

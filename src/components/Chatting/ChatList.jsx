@@ -1,9 +1,17 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { List, ListItem, ListItemText, Divider, TextField, Button } from '@mui/material';
 import styles from './ChatList.module.css';
 
 const ChatList = ({ chatRooms, userId, onSelectRoom, handleNewChatSubmit }) => {
   const receiverIdRef = useRef(null);
+  
+  const handleNewChat = (e) => {
+    e.preventDefault();
+    const receiverId = receiverIdRef.current.value;
+    if (receiverId) {
+      handleNewChatSubmit(receiverId);
+    }
+  }
 
   return (
     <div className={styles.chat_list}>
@@ -27,7 +35,7 @@ const ChatList = ({ chatRooms, userId, onSelectRoom, handleNewChatSubmit }) => {
         ))}
       </List>
       <h2>새로운 채팅 시작</h2>
-      <form onSubmit={(e) => handleNewChatSubmit(e, room.receiverId)}>
+      <form onSubmit={handleNewChat}>
         <TextField
           type="text"
           inputRef={receiverIdRef}

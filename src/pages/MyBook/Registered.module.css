@@ -14,3 +14,24 @@
   font-weight: normal;
   color: var(--contrast-color);
 }
+
+.miniHeader {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.option {
+  width: 12em;
+  margin-right: 12px;
+}
+
+.registeredUserbooksList {
+  height: 80vh;
+  overflow: auto;
+}
+
+.registeredUserbooksList::-webkit-scrollbar {
+  display: none;
+}

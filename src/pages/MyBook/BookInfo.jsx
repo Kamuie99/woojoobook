@@ -7,12 +7,15 @@ import Swal from 'sweetalert2'
 import styles from './BookInfo.module.css';
 import axiosInstance from "../../util/axiosConfig";
 import BookStatusChangeModal from "./BookStatusChangeModal";
+import BookModal from '../MyLibrary/BookModal'
 
 const BookInfo = ({ item, onWishChange }) => {
+  const { sub: userId } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
   const [bookInfo, setBookInfo] = useState(item);
   const [editable, setEditable] = useState(false);
-  const { sub: userId } = useContext(AuthContext);
+  const [showModal, setShowModal] = useState(false);
+  const [bookDetail, setBookDetail] = useState('');
 
   useEffect(() => {
     if (localStorage.getItem('myBookActiveContent') === 'registered') {
@@ -52,6 +55,16 @@ const BookInfo = ({ item, onWishChange }) => {
     return getEmotionImage(qualityMap[qualityStatus]) || null;
   }
 
+  const openBookModal = async (book) => {
+    try {
+      const response = await axiosInstance.get(`books?keyword=${book.isbn}&page=1`);
+      setBookDetail(response.data.bookList[0]);
+      setShowModal(true);
+    } catch (error) {
+      console.error('Error fetching book details:', error);
+    }
+  };
+
   const openModal = () => {
     setOpen(true);
   }
@@ -63,10 +76,10 @@ const BookInfo = ({ item, onWishChange }) => {
   const handleSave = async (canRent, canExchange, quality) => {
     const newRegisterType =
       canRent && canExchange ? 'RENTAL_EXCHANGE' :
-      canRent ? 'RENTAL' : canExchange ? 'EXCHANGE' : '';
+      canRent ? 'RENTAL' : canExchange ? 'EXCHANGE' : 'UNAVAILABLE';
     const newTradeStatus =
       canRent && canExchange? 'RENTAL_EXCHANGE_AVAILABLE' :
-      canRent ? 'RENTAL_AVAILABLE' : canExchange ? 'EXCHANGE_AVAILABLE' : '';
+      canRent ? 'RENTAL_AVAILABLE' : canExchange ? 'EXCHANGE_AVAILABLE' : 'UNAVAILABLE';
 
     try {
       await axiosInstance.put(`/userbooks/${item.id}`, {
@@ -146,16 +159,19 @@ const BookInfo = ({ item, onWishChange }) => {
         <img
           src={item.bookInfo.thumbnail}
           alt={item.bookInfo.title}
+          className={styles.thumbnail}
           style={{ width: '100px', height: '140px' }}
+          onClick={() => openBookModal(item.bookInfo)}
         />
       </div>
       <div className={styles.bookInfo}>
-        <h3>{item.bookInfo.title}</h3>
+        <h3 className={styles.bookTitle} onClick={() => openBookModal(item.bookInfo)}
+        >{item.bookInfo.title}</h3>
         <h4><strong>등록 상태 |</strong> {renderRegisterType(bookInfo.registerType)}</h4>
         <h4><strong>현재 상태 |</strong> {renderTradeStatus(bookInfo.tradeStatus)}</h4>
       </div>
       <div className={styles.status}>
-        {editable && (
+        {editable && bookInfo.tradeStatus === "RENTED" && (
           <div className={styles.giveBackSubmitButton} onClick={() => giveBack(item.id)}>
             반납 확인
           </div>
@@ -181,6 +197,12 @@ const BookInfo = ({ item, onWishChange }) => {
           qualityStatus={bookInfo.qualityStatus}
           handleSave={handleSave}
         />
+        {showModal && bookDetail && (
+          <BookModal
+            book={bookDetail}
+            onClose={() => setShowModal(false)}
+          />
+        )}
       </div>
     </div>
   );

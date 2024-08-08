@@ -9,28 +9,38 @@ const Registered = () => {
   const [registeredUserbooks, setRegisteredUserbooks] = useState([]);
   const [registeredUserbooksCount, setRegisteredUserbooksCount] = useState(0);
   const [page, setPage] = useState(0);
-  
-  useEffect(() => {
-    fetchRegisteredUserbooks(true);
-  }, [])
+  const [activeContent, setActiveContent] = useState(() => {
+    const storedContent = localStorage.getItem('MyBookContent');
+    return storedContent || '';
+  })
 
   useEffect(() => {
-    console.log(registeredUserbooks)
-  }, [registeredUserbooks]);
+    localStorage.setItem('MyBookContent', activeContent);
+  }, [activeContent]);
   
-  const fetchRegisteredUserbooks = async (init = false) => {
+  useEffect(() => {
+    fetchRegisteredUserbooks(true, activeContent);
+  }, [])
+  
+  const handleSelectChange = (e) => {
+    setActiveContent(e.target.value)
+    setPage(0);
+    fetchRegisteredUserbooks(true, e.target.value);
+  }
+
+  const fetchRegisteredUserbooks = async (init = false, activeContent) => {
     try {
       const response = await axiosInstance.get('/users/userbooks/registered', {
         params: {
-          page,
+          tradeStatus: activeContent,
+          page: init ? 0 : page,
           size: 10
         }
       });
       const newItems = response.data.content;
-      console.log(newItems);
       if (init) {
         setRegisteredUserbooks(newItems);
-        setPage(0);
+        setPage(1);
       } else {
         setRegisteredUserbooks(prev => [...prev,...newItems]);
         setPage(prev => prev + 1);
@@ -42,13 +52,23 @@ const Registered = () => {
   }
 
   const loadMoreRegisteredUserbooks = () => {
-    fetchRegisteredUserbooks();
+    fetchRegisteredUserbooks(false, activeContent);
   }
 
   return (
     <>
-    {/* TODO: 내가 등록한 책 중에서, 전체 / 대여중 / 비 대여중 필터 선택할 수 있게 */}
+    <div className={styles.miniHeader}>
       <h2 className={styles.registered}><strong>내가 등록한 책 | </strong> {registeredUserbooksCount}권</h2>
+      <select className={styles.option} value={activeContent} onChange={handleSelectChange}>
+        <option value="">전체</option>
+        <option value="RENTAL_EXCHANGE_AVAILABLE">대여, 교환 가능</option>
+        <option value="RENTAL_AVAILABLE">대여 가능</option>
+        <option value="RENTED">대여중</option>
+        <option value="EXCHANGE_AVAILABLE">교환 가능</option>
+        <option value="UNAVAILABLE">거래 불가능</option>
+      </select>
+    </div>
+    <div className={styles.registeredUserbooks} id="registeredUserbooksList" style={{ height: '80vh', overflow: 'auto' }}>
       <InfiniteScroll
         dataLength={registeredUserbooks.length}
         next={loadMoreRegisteredUserbooks}
@@ -62,12 +82,14 @@ const Registered = () => {
           renderItem={(item) => (
             <>
               <BookInfo 
+              key={item.id}
                 item={item}
               />
             </>
           )}
         />
       </InfiniteScroll>
+    </div>
     </>
   )
 }

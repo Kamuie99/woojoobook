@@ -14,3 +14,12 @@
   font-weight: normal;
   color: var(--contrast-color);
 }
+
+.LikedUserbooksList {
+  height: 80vh;
+  overflow: auto;
+}
+
+.LikedUserbooksList::-webkit-scrollbar {
+  display: none;
+}

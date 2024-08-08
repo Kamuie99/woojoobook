@@ -13,15 +13,8 @@ import PhoneTopBar from './PhoneTopBar';
 import ChatModalHeader from './ChatModalHeader';
 
 const ChatModal = ({ open, handleClose, isClosing, isLoading, handleAnimationEnd, chatRooms, chatRoom, setChatRoom }) => {
-  const { isLoggedIn, sub } = useContext(AuthContext);
-  const [userId, setUserId] = useState('');
+  const { isLoggedIn, sub: userId } = useContext(AuthContext);
   const [receiverId, setReceiverId] = useState('');
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      setUserId(sub);
-    }
-  }, [receiverId]);
 
   useEffect(() => {
     if (open) {
@@ -29,8 +22,7 @@ const ChatModal = ({ open, handleClose, isClosing, isLoading, handleAnimationEnd
     }
   }, [open, setChatRoom]);
 
-  const handleNewChatSubmit = async (e, newReceiverId) => {
-    e.preventDefault();
+  const handleNewChatSubmit = async (newReceiverId) => {
     setReceiverId(newReceiverId);
     if (userId == newReceiverId) {
       console.log('sender와 receiver id가 같습니다.')
