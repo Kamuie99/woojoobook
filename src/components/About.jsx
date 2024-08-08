@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import styles from '../styles/About.module.css';
+import axiosInstance from './../util/axiosConfig';
 
 const AnimatedNumber = ({ end, duration }) => {
   const [count, setCount] = useState(0);
@@ -26,6 +27,21 @@ const AnimatedNumber = ({ end, duration }) => {
 };
 
 const About = () => {
+  const [bookCount, setBookCount] = useState(0);
+
+  useEffect(() => {
+    const fetchBookCount = async () => {
+      try {
+        const response = await axiosInstance.get('/userbooks/count');
+        setBookCount(response.data.count);
+      } catch (error) {
+        console.error('Failed to fetch book count:', error);
+      }
+    };
+
+    fetchBookCount();
+  }, []);
+
   return (
     <div className={`${styles.section} ${styles.sec01}`}>
       <div className={styles.grid_wrap}>
@@ -45,7 +61,7 @@ const About = () => {
                 우주 도서 현황
               </h6>
               <p>
-                <AnimatedNumber end={1303} duration={2000} />
+                <AnimatedNumber end={bookCount} duration={1000} />
                 개
               </p>
               <button>우주도서 보러가기</button>

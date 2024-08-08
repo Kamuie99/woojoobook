@@ -4,6 +4,8 @@ import styles from './BookSearch.module.css';
 import { IoSearchOutline } from "react-icons/io5";
 import axiosInstance from '../../util/axiosConfig';
 import Swal from 'sweetalert2';
+import { HiOutlineInformationCircle } from "react-icons/hi";
+
 
 // eslint-disable-next-line react/prop-types
 const BookSearch = ({ onSelectBook }) => {
@@ -73,7 +75,10 @@ const BookSearch = ({ onSelectBook }) => {
         onRequestClose={() => setModalIsOpen(false)}
         contentLabel="Book Search Results"
       >
-        <h2>Search Results</h2>
+        <div className={styles.titlebox}>
+          <HiOutlineInformationCircle />
+          등록을 원하시는 도서를 선택해주세요!  
+        </div>
         <ul className={styles.bookList}>
           {bookList.map((book) => (
             <li key={book.isbn} className={styles.bookItem} onClick={() => handleSelectBook(book)}>

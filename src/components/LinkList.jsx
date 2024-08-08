@@ -32,7 +32,7 @@ const LinkList = () => {
       />
       <LinkItem icon={<RiCustomerService2Line size='40'/>} 
         text={'이용안내 및 정책'}
-        to={`/${sub}/myactivity`}
+        to={`/policy`}
       />
     </div>
   )

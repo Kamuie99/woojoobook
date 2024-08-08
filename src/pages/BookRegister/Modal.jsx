@@ -1,5 +1,4 @@
 import ReactModal from 'react-modal';
-import { IoCloseSharp } from "react-icons/io5";
 import styles from './Modal.module.css';
 
 ReactModal.setAppElement('#root');
@@ -14,9 +13,9 @@ const Modal = ({ isOpen, onRequestClose, contentLabel, children }) => {
       className={styles.modal}
       overlayClassName={styles.overlay}
     >
-      <button className={styles.closeButton} onClick={onRequestClose}>
+      {/* <button className={styles.closeButton} onClick={onRequestClose}>
         <IoCloseSharp />
-      </button>
+      </button> */}
       {children}
     </ReactModal>
   );

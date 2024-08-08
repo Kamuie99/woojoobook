@@ -6,15 +6,14 @@
   bottom: auto;
   margin-right: -50%;
   transform: translate(-50%, -50%);
-  background: white;
+  background: var(--sub-color);
   padding: 20px;
   max-width: 600px;
   width: 90%;
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   border-radius: 15px;
   overflow-y: auto;
-  min-height: 30vh;
-  max-height: 80vh;
+  height: 80vh;
   outline: none;
 }
 
@@ -27,15 +26,21 @@
   background: rgba(0, 0, 0, 0.75);
 }
 
-.closeButton {
-  position: sticky;
-  top: 0;
-  float: right;
-  background-color: white;
-  border: none;
-  padding: 10px;
-  font-size: 30px;
-  cursor: pointer;
-  align-self: center;
-  z-index: 1;
+.modal {
+  height: 80vh;
 }
+
+/* WebKit browsers (Chrome, Safari) */
+.modal::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.modal::-webkit-scrollbar-thumb {
+  background: var(--accent-sub-color);
+  border-radius: 10px;
+}
+
+/* .ReactModal__Content::-webkit-scrollbar-track {
+  background: var(--main-color);
+} */

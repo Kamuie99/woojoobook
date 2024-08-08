@@ -57,6 +57,9 @@
   align-items: center;
   cursor: pointer;
   margin: 20px 0;
+  background-color: white;
+  padding: 10px;
+  border-radius: 10px;
 }
 
 .bookItem img {
@@ -68,6 +71,7 @@
 .bookDetails {
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 
 .bookDetails h3 {
@@ -78,4 +82,10 @@
 .bookDetails p {
   margin: 0;
   font-size: 14px;
+}
+
+.titlebox {
+  display: flex;
+  gap: 5px;
+  font-size: 20px;
 }
