@@ -175,6 +175,10 @@ public class UserService {
 		}
 	}
 
+	public Long countAllUser() {
+		return this.userRepository.count();
+	}
+
 	private void checkPassword(String id, String password) {
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(id, password);
 		Authentication authenticate = this.authenticationManagerBuilder.getObject().authenticate(token);

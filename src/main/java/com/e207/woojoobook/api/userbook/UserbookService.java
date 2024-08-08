@@ -131,4 +131,8 @@ public class UserbookService {
 	public Userbook findUserbook(Long id) {
 		return userbookReader.findDomain(id);
 	}
+
+	public Long countAllUserbook() {
+		return userbookReader.countUserbooks();
+	}
 }

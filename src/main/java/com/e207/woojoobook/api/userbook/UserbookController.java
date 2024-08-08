@@ -19,6 +19,7 @@ import com.e207.woojoobook.api.rental.RentalService;
 import com.e207.woojoobook.api.userbook.request.UserbookCreateRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookUpdateRequest;
+import com.e207.woojoobook.api.userbook.response.UserbookCountResponse;
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
 
 import jakarta.validation.Valid;
@@ -35,7 +36,7 @@ public class UserbookController {
 	@GetMapping
 	public ResponseEntity<Page<UserbookWithLikeResponse>> findUserbookPageList(
 		@ModelAttribute UserbookPageFindRequest request, @PageableDefault(sort = "title") Pageable pageable) {
-		Page<UserbookWithLikeResponse> userbookWithLikePage = userbookService.findUserbookPage(request, pageable);
+		Page<UserbookWithLikeResponse> userbookWithLikePage = this.userbookService.findUserbookPage(request, pageable);
 		return ResponseEntity.ok(userbookWithLikePage);
 	}
 
@@ -43,19 +44,25 @@ public class UserbookController {
 	public ResponseEntity<UserbookResponse> createUserbook(
 		@Valid @RequestBody UserbookCreateRequest userbookCreateRequest) {
 		// todo 예외 처리: Validation 예외 처리
-		return ResponseEntity.ok(userbookService.createUserbook(userbookCreateRequest));
+		return ResponseEntity.ok(this.userbookService.createUserbook(userbookCreateRequest));
 	}
 
 	@PutMapping("/{userbookId}")
 	public ResponseEntity<UserbookResponse> updateUserbook(
 		@Valid @RequestBody UserbookUpdateRequest userbookUpdateRequest, @PathVariable Long userbookId) {
 		// todo 예외 처리: Validation 예외 처리
-		return ResponseEntity.ok(userbookService.updateUserbook(userbookId, userbookUpdateRequest));
+		return ResponseEntity.ok(this.userbookService.updateUserbook(userbookId, userbookUpdateRequest));
 	}
 
 	@ResponseStatus(HttpStatus.OK)
 	@PutMapping("/{userbookId}/return")
 	public void returnUserbook(@PathVariable Long userbookId) {
 		rentalService.giveBackByUserbookId(userbookId);
+	}
+
+	@GetMapping("/count")
+	public ResponseEntity<UserbookCountResponse> countUserbooks() {
+		Long count = this.userbookService.countAllUserbook();
+		return ResponseEntity.ok(new UserbookCountResponse(count));
 	}
 }

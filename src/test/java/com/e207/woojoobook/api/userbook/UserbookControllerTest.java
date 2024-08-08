@@ -22,12 +22,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.ResultActions;
 
 import com.e207.woojoobook.api.book.response.BookResponse;
+import com.e207.woojoobook.api.rental.RentalService;
 import com.e207.woojoobook.api.user.response.UserResponse;
 import com.e207.woojoobook.api.userbook.request.UserbookCreateRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookUpdateRequest;
+import com.e207.woojoobook.api.userbook.response.UserbookCountResponse;
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.domain.userbook.TradeStatus;
@@ -42,6 +45,8 @@ class UserbookControllerTest extends AbstractRestDocsTest {
 	private UserbookService userbookService;
 	@MockBean
 	private UserRepository userRepository;
+	@MockBean
+	private RentalService rentalService;
 
 	@WithMockUser
 	@DisplayName("사용자 도서를 등록한다.")
@@ -56,10 +61,7 @@ class UserbookControllerTest extends AbstractRestDocsTest {
 		given(userbookService.createUserbook(request)).willReturn(response);
 
 		// expected
-		mockMvc.perform(post("/userbooks")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(requestJson)
-			)
+		mockMvc.perform(post("/userbooks").contentType(MediaType.APPLICATION_JSON).content(requestJson))
 			.andExpect(content().json(responseJson))
 			.andExpect(status().isOk());
 	}
@@ -78,10 +80,8 @@ class UserbookControllerTest extends AbstractRestDocsTest {
 		given(userbookService.updateUserbook(userId, request)).willReturn(response);
 
 		// expected
-		mockMvc.perform(put("/userbooks/{userbookId}", userId)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(requestJson)
-			)
+		mockMvc.perform(
+				put("/userbooks/{userbookId}", userId).contentType(MediaType.APPLICATION_JSON).content(requestJson))
 			.andExpect(content().json(responseJson))
 			.andExpect(status().isOk());
 
@@ -101,12 +101,25 @@ class UserbookControllerTest extends AbstractRestDocsTest {
 		System.out.println("responseJson = " + responseJson);
 
 		// expected
-		mockMvc.perform(get("/userbooks")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(requestJson)
-			)
+		mockMvc.perform(get("/userbooks").contentType(MediaType.APPLICATION_JSON).content(requestJson))
 			// .andExpect(content().json(responseJson)) // TODO <jhl221123> 테스트 수정 필요 
 			.andExpect(status().isOk());
+	}
+
+	@DisplayName("총 사용자 도서 개수를 조회한다.")
+	@Test
+	void countAllUserbookSuccess() throws Exception {
+		// given
+		Long expectedCount = 1_000_000_000L;
+		String expectedResponse = objectMapper.writeValueAsString(new UserbookCountResponse(expectedCount));
+		given(userbookService.countAllUserbook()).willReturn(expectedCount);
+
+		// when
+		ResultActions action = mockMvc.perform(get("/userbooks/count"));
+
+		// then
+		action.andExpect(status().isOk())
+			.andExpect(content().json(expectedResponse));
 	}
 
 	private UserbookPageFindRequest createFindRequest() {
@@ -136,11 +149,7 @@ class UserbookControllerTest extends AbstractRestDocsTest {
 	}
 
 	private UserResponse createUserResponse(Long id, String email, String nickname) {
-		return UserResponse.builder()
-			.id(id)
-			.email(email)
-			.nickname(nickname)
-			.build();
+		return UserResponse.builder().id(id).email(email).nickname(nickname).build();
 	}
 
 	private BookResponse createBookResponse(String isbn, String title) {

@@ -22,6 +22,7 @@ import com.e207.woojoobook.api.user.request.UserCreateRequest;
 import com.e207.woojoobook.api.user.request.UserDeleteRequest;
 import com.e207.woojoobook.api.user.request.UserUpdateRequest;
 import com.e207.woojoobook.api.user.request.VerificationMail;
+import com.e207.woojoobook.api.user.response.UserCountResponse;
 import com.e207.woojoobook.api.user.response.UserInfoResponse;
 import com.e207.woojoobook.api.user.response.UserPersonalResponse;
 import com.e207.woojoobook.api.user.response.VerifyResponse;
@@ -36,8 +37,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 public class UserController {
 
-	private static final String EMAIL_PATTERN =
-		"^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+	private static final String EMAIL_PATTERN = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 	private static final Pattern pattern = Pattern.compile(EMAIL_PATTERN);
 
 	private final UserService userService;
@@ -51,8 +51,7 @@ public class UserController {
 	}
 
 	@PostMapping("/users")
-	public ResponseEntity<?> createUser(@Valid @RequestBody UserCreateRequest userCreateRequest,
-		Errors errors) {
+	public ResponseEntity<?> createUser(@Valid @RequestBody UserCreateRequest userCreateRequest, Errors errors) {
 		this.userValidator.validate(userCreateRequest, errors);
 
 		if (errors.hasErrors()) {
@@ -106,8 +105,7 @@ public class UserController {
 	}
 
 	@PostMapping("/auth")
-	public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest,
-		Errors errors) {
+	public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest, Errors errors) {
 		if (errors.hasErrors()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("아이디와 비밀번호는 필수 입력값입니다.");
 		}
@@ -139,8 +137,7 @@ public class UserController {
 	}
 
 	@DeleteMapping("/users")
-	public ResponseEntity<?> delete(@Valid @RequestBody UserDeleteRequest userDeleteRequest,
-		Errors errors) {
+	public ResponseEntity<?> delete(@Valid @RequestBody UserDeleteRequest userDeleteRequest, Errors errors) {
 		if (errors.hasErrors()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("필수 입력값입니다.");
 		}
@@ -152,6 +149,12 @@ public class UserController {
 	public ResponseEntity<UserPersonalResponse> findUserPersonal() {
 		UserPersonalResponse userPersonal = this.userService.findUserPersonal();
 		return ResponseEntity.ok(userPersonal);
+	}
+
+	@GetMapping("/users/count")
+	public ResponseEntity<UserCountResponse> countUsers() {
+		Long count = userService.countAllUser();
+		return ResponseEntity.ok(new UserCountResponse(count));
 	}
 
 	private HttpHeaders createTokenFromAuthentication() {

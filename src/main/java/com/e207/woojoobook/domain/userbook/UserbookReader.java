@@ -68,4 +68,8 @@ public class UserbookReader {
 	public Userbook findUserbook(Long id) {
 		return this.userbookRepository.findUserbookById(id).orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 	}
+
+	public Long countUserbooks() {
+		return this.userbookRepository.count();
+	}
 }
