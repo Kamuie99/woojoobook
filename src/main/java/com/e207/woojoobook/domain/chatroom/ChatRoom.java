@@ -43,4 +43,12 @@ public class ChatRoom {
 	public void changeModifiedAt(LocalDateTime modifiedAt) {
 		this.modifiedAt = modifiedAt;
 	}
+
+	public void removeSender() {
+		this.sender = null;
+	}
+
+	public void removeReceiver() {
+		this.receiver = null;
+	}
 }

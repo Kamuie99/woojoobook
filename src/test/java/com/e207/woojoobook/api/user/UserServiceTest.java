@@ -20,6 +20,8 @@ import org.springframework.security.core.Authentication;
 import com.e207.woojoobook.api.user.request.LoginRequest;
 import com.e207.woojoobook.api.user.request.UserDeleteRequest;
 import com.e207.woojoobook.api.user.response.UserInfoResponse;
+import com.e207.woojoobook.domain.chatroom.ChatRoom;
+import com.e207.woojoobook.domain.chatroom.ChatRoomRepository;
 import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.rental.RentalRepository;
 import com.e207.woojoobook.domain.user.User;
@@ -51,6 +53,8 @@ class UserServiceTest {
 	@Autowired
 	private UserPersonalFacade userPersonalFacade;
 	@Autowired
+	private ChatRoomRepository chatRoomRepository;
+	@Autowired
 	private EntityManager em;
 	@MockBean
 	private UserHelper userHelper;
@@ -61,22 +65,24 @@ class UserServiceTest {
 	@Mock
 	private Authentication authentication;
 
-
 	@DisplayName("회원 탈퇴를 하면, 참조하고 있던 객체가 NULL로 처리되고 사용자의 정보는 삭제된다")
 	@Transactional
 	@Test
 	void deleteUser() {
 		// given
 		String password = "password";
-		User savedUser = createUser(password);
-		savedUser = this.userRepository.save(savedUser);
-		Userbook savedUserbook = createUserbook(savedUser);
-		savedUserbook = this.userbookRepository.save(savedUserbook);
+		User savedUser = this.userRepository.save(createUser(password));
+		Userbook savedUserbook = this.userbookRepository.save(createUserbook(savedUser));
 		Point savedPoint = createPoint(savedUser);
 		savedUser.getPoints().add(savedPoint);
 		savedPoint = this.pointRepository.save(savedPoint);
 		Rental savedRental = createRental(savedUserbook, savedUser);
 		savedRental = this.rentalRepository.save(savedRental);
+		User testUser = this.userRepository.save(createUser("test"));
+		ChatRoom chatRoom = this.chatRoomRepository.save(ChatRoom.builder()
+			.sender(savedUser)
+			.receiver(testUser)
+			.build());
 
 		given(this.userHelper.findCurrentUser()).willReturn(savedUser);
 		given(authenticationManagerBuilder.getObject()).willReturn(authenticationManager);
@@ -87,6 +93,7 @@ class UserServiceTest {
 		Long userId = savedUserbook.getUser().getId();
 		Long pointId = savedPoint.getId();
 		Long rentalId = savedRental.getId();
+		Long chatRoomId = chatRoom.getId();
 
 		// when
 		this.userService.deleteUser(new UserDeleteRequest(password));
@@ -97,7 +104,10 @@ class UserServiceTest {
 		assertTrue(this.userRepository.findById(userId).isEmpty());
 		assertTrue(this.pointRepository.findById(pointId).isEmpty());
 		Optional<Rental> rental = this.rentalRepository.findById(rentalId);
+		Optional<ChatRoom> byId = this.chatRoomRepository.findById(chatRoomId);
+		assertTrue(byId.isPresent());
 		assertTrue(rental.isPresent());
+		assertEquals(byId.get().getSender(), null);
 		assertNull(rental.get().getUser());
 	}
 
@@ -229,10 +239,10 @@ class UserServiceTest {
 
 	private static Point createPoint(User user, PointHistory history) {
 		Point point = Point.builder()
-				.user(user)
-				.history(history)
-				.amount(history.getAmount())
-				.build();
+			.user(user)
+			.history(history)
+			.amount(history.getAmount())
+			.build();
 		return point;
 	}
 

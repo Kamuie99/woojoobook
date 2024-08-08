@@ -1,5 +1,6 @@
 package com.e207.woojoobook.domain.chatroom;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -21,6 +22,9 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
 	@Query("select cr from ChatRoom cr where cr.sender = :user or cr.receiver = :user")
 	Page<ChatRoom> findPageBySenderOrReceiver(@Param("user") User user, Pageable pageable);
+
+	List<ChatRoom> findAllBySender(User user);
+	List<ChatRoom> findAllByReceiver(User user);
 
 	@Query("select count(cr) from ChatRoom cr"
 		+ " where (cr.sender = :sender and cr.receiver = :receiver)"

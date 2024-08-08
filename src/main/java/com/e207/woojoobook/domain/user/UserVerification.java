@@ -9,11 +9,12 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@RedisHash(value = "memberVerification", timeToLive = 300)
+@RedisHash(value = "userVerification", timeToLive = 300)
 public class UserVerification implements Serializable {
 	@Id
-	private final String email;
-	private final String verificationCode;
+	private String id;
+	private String email;
+	private String verificationCode;
 	private boolean isVerified;
 
 	@Builder
