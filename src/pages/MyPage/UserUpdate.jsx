@@ -15,6 +15,9 @@ const UserUpdate = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { updateUser } = useContext(AuthContext);
+  const [isNicknameAvailable, setIsNicknameAvailable] = useState(true);
+  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
+  const [originalNickname, setOriginalNickname] = useState('');
 
   useEffect(() => {
     fetchUserInfo();
@@ -27,6 +30,7 @@ const UserUpdate = () => {
       const userData = userResponse.data;
       setUserId(userData.id);
       setNickname(userData.nickname);
+      setOriginalNickname(userData.nickname);
 
       const areaResponse = await axiosInstance.get(`/area?areaCode=${userData.areaCode}`);
       const areaData = areaResponse.data;
@@ -47,12 +51,39 @@ const UserUpdate = () => {
     setSelectedArea(selectedArea);
   };
 
+  const checkNicknameAvailability = async () => {
+    if (nickname === originalNickname) {
+      setIsNicknameAvailable(true);
+      setIsNicknameChecked(true);
+      return;
+    }
+    
+    try {
+      const response = await axiosInstance.get(`/users/nicknames/${nickname}`);
+      setIsNicknameAvailable(!response.data.isDuplicate);
+      setIsNicknameChecked(true);
+    } catch (error) {
+      console.error('닉네임 중복 체크 중 오류 발생:', error);
+      setIsNicknameChecked(true);
+      setIsNicknameAvailable(false);
+    }
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
 
     if (nickname.trim() === '') {
       Swal.fire({
         title: '닉네임을 입력해주세요.',
+        confirmButtonText: '확인',
+        icon: 'warning'
+      });
+      return;
+    }
+
+    if (nickname !== originalNickname && (!isNicknameChecked || !isNicknameAvailable)) {
+      Swal.fire({
+        title: '닉네임 중복 체크를 해주세요.',
         confirmButtonText: '확인',
         icon: 'warning'
       });
@@ -73,13 +104,13 @@ const UserUpdate = () => {
         nickname,
         areaCode: selectedArea.areaCode
       });
-
+      console.log(response);
       if (response.status === 200) {
         updateUser({
           nickname,
           areaCode: selectedArea.areaCode
         });
-
+        
         Swal.fire({
           title: "회원정보 수정성공",
           text: "회원정보가 성공적으로 변경되었습니다.",
@@ -121,7 +152,32 @@ const UserUpdate = () => {
             </div>
             <form onSubmit={handleSave}>
               <p>닉네임</p>
-              <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+              <input 
+                type="text" 
+                value={nickname} 
+                onChange={(e) => {
+                  setNickname(e.target.value);
+                  if (e.target.value !== originalNickname) {
+                    setIsNicknameChecked(false);
+                  } else {
+                    setIsNicknameChecked(true);
+                    setIsNicknameAvailable(true);
+                  }
+                }} 
+              />
+              <button type="button" onClick={checkNicknameAvailability} disabled={!nickname || nickname === originalNickname}>
+                중복 체크
+              </button>
+              {!isNicknameChecked && nickname !== originalNickname && (
+                <div style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                  닉네임 중복 체크를 해주세요.
+                </div>
+              )}
+              {isNicknameChecked && nickname !== originalNickname && (
+                <div style={{color: isNicknameAvailable ? 'green' : 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                  {isNicknameAvailable ? '사용 가능한 닉네임입니다.' : '이미 사용 중인 닉네임입니다.'}
+                </div>
+              )}
               <div>
                 <label>지역</label>
                 <AreaSelector

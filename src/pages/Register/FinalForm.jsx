@@ -2,6 +2,7 @@ import { FaAngleRight } from "react-icons/fa6";
 import { useState, useEffect } from 'react';
 import AreaSelector from "../../components/AreaSelector";
 import PrivacyModal from "./PrivacyModal";
+import axiosInstance from '../../util/axiosConfig';
 
 // eslint-disable-next-line react/prop-types
 const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm, passwordMismatch, nickname, setNickname, setAreaCode, handleFinalSubmit }) => {
@@ -10,6 +11,8 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [siSelected, setSiSelected] = useState(false);
+  const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
+  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
 
   const handleAreaSelected = (selectedArea) => {
     if (selectedArea) {
@@ -28,13 +31,29 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
                     passwordConfirm !== '' &&
                     !passwordMismatch &&
                     nickname !== '' &&
+                    isNicknameAvailable &&
+                    isNicknameChecked &&
                     selectedAreaName !== '' &&
                     privacyAgreed;
     setIsFormValid(isValid);
-  }, [password, passwordConfirm, passwordMismatch, nickname, selectedAreaName, privacyAgreed]);
+  }, [password, passwordConfirm, passwordMismatch, nickname, isNicknameAvailable, isNicknameChecked, selectedAreaName, privacyAgreed]);
 
   const handleShowPrivacy = async () => {
     setShowPrivacyModal(true)
+  };
+
+  const checkNicknameAvailability = async () => {
+    try {
+      const response = await axiosInstance.get(`/users/nicknames/${nickname}`);
+      console.log('서버 응답:', response.data);
+    
+      setIsNicknameAvailable(!response.data.isDuplicate);
+      setIsNicknameChecked(true);
+    } catch (error) {
+      console.error('닉네임 중복 체크 중 오류 발생:', error);
+      setIsNicknameChecked(true);
+      setIsNicknameAvailable(false);
+    }
   };
 
   return (
@@ -59,8 +78,24 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
         )}
         <div>
           <label>닉네임</label>
-          <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} required />
+          <input 
+            type="text" 
+            value={nickname} 
+            onChange={(e) => {
+              setNickname(e.target.value);
+              setIsNicknameChecked(false);
+            }} 
+            required 
+          />
+          <button type="button" onClick={checkNicknameAvailability} disabled={!nickname}>
+            중복 체크
+          </button>
         </div>
+        {isNicknameChecked && (
+          <div style={{color: isNicknameAvailable ? 'green' : 'red', fontSize: '0.8em', marginTop: '5px'}}>
+            {isNicknameAvailable ? '사용 가능한 닉네임입니다.' : '이미 사용 중인 닉네임입니다.'}
+          </div>
+        )}
         <div className="chooseAreaContainer">
           <div className="AreaContainerInner">
             <label>지역</label>
