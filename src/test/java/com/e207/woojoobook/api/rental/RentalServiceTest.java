@@ -248,6 +248,30 @@ class RentalServiceTest {
 		assertNotEquals(rental.getUserbook().getTradeStatus(), TradeStatus.UNAVAILABLE);
 	}
 
+	@DisplayName("도서 소유자가 도서 ID로 반납완료를 요청한다")
+	@Test
+	void giveBackByUserbookId() {
+		// given
+		Rental rental = Rental.builder()
+			.user(user)
+			.userbook(userbook)
+			.rentalStatus(RentalStatus.IN_PROGRESS)
+			.build();
+		Rental save = this.rentalRepository.save(rental);
+		given(this.userHelper.findCurrentUser()).willReturn(owner);
+
+		// when
+		this.rentalService.giveBackByUserbookId(userbook.getId());
+
+		// then
+		Optional<Rental> byId = this.rentalRepository.findById(save.getId());
+		assertTrue(byId.isPresent());
+
+		rental = byId.get();
+		assertNotNull(rental.getEndDate());
+		assertNotEquals(rental.getUserbook().getTradeStatus(), TradeStatus.UNAVAILABLE);
+	}
+
 	@DisplayName("회원이 대여한 도서에 대해서 연장 신청을 한다")
 	@Test
 	void extension() {

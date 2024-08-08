@@ -3,6 +3,7 @@ package com.e207.woojoobook.api.userbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -11,8 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.e207.woojoobook.api.rental.RentalService;
 import com.e207.woojoobook.api.userbook.request.UserbookCreateRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookUpdateRequest;
@@ -27,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class UserbookController {
 
 	private final UserbookService userbookService;
+	private final RentalService rentalService;
 
 	@GetMapping
 	public ResponseEntity<Page<UserbookWithLikeResponse>> findUserbookPageList(
@@ -47,5 +51,11 @@ public class UserbookController {
 		@Valid @RequestBody UserbookUpdateRequest userbookUpdateRequest, @PathVariable Long userbookId) {
 		// todo 예외 처리: Validation 예외 처리
 		return ResponseEntity.ok(userbookService.updateUserbook(userbookId, userbookUpdateRequest));
+	}
+
+	@ResponseStatus(HttpStatus.OK)
+	@PutMapping("/{userbookId}/return")
+	public void returnUserbook(@PathVariable Long userbookId) {
+		rentalService.giveBackByUserbookId(userbookId);
 	}
 }

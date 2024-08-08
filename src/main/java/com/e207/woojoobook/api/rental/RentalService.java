@@ -2,6 +2,8 @@ package com.e207.woojoobook.api.rental;
 
 import static com.e207.woojoobook.domain.rental.RentalStatus.*;
 
+import java.util.List;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,16 +53,11 @@ public class RentalService {
 
 		checkIsNotOwner(userbook, currentUser);
 
-		Rental rental = Rental.builder()
-			.user(currentUser)
-			.userbook(userbook)
-			.rentalStatus(OFFERING)
-			.build();
+		Rental rental = Rental.builder().user(currentUser).userbook(userbook).rentalStatus(OFFERING).build();
 		Rental savedRental = this.rentalRepository.save(rental);
 
 		return new RentalOfferResponse(savedRental.getId());
 	}
-
 
 	@Transactional
 	public Page<RentalResponse> findByCondition(RentalFindCondition conditionForFind, Pageable pageable) {
@@ -92,7 +89,6 @@ public class RentalService {
 		approveRentalRequest(rental, request);
 	}
 
-
 	@Transactional
 	public void deleteRentalOffer(Long offerId) {
 		Rental rental = validateAndFindRental(offerId);
@@ -108,17 +104,32 @@ public class RentalService {
 		User currentUser = this.userHelper.findCurrentUser();
 
 		checkCurrentUserIsOwner(rental.getUserbook().getUser(), currentUser);
-		if(rental.getRentalStatus() != IN_PROGRESS) {
+		if (rental.getRentalStatus() != IN_PROGRESS) {
 			throw new ErrorException(ErrorCode.InvalidAccess);
 		}
 		rental.giveBack();
 
 		Userbook userbook = rental.getUserbook();
+		resetUserbookTradeStatus(userbook);
+	}
+
+	@Transactional
+	public void giveBackByUserbookId(Long userbookId) {
+		User currentUser = this.userHelper.findCurrentUser();
+		Userbook userbook = validateAndFindUserbook(userbookId);
+		checkCurrentUserIsOwner(userbook.getUser(), currentUser);
+
+		Rental rental = validateAndFindRentalInProgress(userbook);
+		rental.giveBack();
+
+		resetUserbookTradeStatus(userbook);
+	}
+
+	private void resetUserbookTradeStatus(Userbook userbook) {
 		TradeStatus tradeStatus = userbook.getRegisterType().getDefaultTradeStatus();
 		userbook.updateTradeStatus(tradeStatus);
 
-		this.eventPublisher.publishEvent(new UserBookTradeStatusUpdateEvent
-			(userbook, tradeStatus));
+		this.eventPublisher.publishEvent(new UserBookTradeStatusUpdateEvent(userbook, tradeStatus));
 	}
 
 	private User validateCanRentalAndFindCurrentUser() {
@@ -131,8 +142,20 @@ public class RentalService {
 	}
 
 	private Rental validateAndFindRental(Long rentalId) {
-		return this.rentalRepository.findById(rentalId)
-			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
+		return this.rentalRepository.findById(rentalId).orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
+	}
+
+	private Rental validateAndFindRentalInProgress(Userbook userbook) {
+		List<Rental> rentalList = this.rentalRepository.findAllByUserbookAndRentalStatus(userbook, IN_PROGRESS);
+
+		if (rentalList.isEmpty()) {
+			throw new ErrorException(ErrorCode.NotFound);
+		}
+		if (rentalList.size() > 1) {
+			throw new ErrorException(ErrorCode.DuplicateRented);
+		}
+
+		return rentalList.getFirst();
 	}
 
 	private Userbook validateAndFindUserbook(Long userbooksId) {
@@ -199,15 +222,14 @@ public class RentalService {
 	}
 
 	private void checkIsAvailable(Userbook userbook, Rental rental) {
-		if(!userbook.isAvailable() || rental.isOffering()) {
+		if (!userbook.isAvailable() || rental.isOffering()) {
 			throw new ErrorException(ErrorCode.InvalidAccess);
 		}
 	}
 
 	private void rejectPreviousRentalRequests(Userbook userbook) {
-		this.rentalRepository.findAllByUserbookAndRentalStatus(userbook, OFFERING)
-			.forEach(r -> {
-				handleRentalResponse(r, false);
-			});
+		this.rentalRepository.findAllByUserbookAndRentalStatus(userbook, OFFERING).forEach(r -> {
+			handleRentalResponse(r, false);
+		});
 	}
 }

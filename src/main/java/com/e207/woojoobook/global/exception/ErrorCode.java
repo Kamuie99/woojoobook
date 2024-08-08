@@ -20,11 +20,12 @@ public enum ErrorCode {
 	// 회원
 	NotEnoughPoint(HttpStatus.BAD_REQUEST, "포인트가 부족합니다."),
 	InvalidPassword(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
-	NotAcceptDuplicate(HttpStatus.BAD_REQUEST, "이미 존재합니다.");
+	NotAcceptDuplicate(HttpStatus.BAD_REQUEST, "이미 존재합니다."),
 
 	// 도서
 
 	// 대여
+	DuplicateRented(HttpStatus.INTERNAL_SERVER_ERROR, "동일한 도서가 여러 번 대여되었습니다.");
 
 	// 교환
 

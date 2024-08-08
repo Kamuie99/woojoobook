@@ -66,7 +66,8 @@ public class UserbookService {
 		if (condition.areaCodeList().isEmpty()) {
 			condition.areaCodeList().add(user.getAreaCode());
 		}
-		Page<UserbookWithLikeStatus> userbookPage = this.userbookReader.findTradeablePageWithLikeStatus(condition, pageable);
+		Page<UserbookWithLikeStatus> userbookPage = this.userbookReader.findTradeablePageWithLikeStatus(condition,
+			pageable);
 
 		return userbookPage.map(UserbookWithLikeResponse::of);
 	}
@@ -112,6 +113,10 @@ public class UserbookService {
 	public UserbookResponse updateUserbook(Long userbookId, UserbookUpdateRequest request) {
 		User user = userHelper.findCurrentUser();
 		Userbook userbook = userbookReader.findOwnedUserbook(user, userbookId);
+
+		if (!userbook.canUpdate()) {
+			throw new ErrorException(ErrorCode.BadRequest);
+		}
 
 		RegisterType registerType = userbook.getRegisterType();
 		registerType = request.canRent() ? registerType.rentalOn() : registerType.rentalOff();

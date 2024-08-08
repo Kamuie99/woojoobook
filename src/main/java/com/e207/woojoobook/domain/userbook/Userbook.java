@@ -70,12 +70,8 @@ public class Userbook {
 		return this.tradeStatus.isPossibleToChangeRegisterType();
 	}
 
-	public boolean canRent() {
-		return this.registerType.canRent() && this.tradeStatus.canRent();
-	}
-
-	public boolean canExchange() {
-		return this.registerType.canExchange() && this.tradeStatus.canExchange();
+	public boolean canUpdate() {
+		return this.tradeStatus != TradeStatus.EXCHANGED;
 	}
 
 	public void removeUser() {
