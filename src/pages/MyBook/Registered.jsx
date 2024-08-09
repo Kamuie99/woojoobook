@@ -7,32 +7,40 @@ import ListComponent from './ListComponent'
 
 const Registered = () => {
   const [registeredUserbooks, setRegisteredUserbooks] = useState([]);
-  const [registeredUserbooksCount, setRegisteredUserbooksCount] = useState(0);
   const [page, setPage] = useState(0);
-  const [activeContent, setActiveContent] = useState(() => {
-    const storedContent = localStorage.getItem('MyBookContent');
+  const [registeredUserbooksCount, setRegisteredUserbooksCount] = useState(0);
+  const [totalElementsCount, setTotalElementsCount] = useState(0);
+  const [tradeStatus, setTradeStatus] = useState(() => {
+    const storedContent = localStorage.getItem('tradeStatus');
     return storedContent || '';
   })
 
   useEffect(() => {
-    localStorage.setItem('MyBookContent', activeContent);
-  }, [activeContent]);
+    localStorage.setItem('tradeStatus', tradeStatus);
+  }, [tradeStatus]);
   
   useEffect(() => {
-    fetchRegisteredUserbooks(true, activeContent);
+    fetchRegisteredUserbooks(true, tradeStatus);
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem('tradeStatus', tradeStatus);
+    return () => {
+      localStorage.removeItem('tradeStatus');
+    }
+  }, [tradeStatus]);
   
   const handleSelectChange = (e) => {
-    setActiveContent(e.target.value)
+    setTradeStatus(e.target.value)
     setPage(0);
     fetchRegisteredUserbooks(true, e.target.value);
   }
 
-  const fetchRegisteredUserbooks = async (init = false, activeContent) => {
+  const fetchRegisteredUserbooks = async (init = false, tradeStatus) => {
     try {
       const response = await axiosInstance.get('/users/userbooks/registered', {
         params: {
-          tradeStatus: activeContent,
+          tradeStatus,
           page: init ? 0 : page,
           size: 10
         }
@@ -45,30 +53,37 @@ const Registered = () => {
         setRegisteredUserbooks(prev => [...prev,...newItems]);
         setPage(prev => prev + 1);
       }
-      setRegisteredUserbooksCount(response.data.numberOfElements);
+      if (tradeStatus === '') {
+        setTotalElementsCount(response.data.totalElements);
+      }
+      setRegisteredUserbooksCount(response.data.totalElements);
     } catch (error) {
       console.error(error);
     }
   }
 
   const loadMoreRegisteredUserbooks = () => {
-    fetchRegisteredUserbooks(false, activeContent);
+    fetchRegisteredUserbooks(false, tradeStatus);
   }
 
   return (
     <>
     <div className={styles.miniHeader}>
-      <h2 className={styles.registered}><strong>내가 등록한 책 | </strong> {registeredUserbooksCount}권</h2>
-      <select className={styles.option} value={activeContent} onChange={handleSelectChange}>
+      <h2 className={styles.registered}><strong>내가 등록한 책 | </strong> {totalElementsCount}권</h2>
+      <select className={styles.option} value={tradeStatus} onChange={handleSelectChange}>
         <option value="">전체</option>
-        <option value="RENTAL_EXCHANGE_AVAILABLE">대여, 교환 가능</option>
+        {/* <option value="RENTAL_EXCHANGE_AVAILABLE">대여, 교환 가능</option> */}
         <option value="RENTAL_AVAILABLE">대여 가능</option>
-        <option value="RENTED">대여중</option>
         <option value="EXCHANGE_AVAILABLE">교환 가능</option>
+        <option value="RENTED">대여중</option>
         <option value="UNAVAILABLE">거래 불가능</option>
       </select>
     </div>
-    <div className={styles.registeredUserbooks} id="registeredUserbooksList" style={{ height: '80vh', overflow: 'auto' }}>
+    <div
+      className={styles.registeredUserbooks}
+      id="registeredUserbooksList"
+      style={{ height: 'calc(100vh - 320px)', overflow: 'auto' }}
+    >
       <InfiniteScroll
         dataLength={registeredUserbooks.length}
         next={loadMoreRegisteredUserbooks}

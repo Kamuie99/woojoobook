@@ -1,7 +1,6 @@
 .main {
   padding: 20px;
-  height: calc(100vh - 240px);
-  overflow-y: auto;
+  height: 100vh;
 }
 
 .main::-webkit-scrollbar {

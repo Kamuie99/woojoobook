@@ -18,7 +18,7 @@ const ExchangeModal = ({ receiverBook, onClose }) => {
 
   const fetchUserBooks = async (page) => {
     try {
-      const response = await axiosInstance.get(`/users/userbooks/registered?registerType=EXCHANGE&size=9&page=${page}`);
+      const response = await axiosInstance.get(`/users/userbooks/exchangable?size=9&page=${page}`);
       setUserBooks(response.data.content);
       setTotalPages(response.data.totalPages);
       setTotalElements(response.data.totalElements);
@@ -65,10 +65,13 @@ const ExchangeModal = ({ receiverBook, onClose }) => {
 
         onClose();
       } catch (error) {
-        console.error('교환 신청 실패:', error);
+        console.error('교환 신청 실패:', error.response);
+        const errMsg = error.response.data === '이미 존재합니다.' ? 
+          '이미 교환 신청을 보냈습니다.' :
+          '교환 신청 중 오류가 발생했습니다.'
         Swal.fire({
           title: '오류',
-          text: '교환 신청 중 오류가 발생했습니다.',
+          text: errMsg,
           confirmButtonText: '확인',
           icon: 'warning'
         });

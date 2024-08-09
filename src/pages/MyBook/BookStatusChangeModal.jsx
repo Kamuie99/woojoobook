@@ -41,6 +41,13 @@ const BookStatusChangeModal = ({ isOpen, onClose, registerType, qualityStatus, h
   };
 
   const onSave = () => {
+    if (!canRent && !canExchange) {
+      Swal.fire({
+        title: '대여, 교환 여부가 선택되지 않았습니다.',
+        confirmButtonText: '확인',
+        icon: 'info'
+      })
+    }
     Swal.fire({
       title: "상태를 변경하시겠습니까?",
       icon: "question",

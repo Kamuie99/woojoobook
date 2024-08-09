@@ -18,7 +18,7 @@ const BookInfo = ({ item, onWishChange }) => {
   const [bookDetail, setBookDetail] = useState('');
 
   useEffect(() => {
-    if (localStorage.getItem('myBookActiveContent') === 'registered') {
+    if (localStorage.getItem('MyBookContent') === 'registered') {
       setEditable(true);
     };
   }, []);
@@ -27,7 +27,8 @@ const BookInfo = ({ item, onWishChange }) => {
     const typeMap = {
       'RENTAL': '대여',
       'EXCHANGE': '교환',
-      'RENTAL_EXCHANGE': '대여, 교환'
+      'RENTAL_EXCHANGE': '대여, 교환',
+      'UNAVAILABLE': '거래 불가능'
     };
     return typeMap[registerType] || registerType;
   };
@@ -82,7 +83,7 @@ const BookInfo = ({ item, onWishChange }) => {
       canRent ? 'RENTAL_AVAILABLE' : canExchange ? 'EXCHANGE_AVAILABLE' : 'UNAVAILABLE';
 
     try {
-      await axiosInstance.put(`/userbooks/${item.id}`, {
+      const response = await axiosInstance.put(`/userbooks/${item.id}`, {
         canRent, canExchange, quality,
       });
       setBookInfo((prev) => ({
@@ -91,6 +92,13 @@ const BookInfo = ({ item, onWishChange }) => {
         registerType: newRegisterType,
         tradeStatus: newTradeStatus
       }));
+      if (response.status === 200) {
+        Swal.fire({
+          title: "상태 변경 성공",
+          text: "상태가 성공적으로 변경되었습니다.",
+          icon: "success"
+        })
+      }
       closeModal();
     } catch (error) {
       console.error(error);
@@ -108,19 +116,31 @@ const BookInfo = ({ item, onWishChange }) => {
   }
 
   const giveBack = async (bookId) => {
-    // TODO: rentalId가 필요함
-    try {
-      // const response = await axiosInstance.put(`/rentals/${rentalId}/return`)
-      const response = await axiosInstance.get(`/rentals`, {
-        params: {
-          page: 0,
-          size: 10
+    Swal.fire({
+      title: "반납하시겠습니까?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "반납",
+      cancelButtonText: "취소"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axiosInstance.put(`/userbooks/${bookId}/return`)
+          console.log(response.data)
+          if (response.status === 200) {
+            Swal.fire({
+              title: "반납 완료",
+              text: "성공적으로 반납 되었습니다.",
+              icon: "success"
+            })
+          }
+        } catch (error) {
+          console.error(error);
         }
-      });
-      console.log(response.data)
-    } catch (error) {
-      console.error(error);
-    }
+      }
+    })
   }
 
   const removeWish = async (bookId, wished = true) => {

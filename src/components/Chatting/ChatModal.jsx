@@ -90,10 +90,7 @@ const ChatModal = ({ open, receiverId, setReceiverId, handleClose, isClosing, is
         onClose={handleClose}
         aria-labelledby={styles.chatModalTitle}
         aria-describedby={styles.chatModalDescription}
-        BackdropProps={{
-          style: { backgroundColor: 'transparent' },
-          invisible: true
-        }}
+        BackdropComponent={null}
       >
         <Box
           className={`

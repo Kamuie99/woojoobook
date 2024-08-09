@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 import axiosInstance from '../../util/axiosConfig';
+import Swal from 'sweetalert2';
 import ChatButton from './ChatButton';
 import ChatModal from './ChatModal';
 
 const Chatting = ({ directMessage = null, onClose }) => {
-  const { sub: userId } = useContext(AuthContext);
+  const { isLoggedIn, sub: userId } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -14,9 +15,16 @@ const Chatting = ({ directMessage = null, onClose }) => {
   const [chatRoom, setChatRoom] = useState('');
   const [messages, setMessages] = useState([]);
   const [chatRooms, setChatRooms] = useState([]);
+  const navigate = useNavigate();
 
   const location = useLocation();
   const excludedPaths = ['/login', '/register'];
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setOpen(false);
+    }
+  }, [isLoggedIn, open])
 
   const fetchChatRooms = async () => {
     try {
@@ -47,6 +55,17 @@ const Chatting = ({ directMessage = null, onClose }) => {
   }, [directMessage]);
 
   const toggleOpen = () => {
+    if (!isLoggedIn) {
+      Swal.fire({
+        title: '채팅을 하시려면 로그인 해주세요',
+        confirmButtonText: '확인',
+        icon: 'warning'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/login');
+        }
+      })
+    }
     if (open) {
       handleClose();
       return;
@@ -62,7 +81,6 @@ const Chatting = ({ directMessage = null, onClose }) => {
     setChatRoom('');
     setReceiverId('');
     setIsClosing(true);
-    setOpen(false);
   };
 
   const handleAnimationEnd = () => {

@@ -13,23 +13,9 @@ const MyBook = () => {
   const navigate = useNavigate();
   const {userId} = useParams();
   const {isLoggedIn, sub: loggedInUserId, user} = useContext(AuthContext)
-  const [activeContent, setActiveContent] = useState('registered');
 
-  const clearLocalStorage = useCallback(() => {
-    localStorage.removeItem('myActivityActiveContent');
-    localStorage.removeItem('proceedActiveContent');
-  }, []);
-
-  useEffect(() => {
-    const storedCotent = localStorage.getItem('myBookActiveContent');
-    if (storedCotent) {
-      setActiveContent(storedCotent);
-    }
-
-    return () => {
-      clearLocalStorage();
-    };
-  }, [clearLocalStorage]);
+  const initialContent = localStorage.getItem('MyBookContent') || 'registered';
+  const [activeContent, setActiveContent] = useState(initialContent);
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -46,26 +32,23 @@ const MyBook = () => {
         navigate(-1);
       }
     }
-
+    
     checkAccess();
   }, [isLoggedIn, userId, loggedInUserId, user, navigate]);
-
+  
   useEffect(() => {
-    localStorage.setItem('myBookActiveContent', activeContent);
-  }, [activeContent]);
-
-  useEffect(() => {
+    console.log(activeContent)
+    localStorage.setItem('MyBookContent', activeContent);
+    console.log(localStorage.getItem('MyBookContent'))
     return () => {
-      if (!location.pathname.includes('/mybook')) {
-        clearLocalStorage();
-      }
-    };
-  }, [location, clearLocalStorage]);
+      localStorage.removeItem('MyBookContent');
+    }
+  }, [activeContent]);
 
   if (!isLoggedIn || user === null) {
     return <div>Loading...</div>
   }
-  // TODO: 책 상세페이지 모달 ?
+
   const renderContent = () => {
     switch (activeContent) {
       case 'registered':

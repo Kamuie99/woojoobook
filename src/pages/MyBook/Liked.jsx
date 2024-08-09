@@ -52,7 +52,11 @@ const Liked = () => {
   return (
     <>
     <h2 className={styles.liked}><strong>내가 관심 등록한 책 | </strong> {likedUserbooksCount}</h2>
-    <div className={styles.LikedUserbooksList} id="LikedUserbooksList" style={{ height: '80vh', overflow: 'auto' }}>
+    <div
+      className={styles.LikedUserbooksList}
+      id="LikedUserbooksList"
+      style={{ height: 'calc(100vh - 300px)', overflow: 'auto' }}
+    >
       <InfiniteScroll
         dataLength={likedUserbooks.length}
         next={loadMoreLikedUserbooks}

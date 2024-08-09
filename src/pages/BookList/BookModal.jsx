@@ -68,7 +68,7 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
 
           onClose();
         } catch (error) {
-          console.error('대여 신청 실패:', error.response.data);
+          console.error('대여 신청 실패:', error.response);
           const errMsg = error.response.data === '이미 존재합니다.' ?
             '이미 대여 신청을 보냈습니다.' :
             '대여 신청 중 오류가 발생했습니다.'
