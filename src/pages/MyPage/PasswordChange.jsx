@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../util/axiosConfig';
-import Header from "../../components/Header";
+import Header2 from "../../components/Header2";
 import Swal from 'sweetalert2';
 import { FaUserCircle } from "react-icons/fa";
 import { AuthContext } from '../../contexts/AuthContext';
@@ -76,7 +76,7 @@ const PasswordChange = () => {
 
   return (
     <>
-      <Header />
+      <Header2 />
       <main className={styles.userUpdate}>
         <Link to="/">
           <img src={Logo} width='170px' alt="Home" style={{ cursor: 'pointer' }} />

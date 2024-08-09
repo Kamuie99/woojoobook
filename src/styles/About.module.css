@@ -250,3 +250,7 @@
 .right_wrap > p {
   text-align: right !important;
 }
+
+button {
+  cursor: pointer;
+}

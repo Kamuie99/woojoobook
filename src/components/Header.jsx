@@ -57,8 +57,8 @@ const Header = () => {
       <div className='header_left' onClick={handleLeftClick}>
         <Button text={<MdKeyboardArrowLeft size="40"/>} color="white"/>
       </div>
-      <div className='header_center' onClick={handleLogoClick}>
-        <img src={LogoSmall} width="40px"/>
+      <div className='header_center'>
+        <img onClick={handleLogoClick} src={LogoSmall} width="40px"/>
       </div>
       <div className='header_right' onClick={handleSidebarToggle}>
         <Button text={<IoMenu size="30"/>} color="white"/>

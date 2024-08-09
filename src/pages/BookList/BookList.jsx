@@ -6,6 +6,7 @@ import { IoHeartOutline, IoHeartSharp } from "react-icons/io5";
 import { getEmotionImage } from '../../util/get-emotion-image';
 import { AuthContext } from '../../contexts/AuthContext';
 import { FiMapPin } from "react-icons/fi";
+import { RiMenuSearchLine } from "react-icons/ri";
 import Header from "../../components/Header"
 import axiosInstance from './../../util/axiosConfig';
 import AreaSelector from "../../components/AreaSelector";
@@ -65,9 +66,9 @@ const BookList = () => {
     
   }
 
-  useEffect(() => {
-    console.log(books);
-  }, [books])
+  // useEffect(() => {
+  //   console.log(books);
+  // }, [books])
 
   const fetchBooks = useCallback(async () => {
     setLoading(true);
@@ -104,7 +105,7 @@ const BookList = () => {
   }, [fetchBooks, currentPage, selectedArea]);
 
   const fetchAreaName = useCallback(async (areaCode) => {
-    console.log(areaCode);
+    // console.log(areaCode);
     if (areaCode) {
       try {
         const response = await axiosInstance.get('/area', { params: { areaCode } });
@@ -251,7 +252,9 @@ const BookList = () => {
               placeholder="책 제목 또는 저자를 검색"
               style={{ padding: '10px', borderRadius: '10px' }}
             />
-            <button onClick={handleSearch} style={{ padding: '5px 10px' }}>검색</button>
+            <button className={styles.searchButton} onClick={handleSearch}>
+              <RiMenuSearchLine size={'35px'} />
+            </button>
           </div>  
         </div>
       )}

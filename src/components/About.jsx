@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../styles/About.module.css';
 import axios from 'axios';
 
@@ -31,6 +32,7 @@ const AnimatedNumber = ({ end, duration }) => {
 const About = () => {
   const [bookCount, setBookCount] = useState(0);
   const [userCount, setUserCount] = useState(0);
+  const navigate= useNavigate();
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -48,6 +50,10 @@ const About = () => {
 
     fetchCounts();
   }, []);
+
+  const handleBookListClick = () => {
+    navigate('/booklist');
+  }
 
   return (
     <div className={`${styles.section} ${styles.sec01}`}>
@@ -71,7 +77,7 @@ const About = () => {
                 <AnimatedNumber end={bookCount} duration={1000} />
                 개
               </p>
-              <button>우주도서 보러가기</button>
+              <button onClick={handleBookListClick}>우주도서 보러가기</button>
             </div>
           </div>
         </div>

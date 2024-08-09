@@ -109,6 +109,12 @@
   color: #F27474;
 }
 
+.searchButton {
+  border: none;
+  background-color: inherit !important;
+  cursor: pointer;
+}
+
 
 .titleDiv {
   font-size: 22px;
@@ -127,9 +133,10 @@
 }
 
 .searchBox > input {
-  width: 200px;
-  border-radius: 5px;
-  border: 1px solid gray;
+  width: 180px;
+  border-radius: 0px !important;
+  border: none;
+  border-bottom: 2px solid black;
 }
 
 .status {
@@ -176,10 +183,11 @@
   height: 50px;
   padding: 10px 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .areaSelectorContainer > div select {
+  width: 150px;
   height: 100%;
 }
 
