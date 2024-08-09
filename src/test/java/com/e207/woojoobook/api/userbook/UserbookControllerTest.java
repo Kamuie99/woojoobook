@@ -98,7 +98,6 @@ class UserbookControllerTest extends AbstractRestDocsTest {
 		Page<UserbookWithLikeResponse> response = createUserbookWithLikePage();
 		String responseJson = objectMapper.writeValueAsString(response);
 		given(userbookService.findUserbookPage(eq(request), any(Pageable.class))).willReturn(response);
-		System.out.println("responseJson = " + responseJson);
 
 		// expected
 		mockMvc.perform(get("/userbooks").contentType(MediaType.APPLICATION_JSON).content(requestJson))

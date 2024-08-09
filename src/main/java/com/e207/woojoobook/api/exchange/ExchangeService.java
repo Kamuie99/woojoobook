@@ -115,14 +115,13 @@ public class ExchangeService {
 
 	private void validateUserbooks(Userbook senderBook, Userbook receiverBook) {
 		User sessionUser = userHelper.findCurrentUser();
-		boolean isValidSenderBook = sessionUser.getId().equals(senderBook.getUser().getId());
-		boolean isValidReceiverBook = !sessionUser.getId().equals(receiverBook.getUser().getId());
-		if (!isValidSenderBook || !isValidReceiverBook) {
+		validateBookOwner(sessionUser, senderBook);
+		if (!senderBook.isAvailable() || !receiverBook.isAvailable()) {
 			throw new ErrorException(
 				ErrorCode.InvalidAccess,
-				"교환하려는 도서가 잘못 선택되었습니다. match result "
-					+ "= senderBook: " + isValidSenderBook
-					+ ", receiverBook: " + isValidReceiverBook
+				"교환이 불가능한 상태입니다. available status "
+					+ "= senderBook: " + senderBook.isAvailable()
+					+ ", receiverBook: " + receiverBook.isAvailable()
 			);
 		}
 	}
