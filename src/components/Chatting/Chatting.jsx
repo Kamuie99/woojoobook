@@ -38,14 +38,11 @@ const Chatting = ({ directMessage = null, onClose }) => {
       console.log(directMessage)
       setOpen(true);
       fetchChatRooms();
-      fetchChatRooms();
       setTimeout(() => {
         setReceiverId(directMessage);
       }, 100);
       return;
-      return;
     }
-    setOpen(false);
     setOpen(false);
   }, [directMessage]);
 
@@ -83,24 +80,21 @@ const Chatting = ({ directMessage = null, onClose }) => {
       {!excludedPaths.includes(location.pathname) &&
         <ChatButton
           toggleOpen = {toggleOpen}
-          toggleOpen = {toggleOpen}
         />
       }
       {open && (
-      {open && (
-      <ChatModal
-        open={open}
-        receiverId={receiverId}
-        setReceiverId={setReceiverId}
-        handleClose={handleClose}
-        isClosing={isClosing}
-        isLoading={isLoading}
-        handleAnimationEnd={handleAnimationEnd}
-        chatRooms={chatRooms}
-        chatRoom={chatRoom}
-        setChatRoom={setChatRoom}
-      />
-      )}
+        <ChatModal
+          open={open}
+          receiverId={receiverId}
+          setReceiverId={setReceiverId}
+          handleClose={handleClose}
+          isClosing={isClosing}
+          isLoading={isLoading}
+          handleAnimationEnd={handleAnimationEnd}
+          chatRooms={chatRooms}
+          chatRoom={chatRoom}
+          setChatRoom={setChatRoom}
+        />
       )}
     </div>
   );
