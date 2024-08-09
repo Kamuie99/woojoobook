@@ -44,11 +44,11 @@ public class ChatRoom {
 		this.modifiedAt = modifiedAt;
 	}
 
-	public void removeSender() {
-		this.sender = null;
+	public void removeSender(User user) {
+		this.sender = user;
 	}
 
-	public void removeReceiver() {
-		this.receiver = null;
+	public void removeReceiver(User user) {
+		this.receiver = user;
 	}
 }

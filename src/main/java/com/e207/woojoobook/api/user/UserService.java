@@ -148,6 +148,7 @@ public class UserService {
 		return new UserPersonalResponse(userPoints, userExperience);
 	}
 
+	@Transactional(readOnly = true)
 	public User findDomainById(Long id) {
 		return userRepository.findById(id).orElseThrow(() -> new ErrorException(ErrorCode.UserNotFound));
 	}

@@ -15,6 +15,7 @@ import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
 import com.e207.woojoobook.domain.userbook.Wishbook;
 import com.e207.woojoobook.domain.userbook.WishbookRepository;
+import com.e207.woojoobook.global.helper.UserHelper;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class UserEventListener {
 	private final WishbookRepository wishBookRepository;
 	private final RentalRepository rentalRepository;
 	private final ChatRoomRepository chatRoomRepository;
+	private final UserHelper userHelper;
 
 	@Transactional
 	@EventListener
@@ -39,11 +41,13 @@ public class UserEventListener {
 		List<ChatRoom> allBySender = this.chatRoomRepository.findAllBySender(user);
 		List<ChatRoom> allByReceiver = this.chatRoomRepository.findAllByReceiver(user);
 
-		userbooks.forEach(Userbook::removeUser);
-		wishbooks.forEach(Wishbook::removeUser);
-		rentals.forEach(Rental::removeUser);
-		allBySender.forEach(ChatRoom::removeSender);
-		allByReceiver.forEach(ChatRoom::removeReceiver);
+		User nullAdmin = this.userHelper.findNullAdmin();
+
+		userbooks.forEach(userbook -> userbook.removeUser(nullAdmin));
+		wishbooks.forEach(wishbook -> wishbook.removeUser(nullAdmin));
+		rentals.forEach(rental -> rental.removeUser(nullAdmin));
+		allBySender.forEach(chatRoom -> chatRoom.removeSender(nullAdmin));
+		allByReceiver.forEach(chatRoom -> chatRoom.removeReceiver(nullAdmin));
 		this.userRepository.delete(user);
 	}
 }

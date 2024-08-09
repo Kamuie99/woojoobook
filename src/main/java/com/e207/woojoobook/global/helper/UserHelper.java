@@ -27,4 +27,9 @@ public class UserHelper {
 		return this.userRepository.findById(id)
 				.orElseThrow(() -> new ErrorException(ErrorCode.UserNotFound));
 	}
+
+	public User findNullAdmin() {
+		return this.userRepository.findByEmail("anonymous")
+			.orElseThrow(() -> new ErrorException(ErrorCode.InternalServer));
+	}
 }

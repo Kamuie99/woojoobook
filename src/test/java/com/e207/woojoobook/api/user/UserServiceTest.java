@@ -1,5 +1,6 @@
 package com.e207.woojoobook.api.user;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
@@ -68,7 +69,7 @@ class UserServiceTest {
 	@Mock
 	private Authentication authentication;
 
-	@DisplayName("회원 탈퇴를 하면, 참조하고 있던 객체가 NULL로 처리되고 사용자의 정보는 삭제된다")
+	@DisplayName("회원 탈퇴를 하면, 참조하고 있던 객체가 NULL 계정으로 처리되고 사용자의 정보는 삭제된다")
 	@Transactional
 	@Test
 	void deleteUser() {
@@ -93,6 +94,16 @@ class UserServiceTest {
 			.receiver(savedUser)
 			.build());
 
+		User nullAdmin = this.userRepository.save(
+			User.builder()
+				.email("anonymous")
+				.nickname("null")
+				.password("null")
+				.areaCode("null")
+				.build()
+		);
+
+		given(this.userHelper.findNullAdmin()).willReturn(nullAdmin);
 		given(this.userHelper.findCurrentUser()).willReturn(savedUser);
 		given(authenticationManagerBuilder.getObject()).willReturn(authenticationManager);
 		given(authenticationManager.authenticate(any())).willReturn(authentication);
@@ -110,17 +121,19 @@ class UserServiceTest {
 		em.flush();
 
 		// then
-		assertNull(savedUserbook.getUser());
-		assertTrue(this.userRepository.findById(userId).isEmpty());
-		assertTrue(this.pointRepository.findById(pointId).isEmpty());
-		Optional<Rental> rental = this.rentalRepository.findById(rentalId);
-		Optional<ChatRoom> byId = this.chatRoomRepository.findById(chatRoomId);
-		ChatRoom chatRoom1 = this.chatRoomRepository.findById(chatRoom2Id).get();
-		assertEquals(chatRoom1.getReceiver(), null);
-		assertTrue(byId.isPresent());
-		assertTrue(rental.isPresent());
-		assertEquals(byId.get().getSender(), null);
-		assertNull(rental.get().getUser());
+		Optional<User> optionalUser = this.userRepository.findById(userId);
+		Optional<Point> optionalPoint = this.pointRepository.findById(pointId);
+		Rental rental = this.rentalRepository.findById(rentalId).get();
+		ChatRoom chatRoomOfSender = this.chatRoomRepository.findById(chatRoomId).get();
+		ChatRoom chatRoomOfReceiver = this.chatRoomRepository.findById(chatRoom2Id).get();
+
+		assertAll(
+			() -> assertThat(optionalUser).isNotPresent(),
+			() -> assertThat(optionalPoint).isNotPresent(),
+			() -> assertThat(rental.getUser().getNickname()).isEqualTo("null"),
+			() -> assertThat(chatRoomOfSender.getSender().getNickname()).isEqualTo("null"),
+			() -> assertThat(chatRoomOfReceiver.getReceiver().getNickname()).isEqualTo("null")
+		);
 	}
 
 	@DisplayName("회원의 포인트를 조회한다")

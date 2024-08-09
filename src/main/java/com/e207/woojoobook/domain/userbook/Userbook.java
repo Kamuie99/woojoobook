@@ -74,8 +74,8 @@ public class Userbook {
 		return this.tradeStatus != TradeStatus.EXCHANGED;
 	}
 
-	public void removeUser() {
-		this.user = null;
+	public void removeUser(User user) {
+		this.user = user;
 	}
 
 	public void updateTradeStatus(TradeStatus tradeStatus) {
