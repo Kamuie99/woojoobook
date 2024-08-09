@@ -116,7 +116,8 @@ public class RentalService {
 	@Transactional
 	public void giveBackByUserbookId(Long userbookId) {
 		User currentUser = this.userHelper.findCurrentUser();
-		Userbook userbook = validateAndFindUserbook(userbookId);
+		Userbook userbook = this.userbookRepository.findById(userbookId)
+			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 		checkCurrentUserIsOwner(userbook.getUser(), currentUser);
 
 		Rental rental = validateAndFindRentalInProgress(userbook);
