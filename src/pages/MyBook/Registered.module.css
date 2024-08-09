@@ -34,5 +34,9 @@
 }
 
 .registeredUserbooksList::-webkit-scrollbar {
-  display: none;
+  /* display: none; */
+  background-color: var(--accent-sub-color);
+  border-radius: 10px;
+  line-height: 1.15;
+  width: 10px;
 }

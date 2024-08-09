@@ -15,11 +15,14 @@
   color: var(--contrast-color);
 }
 
-.LikedUserbooksList {
+.likedUserbooksList {
   height: 80vh;
   overflow: auto;
 }
 
-.LikedUserbooksList::-webkit-scrollbar {
-  display: none;
+.likedUserbooksList::-webkit-scrollbar {
+  background-color: var(--accent-sub-color);
+  border-radius: 10px;
+  line-height: 1.15;
+  width: 10px;
 }

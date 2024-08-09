@@ -2,14 +2,14 @@ import React, { useState, useRef } from 'react';
 import { List, ListItem, ListItemText, Divider, TextField, Button } from '@mui/material';
 import styles from './ChatList.module.css';
 
-const ChatList = ({ chatRooms, userId, onSelectRoom, handleNewChatSubmit }) => {
+const ChatList = ({ chatRooms, userId, onSelectRoom, fetchOrCreateChatRoom }) => {
   const receiverIdRef = useRef(null);
   
   const handleNewChat = (e) => {
     e.preventDefault();
     const receiverId = receiverIdRef.current.value;
     if (receiverId) {
-      handleNewChatSubmit(receiverId);
+      fetchOrCreateChatRoom(receiverId);
     }
   }
 

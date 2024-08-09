@@ -14,10 +14,6 @@ const Liked = () => {
     fetchLikedUserbooks(true);
   }, []);
 
-  useEffect(() => {
-    console.log(likedUserbooks);
-  }, [likedUserbooks]);
-
   const fetchLikedUserbooks = async (init = false) => {
     try {
       const response = await axiosInstance.get(`/users/userbooks/likes`, {
@@ -53,8 +49,8 @@ const Liked = () => {
     <>
     <h2 className={styles.liked}><strong>내가 관심 등록한 책 | </strong> {likedUserbooksCount}</h2>
     <div
-      className={styles.LikedUserbooksList}
-      id="LikedUserbooksList"
+      className={styles.likedUserbooksList}
+      id="likedUserbooksList"
       style={{ height: 'calc(100vh - 300px)', overflow: 'auto' }}
     >
       <InfiniteScroll
@@ -62,7 +58,7 @@ const Liked = () => {
         next={loadMoreLikedUserbooks}
         hasMore={likedUserbooks.length < likedUserbooksCount}
         loader={<h4>Loading...</h4>}
-        scrollableTarget="LikedUserbooksList"
+        scrollableTarget="likedUserbooksList"
       >
         <ListComponent
           items={likedUserbooks}

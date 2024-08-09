@@ -2,8 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Box, IconButton, CircularProgress, Backdrop } from '@mui/material';
 import { IoChatbubblesOutline, IoSettingsOutline  } from "react-icons/io5";
 import { IoMdCloseCircleOutline } from "react-icons/io";
-import { FaExchangeAlt } from "react-icons/fa";
-import { TbStatusChange } from "react-icons/tb";
 import { AuthContext } from '../../contexts/AuthContext';
 import axiosInstance from '../../util/axiosConfig';
 import styles from './ChatModal.module.css';
@@ -13,6 +11,7 @@ import PhoneTopBar from './PhoneTopBar';
 import ChatModalHeader from './ChatModalHeader';
 import Draggable from 'react-draggable';
 import ChatManagement from './ChatManagement';
+import Swal from 'sweetalert2'
 
 const ChatModal = ({ open, receiverId, setReceiverId, handleClose, isClosing, isLoading, handleAnimationEnd, chatRooms, chatRoom, setChatRoom }) => {
   const { isLoggedIn, sub: userId } = useContext(AuthContext);

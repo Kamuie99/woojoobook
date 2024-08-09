@@ -9,7 +9,7 @@ import axiosInstance from "../../util/axiosConfig";
 import BookStatusChangeModal from "./BookStatusChangeModal";
 import BookModal from '../MyLibrary/BookModal'
 
-const BookInfo = ({ item, onWishChange }) => {
+const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
   const { sub: userId } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
   const [bookInfo, setBookInfo] = useState(item);
@@ -75,6 +75,7 @@ const BookInfo = ({ item, onWishChange }) => {
   }
 
   const handleSave = async (canRent, canExchange, quality) => {
+    const tradeStatus = localStorage.getItem('tradeStatus');
     const newRegisterType =
       canRent && canExchange ? 'RENTAL_EXCHANGE' :
       canRent ? 'RENTAL' : canExchange ? 'EXCHANGE' : 'UNAVAILABLE';
@@ -99,6 +100,7 @@ const BookInfo = ({ item, onWishChange }) => {
           icon: "success"
         })
       }
+      fetchRegisteredUserbooks(tradeStatus, true);
       closeModal();
     } catch (error) {
       console.error(error);
@@ -109,6 +111,7 @@ const BookInfo = ({ item, onWishChange }) => {
           icon: "error",
           confirmButtonColor: "#3085d6"
         }).then(() => {
+          fetchRegisteredUserbooks(tradeStatus, true);
           closeModal();
         });
       }
@@ -135,12 +138,26 @@ const BookInfo = ({ item, onWishChange }) => {
               text: "성공적으로 반납 되었습니다.",
               icon: "success"
             })
+          } else {
+            Swal.fire({
+              title: "반납 실패",
+              text: "반납에 실패하였습니다.",
+              icon: "error"
+            })
           }
         } catch (error) {
           console.error(error);
+          Swal.fire({
+            title: "반납 실패",
+            text: "반납에 실패하였습니다.",
+            icon: "error"
+          })
         }
       }
     })
+    const tradeStatus = localStorage.getItem('tradeStatus')
+    console.log(tradeStatus)
+    fetchRegisteredUserbooks(tradeStatus, true)
   }
 
   const removeWish = async (bookId, wished = true) => {

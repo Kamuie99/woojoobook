@@ -20,7 +20,7 @@ const Registered = () => {
   }, [tradeStatus]);
   
   useEffect(() => {
-    fetchRegisteredUserbooks(true, tradeStatus);
+    fetchRegisteredUserbooks(tradeStatus, true);
   }, [])
 
   useEffect(() => {
@@ -33,10 +33,10 @@ const Registered = () => {
   const handleSelectChange = (e) => {
     setTradeStatus(e.target.value)
     setPage(0);
-    fetchRegisteredUserbooks(true, e.target.value);
+    fetchRegisteredUserbooks(e.target.value, true);
   }
 
-  const fetchRegisteredUserbooks = async (init = false, tradeStatus) => {
+  const fetchRegisteredUserbooks = async (tradeStatus, init = false) => {
     try {
       const response = await axiosInstance.get('/users/userbooks/registered', {
         params: {
@@ -63,7 +63,7 @@ const Registered = () => {
   }
 
   const loadMoreRegisteredUserbooks = () => {
-    fetchRegisteredUserbooks(false, tradeStatus);
+    fetchRegisteredUserbooks(tradeStatus);
   }
 
   return (
@@ -80,7 +80,7 @@ const Registered = () => {
       </select>
     </div>
     <div
-      className={styles.registeredUserbooks}
+      className={styles.registeredUserbooksList}
       id="registeredUserbooksList"
       style={{ height: 'calc(100vh - 320px)', overflow: 'auto' }}
     >
@@ -97,8 +97,9 @@ const Registered = () => {
           renderItem={(item) => (
             <>
               <BookInfo 
-              key={item.id}
+                key={item.id}
                 item={item}
+                fetchRegisteredUserbooks={fetchRegisteredUserbooks}
               />
             </>
           )}

@@ -32,7 +32,6 @@ const Chatting = ({ directMessage = null, onClose }) => {
         params: { userId, page:0, size:10 },
       });
       const data = await response.data;
-      console.log(data.content)
       setChatRooms(Array.isArray(data.content) ? data.content : []);
     } catch (error) {
       console.error('채팅 룸 목록 조회 중 오류 발생:', error);
@@ -43,7 +42,6 @@ const Chatting = ({ directMessage = null, onClose }) => {
 
   useEffect(() => {
     if (directMessage) {
-      console.log(directMessage)
       setOpen(true);
       fetchChatRooms();
       setTimeout(() => {

@@ -79,7 +79,7 @@
   border: 5px solid black;
   border-radius: 20px;
   overflow: hidden;
-  z-index: 1000;
+  z-index: 800;
   padding-top: 40px;
 }
 

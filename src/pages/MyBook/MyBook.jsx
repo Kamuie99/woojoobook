@@ -37,9 +37,7 @@ const MyBook = () => {
   }, [isLoggedIn, userId, loggedInUserId, user, navigate]);
   
   useEffect(() => {
-    console.log(activeContent)
     localStorage.setItem('MyBookContent', activeContent);
-    console.log(localStorage.getItem('MyBookContent'))
     return () => {
       localStorage.removeItem('MyBookContent');
     }
