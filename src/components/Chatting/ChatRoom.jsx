@@ -4,6 +4,7 @@ import { BsArrowReturnLeft } from 'react-icons/bs';
 import { IoIosArrowDown } from "react-icons/io";
 import { AuthContext } from '../../contexts/AuthContext';
 import axiosInstance from '../../util/axiosConfig';
+import debounce from 'lodash.debounce';
 import styles from './ChatRoom.module.css';
 
 const ChatRoom = ({ chatRoom, receiverId }) => {
@@ -28,20 +29,21 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
     let subscription;
     if (client.current && chatRoom) {
       const destination = `/topic/user_${userId}`;
-      subscription = client.current.subscribe(destination, (message) => {
+      subscription = client.current.subscribe(destination, debounce((message) => {
         console.log('수신된 메시지:', message.body);
         const messageBody = JSON.parse(message.body);
         const scrollableDiv = scrollBarRef.current;
         const isAtBottom = scrollableDiv.scrollHeight - scrollableDiv.scrollTop === scrollableDiv.clientHeight;
-
+      
         setMessages((prev) => [
-          { senderId: messageBody.senderId, content: messageBody.content },
+          { userId: messageBody.userId, content: messageBody.content },
           ...prev,
         ]);
-        if (!isAtBottom && messageBody.senderId != userId) {
+
+        if (!isAtBottom && messageBody.userId != userId) {
           setNewMessageAlert(true); // 새로운 메시지가 도착했음을 알림
         }
-      });
+      }, 500, { leading: true, trailing: false}));
       return () => {
         if (subscription) subscription.unsubscribe();
       };
@@ -101,7 +103,7 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
       const newChats = response.data.content || [];
       if (reset) {
         setMessages(newChats);
-        setCurrentPage(1);
+        setCurrentPage(0);
         setHasMore(true);
       } else {
         setMessages((prev) => [...prev, ...newChats]);
@@ -128,14 +130,14 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
     }
   };
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     console.log('Attempting to send message', client.current);
     if (client.current && client.current.connected) {
-      console.log('WebSocket is connected');
       const newMessage = {
         content: chat,
         chatRoomId: chatRoom.id,
         senderId: userId,
+        userId,
         receiverId,
       }
       client.current.publish({
@@ -164,7 +166,7 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
         <div ref={loadMoreMessagesTarget} />
           {[...messages].reverse().map((message, index) => (
             <div key={index} className={
-              `${styles.message} ${message.senderId == userId ? styles.sent : styles.received}`
+              `${styles.message} ${message.userId == userId ? styles.sent : styles.received}`
             }>
               <p>{message.content}</p>
             </div>

@@ -6,13 +6,10 @@ import axiosInstance from '../../util/axiosConfig';
 import { AuthContext } from '../../contexts/AuthContext';
 import Swal from 'sweetalert2';
 import ExchangeModal from './ExchangeModal';
-import Chatting from '../../components/Chatting/Chatting';
 
-const BookModal = ({ book, onClose }) => {
+const BookModal = ({ book, onClose, onChatOpen }) => {
   const { user, sub: userId } = useContext(AuthContext);
   const [showExchangeModal, setShowExchangeModal] = useState(false);
-  const [showChatModal, setShowChatModal] = useState(false);
-  const [chatRoom, setChatRoom] = useState('');
 
   const userbook = book.userbook;
   const getQualityEmoticon = (qualityStatus) => {
@@ -88,40 +85,8 @@ const BookModal = ({ book, onClose }) => {
   
   const handleNewChat = (e, ownerId) => {
     e.preventDefault();
-    setShowChatModal(true);
-    setChatRoom(ownerId);
+    onChatOpen(ownerId);
   }
-
-  const handleNewChatSubmit = async (newReceiverId) => {
-    setReceiverId(newReceiverId);
-    if (userId == newReceiverId) {
-      console.log('sender와 receiver id가 같습니다.')
-      return;
-    }
-    try {
-      const response = await axiosInstance.get('chatrooms/check', {
-        params: {
-          senderId: userId,
-          receiverId: newReceiverId,
-        },
-      });
-      const data = await response.data;
-      if (data.isExist) {
-        const roomResponse = await axiosInstance.get(`chatrooms/${userId}/${newReceiverId}`);
-        const roomData = await roomResponse.data;
-        setChatRoom(roomData);
-      } else {
-        const newRoomResponse = await axiosInstance.post('chatrooms', {
-          senderId: userId,
-          receiverId: newReceiverId,
-        });
-        const newRoomData = await newRoomResponse.data;
-        setChatRoom(newRoomData);
-      }
-    } catch (error) {
-      console.error('채팅 룸 조회/생성 중 오류 발생:', error);
-    }
-  };
 
   return (
     <div className={styles.modalBackdrop} onClick={onClose}>
@@ -170,20 +135,15 @@ const BookModal = ({ book, onClose }) => {
                 </button>
                 {!isExchangeEnabled && <span className={styles.tooltip}>교환이 불가능한 도서입니다.</span>}
               </div>
+              <button onClick={(e) => handleNewChat(e, userbook.ownerInfo.id)} className={styles.tochatButton}>채팅하기</button>
             </>
           )}
-          <button onClick={(e) => handleNewChat(e, userbook.ownerInfo.id)} className={styles.tochatButton}>채팅하기</button>
         </div>
       </div>
       {showExchangeModal && (
         <ExchangeModal 
           receiverBook={userbook} 
           onClose={() => setShowExchangeModal(false)} 
-        />
-      )}
-      {showChatModal && (
-        <Chatting
-          directMessage={chatRoom}
         />
       )}
     </div>

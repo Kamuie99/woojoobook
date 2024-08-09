@@ -64,7 +64,7 @@
   }
 }
 
-.chat_modal {
+.chatModal {
   position: fixed !important;
   bottom: 16px;
   left: 16px;
@@ -83,11 +83,11 @@
   padding-top: 40px;
 }
 
-.chat_modal_open {
+.chatModalOpen {
   animation: foldOpen 0.5s ease forwards;
 }
 
-.chat_modal_close {
+.chatModalClose {
   animation: foldClose 0.5s ease forwards;
 }
 
@@ -100,7 +100,7 @@
   z-index: 1002;
 }
 
-.modal_footer {
+.modalFooter {
   position: absolute;
   bottom: 0;
   left: 0;

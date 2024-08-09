@@ -5,8 +5,8 @@ import axiosInstance from '../../util/axiosConfig';
 import ChatButton from './ChatButton';
 import ChatModal from './ChatModal';
 
-const Chatting = ({directMessage = null}) => {
-  const { isLoggedIn, sub: userId } = useContext(AuthContext);
+const Chatting = ({ directMessage = null, onClose }) => {
+  const { sub: userId } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,18 +37,27 @@ const Chatting = ({directMessage = null}) => {
     if (directMessage) {
       console.log(directMessage)
       setOpen(true);
+      fetchChatRooms();
+      fetchChatRooms();
       setTimeout(() => {
         setReceiverId(directMessage);
       }, 100);
+      return;
+      return;
     }
+    setOpen(false);
+    setOpen(false);
   }, [directMessage]);
 
-  const handleOpen = () => {
+  const toggleOpen = () => {
+    if (open) {
+      handleClose();
+      return;
+    } 
     setOpen(true);
     setMessages([]);
     setChatRoom('');
     fetchChatRooms();
-    document.body.style.overflow = 'hidden';
   }
 
   const handleClose = () => {
@@ -56,6 +65,7 @@ const Chatting = ({directMessage = null}) => {
     setChatRoom('');
     setReceiverId('');
     setIsClosing(true);
+    setOpen(false);
   };
 
   const handleAnimationEnd = () => {
@@ -63,7 +73,6 @@ const Chatting = ({directMessage = null}) => {
       setTimeout(() => {
         setIsClosing(false);
         setOpen(false);
-        document.body.style.overflow = '';
       }, 500);
       setIsLoading(true);
     }
@@ -73,9 +82,12 @@ const Chatting = ({directMessage = null}) => {
     <div>
       {!excludedPaths.includes(location.pathname) &&
         <ChatButton
-          handleOpen = {handleOpen}
+          toggleOpen = {toggleOpen}
+          toggleOpen = {toggleOpen}
         />
       }
+      {open && (
+      {open && (
       <ChatModal
         open={open}
         receiverId={receiverId}
@@ -88,6 +100,8 @@ const Chatting = ({directMessage = null}) => {
         chatRoom={chatRoom}
         setChatRoom={setChatRoom}
       />
+      )}
+      )}
     </div>
   );
 };

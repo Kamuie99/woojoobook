@@ -3,12 +3,12 @@ import { Fab } from '@mui/material';
 import { IoChatbox } from "react-icons/io5";
 import styles from "./ChatButton.module.css";
 
-const ChatButton = ({handleOpen}) => {
+const ChatButton = ({toggleOpen}) => {
   return (
     <Fab
       color="primary"
       aria-label="chat"
-      onClick={handleOpen}
+      onClick={toggleOpen}
       className={styles.chat_button}
     >
       <IoChatbox size={30} />

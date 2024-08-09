@@ -2,11 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { IconButton } from '@mui/material';
 import { MdKeyboardArrowLeft } from "react-icons/md";
+import { CiMenuKebab } from "react-icons/ci";
 import styles from './ChatModalHeader.module.css';
 
-const ChatModalHeader = ({chatRoom, handleBack}) => {
+const ChatModalHeader = ({chatRoom, openChatManagement, handleBack}) => {
   const { sub: userId } = useContext(AuthContext);
   const [receiverNickname, setReceiverNickname] = useState('');
+
   useEffect(() => {
     if (chatRoom) {
       if (chatRoom.senderId == userId) {
@@ -20,21 +22,23 @@ const ChatModalHeader = ({chatRoom, handleBack}) => {
   }, [chatRoom]);
 
   return (
-    <div className={styles.modal_header}>
+    <div className={styles.modalHeader}>
       {chatRoom ? (
         <IconButton aria-label="back" onClick={handleBack}>
           <MdKeyboardArrowLeft size={30} />
         </IconButton>
       ) : (
-        <div></div>
+        openChatManagement ? "채팅방 관리하기" : "전체 채팅 목록"
       )}
-      <div className={styles.modal_title}>
+      <div className={styles.modalTitle}>
         <p>
           {chatRoom ?
-            `${receiverNickname} 님과의 채팅` : '전체 채팅 목록'
+            `${receiverNickname} 님과의 채팅` :
+            <div></div>    
           }
         </p>
       </div>
+
     </div>
   )
 }

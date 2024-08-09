@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Box, IconButton, CircularProgress, Backdrop } from '@mui/material';
-import { IoChatbubblesOutline } from "react-icons/io5";
+import { IoChatbubblesOutline, IoSettingsOutline  } from "react-icons/io5";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { FaExchangeAlt } from "react-icons/fa";
 import { TbStatusChange } from "react-icons/tb";
@@ -11,10 +11,13 @@ import ChatList from './ChatList';
 import ChatRoom from './ChatRoom';
 import PhoneTopBar from './PhoneTopBar';
 import ChatModalHeader from './ChatModalHeader';
+import Draggable from 'react-draggable';
+import ChatManagement from './ChatManagement';
 
 const ChatModal = ({ open, receiverId, setReceiverId, handleClose, isClosing, isLoading, handleAnimationEnd, chatRooms, chatRoom, setChatRoom }) => {
   const { isLoggedIn, sub: userId } = useContext(AuthContext);
   const [isVisible, setIsVisible] = useState(false);
+  const [openChatManagement, setOpenChatManagement] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -63,6 +66,7 @@ const ChatModal = ({ open, receiverId, setReceiverId, handleClose, isClosing, is
   };
 
   const handleSelectRoom = (receiverId, chatRoom) => {
+    setOpenChatManagement(false);
     setReceiverId(receiverId);
     setChatRoom(chatRoom);
   };
@@ -70,71 +74,87 @@ const ChatModal = ({ open, receiverId, setReceiverId, handleClose, isClosing, is
   const handleBack = () => {
     setReceiverId('');
     setChatRoom('');
+    setOpenChatManagement(false);
   };
 
+  const openManagement = () => {
+    setReceiverId('');
+    setChatRoom('');
+    setOpenChatManagement(true);
+  }
+
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby={styles.chat_modal_title}
-      aria-describedby={styles.chat_modal_description}
-      BackdropProps={{
-        style: { backgroundColor: 'transparent' },
-        invisible: true
-      }}
-    >
-      <Box
-        className={`
-          ${styles.chat_modal}
-          ${open ? styles.chat_modal_open : ''}
-          ${isClosing ? styles.chat_modal_close : ''}
-        `}
-        onAnimationEnd={handleAnimationEnd}
+    <Draggable>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby={styles.chatModalTitle}
+        aria-describedby={styles.chatModalDescription}
+        BackdropProps={{
+          style: { backgroundColor: 'transparent' },
+          invisible: true
+        }}
       >
-        <PhoneTopBar />
-        <ChatModalHeader
-          chatRoom={chatRoom}
-          handleBack={handleBack}
-        />
-        {isLoading ? (
-          <div className={styles.loading}>
-            <CircularProgress />
-          </div>
-        ) : (
-          chatRoom ? (
-            <ChatRoom
-              userId={userId}
-              chatRoom={chatRoom}
-              receiverId={receiverId}
-            />
+        <Box
+          className={`
+            ${styles.chatModal}
+            ${open ? styles.chatModalOpen : ''}
+            ${isClosing ? styles.chatModalClose : ''}
+          `}
+          onAnimationEnd={handleAnimationEnd}
+        >
+          <PhoneTopBar />
+          <ChatModalHeader
+            chatRoom={chatRoom}
+            openChatManagement={openChatManagement}
+            handleBack={handleBack}
+          />
+          {isLoading ? (
+            <div className={styles.loading}>
+              <CircularProgress />
+            </div>
           ) : (
-            <ChatList
-              chatRooms={chatRooms}
-              userId={userId}
-              onSelectRoom={handleSelectRoom}
-              fetchOrCreateChatRoom={fetchOrCreateChatRoom}
-            />
-          )
-        )}
-        <div className={styles.modal_footer}>
-          {/* TODO: 전체 채팅 보기 */}
-          <IconButton onClick={handleBack}>
-            <IoChatbubblesOutline size={30} />
-          </IconButton>
-          {/* TODO: 대여 채팅 필터링 */}
-          <IconButton onClick={handleClose}>
-            <TbStatusChange size={30} />
-          </IconButton>
-          {/* TODO: 교환 채팅 필터링 */}
-          <IconButton onClick={handleClose}>
-            <FaExchangeAlt size={25} />
-          </IconButton>
-          <IconButton aria-label="close" onClick={handleClose}>
-            <IoMdCloseCircleOutline size={30} />
-          </IconButton>
-        </div>
-      </Box>
-    </Modal>
+            chatRoom ? (
+              <ChatRoom
+                userId={userId}
+                chatRoom={chatRoom}
+                receiverId={receiverId}
+              />
+            ) : (
+              openChatManagement ? (
+                <ChatManagement
+                  chatRooms={chatRooms}
+                  userId={userId}
+                />
+              ) : (
+                <ChatList
+                  chatRooms={chatRooms}
+                  userId={userId}
+                  onSelectRoom={handleSelectRoom}
+                  fetchOrCreateChatRoom={fetchOrCreateChatRoom}
+                />
+              )
+            )
+          )}
+          <div className={styles.modalFooter}>
+            {/* TODO: 전체 채팅 보기 */}
+            <IconButton onClick={handleBack}>
+              <IoChatbubblesOutline size={30} />
+            </IconButton>
+            <IconButton onClick={openManagement}>
+              <IoSettingsOutline size={30}/>
+            </IconButton>
+            {/* TODO: 교환 채팅 필터링 */}
+            {/* <IconButton onClick={handleClose}>
+              <FaExchangeAlt size={25} />
+            </IconButton> */}
+            <IconButton aria-label="close" onClick={handleClose}>
+              <IoMdCloseCircleOutline size={30} />
+            </IconButton>
+          </div>
+        </Box>
+      </Modal>
+    </Draggable>
   );
 };
 

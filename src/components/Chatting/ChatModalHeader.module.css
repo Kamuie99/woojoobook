@@ -1,9 +1,8 @@
 
-.modal_header {
+.modalHeader {
   position: absolute;
   top: 35px;
   background-color: inherit;
-  /* background-color: var(--main-color); */
   width: calc(100% - 32px);
   display: flex;
   flex-wrap: nowrap;
@@ -14,6 +13,17 @@
   justify-content: space-between;
 }
 
-.modal_title {
+.modalTitle {
   align-self: center;
+}
+
+.sideMenuButton {
+  border-radius: 20px;
+  padding: 2px;
+  width: 30px;
+  height: 30px;
+}
+
+.sideMenuButton:hover {
+  background-color: rgba(0, 0, 0, 0.23);
 }

@@ -9,6 +9,7 @@ import { FiMapPin } from "react-icons/fi";
 import Header from "../../components/Header"
 import axiosInstance from './../../util/axiosConfig';
 import AreaSelector from "../../components/AreaSelector";
+import Chatting from "../../components/Chatting/Chatting";
 import BookModal from './BookModal';
 import Swal from 'sweetalert2'
 import styles from './BookList.module.css';
@@ -28,6 +29,8 @@ const BookList = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [userAreaName, setUserAreaName] = useState('');
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [receiverId, setReceiverId] = useState('');
 
   useEffect(() => {
     fetchUserInfo();
@@ -54,6 +57,13 @@ const BookList = () => {
       setIsLoading(false);
     }
   };
+
+  const handleChatOpen = (ownerId) => {
+    setReceiverId(ownerId);
+    
+    setShowChatModal(true);
+    
+  }
 
   useEffect(() => {
     console.log(books);
@@ -345,8 +355,9 @@ const BookList = () => {
         </button>
       </div>
       )}
-      {selectedBook && <BookModal book={selectedBook} onClose={closeModal} />}
-    </>
+      {selectedBook && <BookModal book={selectedBook} onClose={closeModal} onChatOpen={handleChatOpen} />}
+      {showChatModal && <Chatting directMessage={receiverId} onClose={() => setShowChatModal(false)}/>}
+      </>
   )
 }
 
