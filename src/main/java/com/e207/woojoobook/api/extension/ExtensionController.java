@@ -2,6 +2,8 @@ package com.e207.woojoobook.api.extension;
 
 import static org.springframework.data.domain.Sort.Direction.*;
 
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -27,9 +29,9 @@ public class ExtensionController {
 	private final ExtensionService extensionService;
 
 	@PostMapping("/rentals/{rentalId}/extensions")
-	public ResponseEntity<?> extension(@PathVariable("rentalId") Long rentalId) {
-		this.extensionService.extensionRental(rentalId);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<ExtensionOfferResponse> extension(@PathVariable("rentalId") Long rentalId) {
+		Long extensionId = this.extensionService.extensionRental(rentalId);
+		return ResponseEntity.ok(new ExtensionOfferResponse(extensionId));
 	}
 
 	@GetMapping("/extensions")
