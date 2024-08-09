@@ -1,7 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import styles from '../styles/About.module.css';
-import axiosInstance from './../util/axiosConfig';
+import axios from 'axios';
+
+const baseURL = import.meta.env.VITE_API_URL;
 
 const AnimatedNumber = ({ end, duration }) => {
   const [count, setCount] = useState(0);
@@ -28,18 +30,23 @@ const AnimatedNumber = ({ end, duration }) => {
 
 const About = () => {
   const [bookCount, setBookCount] = useState(0);
+  const [userCount, setUserCount] = useState(0);
 
   useEffect(() => {
-    const fetchBookCount = async () => {
-      try {
-        const response = await axiosInstance.get('/userbooks/count');
-        setBookCount(response.data.count);
-      } catch (error) {
-        console.error('Failed to fetch book count:', error);
-      }
+    const fetchCounts = async () => {
+        try {
+          const [bookResponse, userResponse] = await Promise.all([
+            axios.get(`${baseURL}/userbooks/count`),
+            axios.get(`${baseURL}/users/count`)
+          ]);
+          setBookCount(bookResponse.data.count);
+          setUserCount(userResponse.data.count);
+        } catch (error) {
+          console.error('요청에 실패했습니다. 원인:', error);
+        }
     };
 
-    fetchBookCount();
+    fetchCounts();
   }, []);
 
   return (
@@ -84,7 +91,7 @@ const About = () => {
                 이용자 현황
               </h6>
               <p>
-                <AnimatedNumber end={2710} duration={2000} />
+                <AnimatedNumber end={userCount} duration={2000} />
                 명
               </p>
               <button>다른 유저와 소통</button>

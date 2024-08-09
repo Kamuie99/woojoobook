@@ -1,11 +1,12 @@
 import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../util/axiosConfig';
 import Header from "../../components/Header";
 import Swal from 'sweetalert2';
 import { FaUserCircle } from "react-icons/fa";
 import { AuthContext } from '../../contexts/AuthContext';
 import styles from './PasswordChange.module.css';
+import Logo from '../../assets/Logo.png';
 
 const PasswordChange = () => {
   const { user } = useContext(AuthContext);
@@ -76,7 +77,10 @@ const PasswordChange = () => {
   return (
     <>
       <Header />
-      <main>
+      <main className={styles.userUpdate}>
+        <Link to="/">
+          <img src={Logo} width='170px' alt="Home" style={{ cursor: 'pointer' }} />
+        </Link>
         <div className={styles.titleDiv}>
           <FaUserCircle /> 비밀번호 변경
         </div>
@@ -93,7 +97,7 @@ const PasswordChange = () => {
             <label>비밀번호 확인:</label>
             <input type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
           </div>
-          <button onClick={handlePasswordChange}>변경</button>
+          <button className={styles.submitButton} onClick={handlePasswordChange}>변경</button>
         </div>
       </main>
     </>

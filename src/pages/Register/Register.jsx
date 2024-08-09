@@ -72,7 +72,8 @@ const Register = () => {
     } catch (error) {
       if (error.response) {
         Swal.fire({
-          title: '잘못된 인증번호를 입력하셨습니다. 다시 입력해주세요.',
+          title: '인증번호 오류',
+          text: '잘못된 인증번호입니다. 인증번호를 확인해주세요',
           confirmButtonText: '확인',
           icon: 'error'
         })
@@ -104,7 +105,8 @@ const Register = () => {
       });
       if (response.status === 201) {
         Swal.fire({
-          title: '회원가입이 완료되었습니다. 로그인 해주세요.',
+          title: '회원가입이 완료',
+          text: '회원가입이 완료되었습니다. 로그인 해주세요.',
           confirmButtonText: '확인',
           icon: 'success'
         })
@@ -113,7 +115,8 @@ const Register = () => {
     } catch (error) {
       console.error(error);
       Swal.fire({
-        title: '회원가입에 실패했습니다. 잠시 후에 다시 시도해주세요.',
+        title: '회원가입 실패',
+        text: '회원가입 정보를 다시 확인해주세요. ',
         confirmButtonText: '확인',
         icon: 'error'
       })

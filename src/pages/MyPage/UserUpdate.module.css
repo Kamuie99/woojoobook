@@ -8,5 +8,71 @@
 }
 
 .contentDiv {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   padding: 0 20px;
+}
+
+.userUpdate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  margin-top: 60px;
+  gap: 20px;
+}
+
+.goChangePw {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.changeNick {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nickBox {
+  display: flex;
+  gap: 5px;
+}
+
+.nickBox > input {
+  width: 200px;
+  height: 30px;
+  padding: 0px 10px;
+}
+
+.areaBox {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.areaBox > div > select {
+  width: 120px;
+}
+
+.areaBox > div {
+  display: flex;
+  gap: 5px;
+}
+
+.submitButton {
+  width: 100%;
+  margin-top: 20px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  background-color: var(--accent-sub-color);
+  cursor: pointer;
+}
+
+.submitButton:hover {
+  background-color: var(--accent-color);
 }

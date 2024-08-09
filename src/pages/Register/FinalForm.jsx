@@ -31,7 +31,7 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
                     passwordConfirm !== '' &&
                     !passwordMismatch &&
                     nickname !== '' &&
-                    isNicknameAvailable &&
+                    !isNicknameAvailable &&
                     isNicknameChecked &&
                     selectedAreaName !== '' &&
                     privacyAgreed;
@@ -46,8 +46,8 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
     try {
       const response = await axiosInstance.get(`/users/nicknames/${nickname}`);
       console.log('서버 응답:', response.data);
-    
-      setIsNicknameAvailable(!response.data.isDuplicate);
+      console.log(nickname)
+      setIsNicknameAvailable(response.data.isDuplicated);
       setIsNicknameChecked(true);
     } catch (error) {
       console.error('닉네임 중복 체크 중 오류 발생:', error);
@@ -78,22 +78,25 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
         )}
         <div>
           <label>닉네임</label>
-          <input 
-            type="text" 
-            value={nickname} 
-            onChange={(e) => {
-              setNickname(e.target.value);
-              setIsNicknameChecked(false);
-            }} 
-            required 
-          />
-          <button type="button" onClick={checkNicknameAvailability} disabled={!nickname}>
-            중복 체크
-          </button>
+          <div className="nicknameContainer">
+            <input 
+              type="text" 
+              value={nickname} 
+              onChange={(e) => {
+                setNickname(e.target.value);
+                setIsNicknameChecked(false);
+              }}
+              className="nicknameInput"
+              required 
+            />
+            <button type="button" onClick={checkNicknameAvailability} disabled={!nickname}>
+              중복 체크
+            </button>
+          </div>
         </div>
         {isNicknameChecked && (
-          <div style={{color: isNicknameAvailable ? 'green' : 'red', fontSize: '0.8em', marginTop: '5px'}}>
-            {isNicknameAvailable ? '사용 가능한 닉네임입니다.' : '이미 사용 중인 닉네임입니다.'}
+          <div style={{color: isNicknameAvailable ? 'red' : 'green', fontSize: '0.8em', marginTop: '5px'}}>
+            {!isNicknameAvailable ? '사용 가능한 닉네임입니다.' : '이미 사용 중인 닉네임입니다.'}
           </div>
         )}
         <div className="chooseAreaContainer">
@@ -113,6 +116,7 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
           <input
             type="checkbox"
             id="privacyCheck"
+            className="privacyCheck"
             checked={privacyAgreed}
             onChange={(e) => setPrivacyAgreed(e.target.checked)}
             required

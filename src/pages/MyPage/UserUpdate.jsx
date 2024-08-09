@@ -4,9 +4,10 @@ import { FaUserCircle } from "react-icons/fa";
 import { AuthContext } from '../../contexts/AuthContext';
 import Swal from 'sweetalert2';
 import axiosInstance from '../../util/axiosConfig';
-import Header from "../../components/Header";
+import Header2 from "../../components/Header2";
 import AreaSelector from '../../components/AreaSelector';
 import styles from './UserUpdate.module.css';
+import Logo from '../../assets/Logo.png';
 
 const UserUpdate = () => {
   const [userId, setUserId] = useState('');
@@ -136,8 +137,11 @@ const UserUpdate = () => {
 
   return (
     <>
-      <Header />
-      <main>
+      <Header2 />
+      <main className={styles.userUpdate}>
+        <Link to="/">
+          <img src={Logo} width='170px' alt="Home" style={{ cursor: 'pointer' }} />
+        </Link>
         <div className={styles.titleDiv}>
           <FaUserCircle /> 회원정보 수정
         </div>
@@ -145,29 +149,34 @@ const UserUpdate = () => {
           <div>로딩 중...</div>
         ) : (
           <div className={styles.contentDiv}>
-            <div>
+            <div className={styles.goChangePw}>
+              <label htmlFor="">비밀번호 변경</label>
               <Link to='/passwordchange'>
-                <button>비밀번호 변경</button>
+                <button>비밀번호 변경 페이지로 이동</button>
               </Link>
             </div>
             <form onSubmit={handleSave}>
-              <p>닉네임</p>
-              <input 
-                type="text" 
-                value={nickname} 
-                onChange={(e) => {
-                  setNickname(e.target.value);
-                  if (e.target.value !== originalNickname) {
-                    setIsNicknameChecked(false);
-                  } else {
-                    setIsNicknameChecked(true);
-                    setIsNicknameAvailable(true);
-                  }
-                }} 
-              />
-              <button type="button" onClick={checkNicknameAvailability} disabled={!nickname || nickname === originalNickname}>
-                중복 체크
-              </button>
+              <div className={styles.changeNick}>
+                <label>닉네임 변경</label>
+                <div className={styles.nickBox}>
+                  <input 
+                    type="text" 
+                    value={nickname} 
+                    onChange={(e) => {
+                      setNickname(e.target.value);
+                      if (e.target.value !== originalNickname) {
+                        setIsNicknameChecked(false);
+                      } else {
+                        setIsNicknameChecked(true);
+                        setIsNicknameAvailable(true);
+                      }
+                    }} 
+                  />
+                  <button type="button" onClick={checkNicknameAvailability} disabled={!nickname || nickname === originalNickname}>
+                    중복 체크
+                  </button>
+                </div>
+              </div>
               {!isNicknameChecked && nickname !== originalNickname && (
                 <div style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
                   닉네임 중복 체크를 해주세요.
@@ -178,14 +187,14 @@ const UserUpdate = () => {
                   {isNicknameAvailable ? '사용 가능한 닉네임입니다.' : '이미 사용 중인 닉네임입니다.'}
                 </div>
               )}
-              <div>
-                <label>지역</label>
+              <div className={styles.areaBox}>
+                <label>지역 변경</label>
                 <AreaSelector
                   onAreaSelected={handleAreaSelected}
                   initialArea={selectedArea}
                 />
               </div>
-              <button type="submit">저장</button>
+              <button className={styles.submitButton} type="submit">저장</button>
             </form>
           </div>
         )}
