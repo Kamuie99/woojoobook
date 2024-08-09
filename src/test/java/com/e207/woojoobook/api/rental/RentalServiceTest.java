@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +36,7 @@ import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.book.BookRepository;
 import com.e207.woojoobook.domain.extension.Extension;
 import com.e207.woojoobook.domain.extension.ExtensionRepository;
+import com.e207.woojoobook.domain.extension.ExtensionStatus;
 import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.rental.RentalRepository;
 import com.e207.woojoobook.domain.rental.RentalStatus;
@@ -234,6 +236,15 @@ class RentalServiceTest {
 			.rentalStatus(RentalStatus.IN_PROGRESS)
 			.build();
 		Rental save = this.rentalRepository.save(rental);
+
+		Extension extension = this.extensionRepository.save(
+			Extension.builder()
+				.rental(save)
+				.createdAt(LocalDateTime.of(2024, 05, 01, 12, 00, 00))
+				.extensionStatus(ExtensionStatus.APPROVED)
+				.build()
+		);
+
 		given(this.userHelper.findCurrentUser()).willReturn(owner);
 
 		// when
@@ -242,6 +253,9 @@ class RentalServiceTest {
 		// then
 		Optional<Rental> byId = this.rentalRepository.findById(save.getId());
 		assertTrue(byId.isPresent());
+		Optional<Extension> extensionOptional = this.extensionRepository.findById(extension.getId());
+		assertFalse(extensionOptional.isPresent());
+
 
 		rental = byId.get();
 		assertNotNull(rental.getEndDate());
