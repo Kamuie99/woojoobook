@@ -1,3 +1,36 @@
+.historyContainerInner {
+  background-color: var(--sub-color);
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  max-height: 60px; /* 접힌 상태의 높이 */
+}
+
+.historyContainerInner.expanded {
+  max-height: 1000px; /* 충분히 큰 값으로 설정 */
+}
+
+.historyContainerInner > h2 {
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.expandableContent {
+  margin-top: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+.expanded .expandableContent {
+  opacity: 1;
+}
+
 .historyContainer {
   padding: 10px 20px;
   overflow-y: auto;
@@ -110,19 +143,4 @@
   justify-content: space-between;
   /* font-weight: bold; */
   padding: 10px 20px;
-}
-
-.historyContainerInner {
-  background-color: var(--sub-color);
-  padding: 20px;
-  border-radius: 20px;
-  margin-bottom: 40px;
-}
-
-.historyContainerInner > h2 {
-  font-size: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
 }

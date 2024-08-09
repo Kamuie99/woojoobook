@@ -17,7 +17,7 @@ const BookSearch = ({ onSelect }) => {
     if (!keyword.trim()) {
       Swal.fire({
         title: '입력 오류',
-        test: '검색어를 입력해주세요.',
+        text: '검색어를 입력해주세요.',
         confirmButtonText: '확인',
         icon: 'warning'
       })

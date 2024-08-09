@@ -30,6 +30,10 @@ const Rental = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState(null);
+  const [isCurrentRentExpanded, setIsCurrentRentExpanded] = useState(false);
+  const [isRentalRequestsExpanded, setIsRentalRequestsExpanded] = useState(false);
+  const [isReceivedRequestsExpanded, setIsReceivedRequestsExpanded] = useState(false);
+  const [isRejectedRequestsExpanded, setIsRejectedRequestsExpanded] = useState(false);
   
   useEffect(() => {
     fetchRentalList()
@@ -249,6 +253,15 @@ const Rental = () => {
           closeModal()
         } catch (error) {
           console.log(error)
+          if (error.response.data === '이미 존재합니다.') {
+            Swal.fire({
+              title: '연장 신청 오류',
+              text: '이미 연장 신청을 보냈습니다.',
+              confirmButtonText: '확인',
+              icon: 'warning'
+            })
+            closeModal()
+          }
         }
       }
     })
@@ -361,11 +374,19 @@ const Rental = () => {
               </div>
               <div className={styles.modalBookInfo}>
                 <h2>제목</h2>
-                <p>{selectedItem.userbook.bookInfo.title}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.userbook.bookInfo.title}
+                </div>
                 <h2>저자</h2>
-                <p>{selectedItem.userbook.bookInfo.author}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.userbook.bookInfo.author}
+                </div>
                 <h2>책권자</h2>
-                <p>{selectedItem.userbook.ownerInfo.nickname}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.userbook.ownerInfo.nickname}
+                </div>
+                <h2></h2>
+                <div className={styles.modalContent}></div>
               </div>
             </div>
             <div className={styles.rentalInfo}>
@@ -374,7 +395,9 @@ const Rental = () => {
               <h2>대여 종료일</h2>
               <p>{selectedItem.endDate.split('T')[0]}</p>
             </div>
-            <button className={styles.modalButton} onClick={() => handleExtension(selectedItem.id)}>연장 신청</button>
+            <div className={styles.buttons}>
+              <button className={styles.modalButton} onClick={() => handleExtension(selectedItem.id)}>연장 신청</button>
+            </div>
           </>
         );
       case MODAL_TYPES.RENTAL_REQUEST:
@@ -386,14 +409,24 @@ const Rental = () => {
               </div>
               <div className={styles.modalBookInfo}>
                 <h2>제목</h2>
-                <p>{selectedItem.userbook.bookInfo.title}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.userbook.bookInfo.title}
+                </div>
                 <h2>저자</h2>
-                <p>{selectedItem.userbook.bookInfo.author}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.userbook.bookInfo.author}
+                </div>
                 <h2>책권자</h2>
-                <p>{selectedItem.userbook.ownerInfo.nickname}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.userbook.ownerInfo.nickname}
+                </div>
+                <h2></h2>
+                <div className={styles.modalContent}></div>
               </div>
             </div>
-            <button className={styles.modalButton} onClick={() => handleCancelRental(selectedItem.id)}>신청취소</button>
+            <div className={styles.buttons}>
+              <button className={styles.modalButton} onClick={() => handleCancelRental(selectedItem.id)}>신청취소</button>
+            </div>
           </>
         );
       case MODAL_TYPES.RECEIVED_REQUEST:
@@ -405,9 +438,17 @@ const Rental = () => {
               </div>
               <div className={styles.modalBookInfo}>
                 <h2>제목</h2>
-                <p>{selectedItem.userbook.bookInfo.title}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.userbook.bookInfo.title}
+                </div>
                 <h2>저자</h2>
-                <p>{selectedItem.userbook.bookInfo.author}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.userbook.bookInfo.author}
+                </div>
+                <h2></h2>
+                <div className={styles.modalContent}></div>
+                <h2></h2>
+                <div className={styles.modalContent}></div>
               </div>
             </div>
             <div className={styles.rentalInfo}>
@@ -431,75 +472,89 @@ const Rental = () => {
     }
   };
 
+  const toggleExpansion = (setter) => {
+    setter(prev => !prev);
+  };
+
   return (
     <div className={styles.rentalContainer}>
-
-      <div className={styles.rentalContainerInner}>
-        <h2><FiList /> 대여 중인 목록 (총 {currentRentCnt}개)</h2>
-        <div className={styles.listHeader}>
-          <div>제목</div>
-          <div>책권자</div>
+      <div className={`${styles.rentalContainerInner} ${isCurrentRentExpanded ? styles.expanded : ''}`}>
+        <h2 onClick={() => toggleExpansion(setIsCurrentRentExpanded)}>
+          <FiList /> 대여 중인 목록 (총 {currentRentCnt}개)
+        </h2>
+        <div className={styles.expandableContent}>
+          <div className={styles.listHeader}>
+            <div>제목</div>
+            <div>책권자</div>
+          </div>
+          <InfiniteScroll
+            dataLength={currentRent.length}
+            next={loadMoreCurrentRent}
+            hasMore={currentRent.length < currentRentCnt}
+            loader={<h4>Loading...</h4>}
+            scrollableTarget="currentRentList"
+          >
+            <ListComponent
+              items={currentRent}
+              emptyMessage="목록이 없습니다"
+              renderItem={(item) => (
+                <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.CURRENT_RENT)} style={{cursor: 'pointer'}}>
+                  <div>{item.userbook.bookInfo.title}</div>
+                  <div>{item.userbook.ownerInfo.nickname}</div>
+                </div>
+              )}
+            />
+          </InfiniteScroll>
         </div>
-        <InfiniteScroll
-          dataLength={currentRent.length}
-          next={loadMoreCurrentRent}
-          hasMore={currentRent.length < currentRentCnt}
-          loader={<h4>Loading...</h4>}
-          scrollableTarget="currentRentList"
-        >
-          <ListComponent
-            items={currentRent}
-            emptyMessage="목록이 없습니다"
-            renderItem={(item) => (
-              <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.CURRENT_RENT)} style={{cursor: 'pointer'}}>
-                <div>{item.userbook.bookInfo.title}</div>
-                <div>{item.userbook.ownerInfo.nickname}</div>
-              </div>
-            )}
-          />
-        </InfiniteScroll>
       </div>
 
 
-      <div className={styles.rentalContainerInner}>
-        <h2><FiList /> 대여 신청한 목록 (총 {rentalRequestsCnt}개)</h2>
-        <div className={styles.listHeader}>
-          <div>제목</div>
-          <div>책권자</div>
+      <div className={`${styles.rentalContainerInner} ${isRentalRequestsExpanded ? styles.expanded : ''}`}>
+        <h2 onClick={() => toggleExpansion(setIsRentalRequestsExpanded)}>
+          <FiList /> 대여 신청한 목록 (총 {rentalRequestsCnt}개)
+        </h2>
+        <div className={styles.expandableContent}>
+          <div className={styles.listHeader}>
+            <div>제목</div>
+            <div>책권자</div>
+          </div>
+          <InfiniteScroll
+            dataLength={rentalRequests.length}
+            next={loadMoreRentalRequests}
+            hasMore={rentalRequests.length < rentalRequestsCnt}
+            loader={<h4>Loading...</h4>}
+            scrollableTarget="rentalRequestsList"
+          >
+            <ListComponent
+              items={rentalRequests}
+              emptyMessage="목록이 없습니다"
+              renderItem={(item) => (
+                <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RENTAL_REQUEST)} style={{cursor: 'pointer'}}>
+                  <div>{item.userbook.bookInfo.title}</div>
+                  <div>{item.userbook.ownerInfo.nickname}</div>
+                </div>
+              )}
+            />
+          </InfiniteScroll>
         </div>
-        <InfiniteScroll
-          dataLength={rentalRequests.length}
-          next={loadMoreRentalRequests}
-          hasMore={rentalRequests.length < rentalRequestsCnt}
-          loader={<h4>Loading...</h4>}
-          scrollableTarget="rentalRequestsList"
-        >
-          <ListComponent
-            items={rentalRequests}
-            emptyMessage="목록이 없습니다"
-            renderItem={(item) => (
-              <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RENTAL_REQUEST)} style={{cursor: 'pointer'}}>
-                <div>{item.userbook.bookInfo.title}</div>
-                <div>{item.userbook.ownerInfo.nickname}</div>
-              </div>
-            )}
-          />
-        </InfiniteScroll>
       </div>
 
-      <div className={styles.rentalContainerInner}>
-        <h2><FiList /> 대여 신청 받은 목록 (총 {receivedRentalRequestsCnt}개)</h2>
-        <div className={styles.listHeader}>
-          <div>제목</div>
-          <div>신청자</div>
-        </div>
-        <InfiniteScroll
-          dataLength={receivedRentalRequests.length}
-          next={loadMoreReceivedRentalRequests}
-          hasMore={receivedRentalRequests.length < receivedRentalRequestsCnt}
-          loader={<h4>Loading...</h4>}
-          scrollableTarget="receivedRentalRequestsList"
-        >
+      <div className={`${styles.rentalContainerInner} ${isReceivedRequestsExpanded ? styles.expanded : ''}`}>
+        <h2 onClick={() => toggleExpansion(setIsReceivedRequestsExpanded)}>
+          <FiList /> 대여 신청 받은 목록 (총 {receivedRentalRequestsCnt}개)
+        </h2>
+        <div className={styles.expandableContent}>
+          <div className={styles.listHeader}>
+            <div>제목</div>
+            <div>신청자</div>
+          </div>
+          <InfiniteScroll
+            dataLength={receivedRentalRequests.length}
+            next={loadMoreReceivedRentalRequests}
+            hasMore={receivedRentalRequests.length < receivedRentalRequestsCnt}
+            loader={<h4>Loading...</h4>}
+            scrollableTarget="receivedRentalRequestsList"
+          >
           <ListComponent
             items={receivedRentalRequests}
             emptyMessage="목록이 없습니다"
@@ -510,22 +565,25 @@ const Rental = () => {
               </div>
             )}
           />
-        </InfiniteScroll>
+          </InfiniteScroll>
+       </div>
       </div>
-      <div className={styles.rentalContainerInner}>
 
-
-        <h2><FiList /> 대여 신청 거절당한 목록 (총 {rejectedRentalRequestsCnt}개)</h2>
-        <div className={styles.listHeader}>
-          <div>제목</div>
-        </div>
-        <InfiniteScroll
-          dataLength={rejectedRentalRequests.length}
-          next={loadMoreRejectedRentalRequests}
-          hasMore={rejectedRentalRequests.length < rejectedRentalRequestsCnt}
-          loader={<h4>Loading...</h4>}
-          scrollableTarget="rejectedRentalRequestsList"
-        >
+      <div className={`${styles.rentalContainerInner} ${isRejectedRequestsExpanded ? styles.expanded : ''}`}>
+        <h2 onClick={() => toggleExpansion(setIsRejectedRequestsExpanded)}>
+          <FiList /> 대여 신청 거절당한 목록 (총 {rejectedRentalRequestsCnt}개)
+        </h2>
+        <div className={styles.expandableContent}>
+          <div className={styles.listHeader}>
+            <div>제목</div>
+          </div>
+          <InfiniteScroll
+            dataLength={rejectedRentalRequests.length}
+            next={loadMoreRejectedRentalRequests}
+            hasMore={rejectedRentalRequests.length < rejectedRentalRequestsCnt}
+            loader={<h4>Loading...</h4>}
+            scrollableTarget="rejectedRentalRequestsList"
+          >
           <ListComponent
             items={rejectedRentalRequests}
             emptyMessage="목록이 없습니다"
@@ -535,8 +593,9 @@ const Rental = () => {
               </div>
             )}
           />
-        </InfiniteScroll>
-      </div>
+          </InfiniteScroll>
+         </div>
+       </div>
 
       <Modal
         isOpen={isModalOpen}

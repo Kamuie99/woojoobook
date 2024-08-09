@@ -2,6 +2,40 @@
   padding: 10px 0;
 }
 
+.extensionContainerInner {
+  background-color: var(--sub-color);
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, margin-bottom 0.3s ease-out;
+  max-height: 60px;
+}
+
+.extensionContainerInner.expanded {
+  max-height: 1000px;
+  margin-bottom: 40px;
+}
+
+.extensionContainerInner > h2 {
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.expandableContent {
+  margin-top: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+.expanded .expandableContent {
+  opacity: 1;
+}
+
 .emptyList {
   text-align: center;
   padding: 20px;
@@ -13,11 +47,27 @@
   padding: 0 10px;
   display: flex;
   justify-content: space-between;
+  gap: 10px;
+}
+
+.listItem > div:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .modalBook {
   display: flex;
   margin-bottom: 30px;
+}
+
+.modalContent {
+  height: 50px;
+  overflow: auto;
+}
+
+.modalContent::-webkit-scrollbar {
+  display: none;
 }
 
 .modalBookImg {
@@ -49,40 +99,24 @@
 }
 
 .modalButton {
-  display: block;
   width: 120px;
-  padding: 12px 20px;
+  padding: 10px 20px;
   background-color: var(--accent-color);
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin: 20px auto;
   text-align: center;
 }
 
 .buttons {
   display: flex;
+  justify-content: center;
+  gap: 20px;
 }
 
 .listHeader {
   display: flex;
   justify-content: space-between;
-  /* font-weight: bold; */
   padding: 10px 20px;
-}
-
-.extensionContainerInner {
-  background-color: var(--sub-color);
-  padding: 20px;
-  border-radius: 20px;
-  margin-bottom: 40px;
-}
-
-.extensionContainerInner > h2 {
-  font-size: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
 }

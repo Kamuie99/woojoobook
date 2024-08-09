@@ -21,6 +21,8 @@ const History = (userId) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState(null);
+  const [isRentalExpanded, setIsRentalExpanded] = useState(false);
+  const [isExchangeExpanded, setIsExchangeExpanded] = useState(false);
 
   useEffect(() => {
     fetchHistory()
@@ -204,51 +206,67 @@ const History = (userId) => {
     }
   };
 
+  const toggleRentalExpansion = () => {
+    setIsRentalExpanded(!isRentalExpanded);
+  };
+
+  const toggleExchangeExpansion = () => {
+    setIsExchangeExpanded(!isExchangeExpanded);
+  };
+
   return (
     <div className={styles.historyContainer}>
-      <div className={styles.historyContainerInner}>
-        <h2><FiList /> 대여했던 목록 (총 {rentalHistoryCnt}개)</h2>
-        <div className={styles.listHeader}>
-          <div>제목</div>
-          <div>책권자</div>
+      <div className={`${styles.historyContainerInner} ${isRentalExpanded ? styles.expanded : ''}`}>
+        <h2 onClick={toggleRentalExpansion}>
+          <FiList /> 대여했던 목록 (총 {rentalHistoryCnt}개)
+        </h2>
+        <div className={styles.expandableContent}>
+          <div className={styles.listHeader}>
+            <div>제목</div>
+            <div>책권자</div>
+          </div>
+          <InfiniteScroll
+            dataLength={rentalHistory.length}
+            next={fetchMoreRentals}
+            hasMore={rentalHistory.length < rentalHistoryCnt}
+            loader={<h4>Loading...</h4>}
+            scrollableTarget="rentalList"
+          >
+            <ListComponent
+              items={rentalHistory}
+              emptyMessage="목록이 없습니다"
+              renderItem={(item) => (
+                <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RENTAL_HISTORY)} style={{cursor: 'pointer'}}>
+                  <div>{item.userbook.bookInfo.title}</div>
+                  <div>{item.userbook.ownerInfo.nickname}</div>
+                </div>
+              )}
+            />
+          </InfiniteScroll>
         </div>
-        <InfiniteScroll
-          dataLength={rentalHistory.length}
-          next={fetchMoreRentals}
-          hasMore={rentalHistory.length < rentalHistoryCnt}
-          loader={<h4>Loading...</h4>}
-          scrollableTarget="rentalList"
-        >
-          <ListComponent
-            items={rentalHistory}
-            emptyMessage="목록이 없습니다"
-            renderItem={(item) => (
-              <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RENTAL_HISTORY)} style={{cursor: 'pointer'}}>
-                <div>{item.userbook.bookInfo.title}</div>
-                <div>{item.userbook.ownerInfo.nickname}</div>
-              </div>
-            )}
-          />
-        </InfiniteScroll>
       </div>
-      <div className={styles.historyContainerInner}>
-        <h2><FiList /> 교환했던 목록 (총 {exchangeHistoryCnt}개)</h2>
-        <div className={styles.listHeader}>
-          <div>상대책</div>
-          <div>내책</div>
-        </div>
-        <InfiniteScroll
-          dataLength={exchangeHistory.length}
-          next={fetchMoreExchanges}
-          hasMore={exchangeHistory.length < exchangeHistoryCnt}
-          loader={<h4>Loading...</h4>}
-          scrollableTarget="exchangeList"
-        >
-          <ListComponent
-            items={exchangeHistory}
-            emptyMessage="목록이 없습니다"
-            renderItem={(item) => (
-              <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.EXCHANGE_HISTORY)} style={{cursor: 'pointer'}}>
+
+      <div className={`${styles.historyContainerInner} ${isExchangeExpanded ? styles.expanded : ''}`}>
+        <h2 onClick={toggleExchangeExpansion}>
+          <FiList /> 교환했던 목록 (총 {exchangeHistoryCnt}개)
+        </h2>
+        <div className={styles.expandableContent}>
+          <div className={styles.listHeader}>
+            <div>상대책</div>
+            <div>내책</div>
+          </div>
+          <InfiniteScroll
+            dataLength={exchangeHistory.length}
+            next={fetchMoreExchanges}
+            hasMore={exchangeHistory.length < exchangeHistoryCnt}
+            loader={<h4>Loading...</h4>}
+            scrollableTarget="exchangeList"
+          >
+            <ListComponent
+              items={exchangeHistory}
+              emptyMessage="목록이 없습니다"
+              renderItem={(item) => (
+                <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.EXCHANGE_HISTORY)} style={{cursor: 'pointer'}}>
                 {item.senderBook.ownerInfo.id === userId ? (
                   <>
                     <div className={styles.senderBook}>{item.receiverBook.bookInfo.title}</div>
@@ -261,9 +279,10 @@ const History = (userId) => {
                   </>
                 )}
               </div>
-            )}
-          />
-        </InfiniteScroll>
+              )}
+            />
+          </InfiniteScroll>
+        </div>
       </div>
 
       <Modal

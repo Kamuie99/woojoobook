@@ -26,6 +26,9 @@ const Exchange = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState(null);
+  const [isExchangeRequestsExpanded, setIsExchangeRequestsExpanded] = useState(false);
+  const [isReceivedRequestsExpanded, setIsReceivedRequestsExpanded] = useState(false);
+  const [isRejectedRequestsExpanded, setIsRejectedRequestsExpanded] = useState(false);
 
   useEffect(() => {
     fetchExchangeList()
@@ -280,8 +283,10 @@ const Exchange = () => {
           <>
             <div className={styles.modalBook}>
               <div className={styles.senderBook}>
-                <p>상대 책</p>
-                <img src={selectedItem.receiverBook.bookInfo.thumbnail} alt="" />
+                <h2>상대 책</h2>
+                <div className={styles.modalImg}>
+                  <img src={selectedItem.receiverBook.bookInfo.thumbnail} alt="" />
+                </div>
                 <h2>제목</h2>
                 <p>{selectedItem.receiverBook.bookInfo.title}</p>
                 <h2>저자</h2>
@@ -290,8 +295,10 @@ const Exchange = () => {
                 <p>{selectedItem.receiverBook.ownerInfo.nickname}</p>
               </div>
               <div className={styles.receiverBook}>
-                <p>내 책</p>
-                <img src={selectedItem.senderBook.bookInfo.thumbnail} alt="" />
+                <h2>내 책</h2>
+                <div className={styles.modalImg}>
+                  <img src={selectedItem.senderBook.bookInfo.thumbnail} alt="" />
+                </div>
                 <h2>제목</h2>
                 <p>{selectedItem.senderBook.bookInfo.title}</p>
                 <h2>저자</h2>
@@ -306,22 +313,38 @@ const Exchange = () => {
           <>
             <div className={styles.modalBook}>
               <div className={styles.senderBook}>
-                <p>상대 책</p>
-                <img src={selectedItem.senderBook.bookInfo.thumbnail} alt="" />
+                <h2>상대 책</h2>
+                <div className={styles.modalImg}>
+                  <img src={selectedItem.senderBook.bookInfo.thumbnail} alt="" />
+                </div>
                 <h2>제목</h2>
-                <p>{selectedItem.senderBook.bookInfo.title}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.senderBook.bookInfo.title}
+                </div>
                 <h2>저자</h2>
-                <p>{selectedItem.senderBook.bookInfo.author}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.senderBook.bookInfo.author}
+                </div>
                 <h2>교환신청자</h2>
-                <p>{selectedItem.senderBook.ownerInfo.nickname}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.senderBook.ownerInfo.nickname}
+                </div>
               </div>
               <div className={styles.receiverBook}>
-                <p>내 책</p>
-                <img src={selectedItem.receiverBook.bookInfo.thumbnail} alt="" />
+                <h2>내 책</h2>
+                <div className={styles.modalImg}>
+                  <img src={selectedItem.receiverBook.bookInfo.thumbnail} alt="" />
+                </div>
                 <h2>제목</h2>
-                <p>{selectedItem.receiverBook.bookInfo.title}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.receiverBook.bookInfo.title}
+                </div>
                 <h2>저자</h2>
-                <p>{selectedItem.receiverBook.bookInfo.author}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.receiverBook.bookInfo.author}
+                </div>
+                <h2></h2>
+                <div className={styles.modalContent}></div>
               </div>
             </div>
             <div className={styles.buttons}>
@@ -342,85 +365,101 @@ const Exchange = () => {
     }
   }
 
+  const toggleExpansion = (setter) => {
+    setter(prev => !prev);
+  };
+
   return (
     <div className={styles.exchangeContainer}>
-      <div className={styles.exchangeContainerInner}>
-        <h2><FaExchangeAlt size={'15px'} /> 교환 신청한 목록 (총 {exchangeRequestsCnt}개)</h2>
-        <div className={styles.listHeader}>
-          <div>상대 책</div>
-          <div>내 책</div>
+      <div className={`${styles.exchangeContainerInner} ${isExchangeRequestsExpanded ? styles.expanded : ''}`}>
+        <h2 onClick={() => toggleExpansion(setIsExchangeRequestsExpanded)}>
+          <FaExchangeAlt size={'15px'} /> 교환 신청한 목록 (총 {exchangeRequestsCnt}개)
+        </h2>
+        <div className={styles.expandableContent}>
+          <div className={styles.listHeader}>
+            <div>상대 책</div>
+            <div>내 책</div>
+          </div>
+          <InfiniteScroll
+            dataLength={exchangeRequests.length}
+            next={loadMoreExchangeRequests}
+            hasMore={exchangeRequests.length < exchangeRequestsCnt}
+            loader={<h4>Loading...</h4>}
+            scrollableTarget="exchangeRequestsList"
+          >
+            <ListComponent
+              items={exchangeRequests}
+              emptyMessage="목록이 없습니다"
+              renderItem={(item) => (
+                <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.EXCHANGE_REQUEST)} style={{cursor: 'pointer'}}>
+                  <div className={styles.senderBook}>{item.receiverBook.bookInfo.title}</div>
+                  <div className={styles.receiverBook}>{item.senderBook.bookInfo.title}</div>
+                </div>
+              )}
+            />
+          </InfiniteScroll>
         </div>
-        <InfiniteScroll
-          dataLength={exchangeRequests.length}
-          next={loadMoreExchangeRequests}
-          hasMore={exchangeRequests.length < exchangeRequestsCnt}
-          loader={<h4>Loading...</h4>}
-          scrollableTarget="exchangeRequestsList"
-        >
-          <ListComponent
-            items={exchangeRequests}
-            emptyMessage="목록이 없습니다"
-            renderItem={(item) => (
-              <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.EXCHANGE_REQUEST)} style={{cursor: 'pointer'}}>
-                <div className={styles.senderBook}>{item.receiverBook.bookInfo.title}</div>
-                <div className={styles.receiverBook}>{item.senderBook.bookInfo.title}</div>
-              </div>
-            )}
-          />
-        </InfiniteScroll>
       </div>
 
 
-      <div className={styles.exchangeContainerInner}>
-        <h2><FaExchangeAlt size={'15px'} /> 교환 신청 받은 목록 (총 {receivedExchangeRequestsCnt}개)</h2>
-        <div className={styles.listHeader}>
-          <div>상대 책</div>
-          <div>내 책</div>
+      <div className={`${styles.exchangeContainerInner} ${isReceivedRequestsExpanded ? styles.expanded : ''}`}>
+        <h2 onClick={() => toggleExpansion(setIsReceivedRequestsExpanded)}>
+          <FaExchangeAlt size={'15px'} /> 교환 신청 받은 목록 (총 {receivedExchangeRequestsCnt}개)
+        </h2>
+        <div className={styles.expandableContent}>
+          <div className={styles.listHeader}>
+            <div>상대 책</div>
+            <div>내 책</div>
+          </div>
+          <InfiniteScroll
+            dataLength={receivedExchangeRequests.length}
+            next={loadMoreReceivedExchangeRequests}
+            hasMore={receivedExchangeRequests.length < receivedExchangeRequestsCnt}
+            loader={<h4>Loading...</h4>}
+            scrollableTarget="receivedExchangeRequestsList"
+          >
+            <ListComponent
+              items={receivedExchangeRequests}
+              emptyMessage="목록이 없습니다"
+              renderItem={(item) => (
+                <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{cursor: 'pointer'}}>
+                  <div className={styles.senderBook}>{item.senderBook.bookInfo.title}</div>
+                  <div className={styles.receiverBook}>{item.receiverBook.bookInfo.title}</div>
+                </div>
+              )}
+            />
+          </InfiniteScroll>
         </div>
-        <InfiniteScroll
-          dataLength={receivedExchangeRequests.length}
-          next={loadMoreReceivedExchangeRequests}
-          hasMore={receivedExchangeRequests.length < receivedExchangeRequestsCnt}
-          loader={<h4>Loading...</h4>}
-          scrollableTarget="receivedExchangeRequestsList"
-        >
-          <ListComponent
-            items={receivedExchangeRequests}
-            emptyMessage="목록이 없습니다"
-            renderItem={(item) => (
-              <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{cursor: 'pointer'}}>
-                <div className={styles.senderBook}>{item.senderBook.bookInfo.title}</div>
-                <div className={styles.receiverBook}>{item.receiverBook.bookInfo.title}</div>
-              </div>
-            )}
-          />
-        </InfiniteScroll>
       </div>
       
-      <div className={styles.exchangeContainerInner}>
-        <h2><FaExchangeAlt size={'15px'} /> 교환 신청 거절 당한 내역 (총 {rejectedExchangeRequestsCnt}개)</h2>
-        <div className={styles.listHeader}>
-          <div>상대 책</div>
-          <div>내 책</div>
+      <div className={`${styles.exchangeContainerInner} ${isRejectedRequestsExpanded ? styles.expanded : ''}`}>
+        <h2 onClick={() => toggleExpansion(setIsRejectedRequestsExpanded)}>
+          <FaExchangeAlt size={'15px'} /> 교환 신청 거절 당한 내역 (총 {rejectedExchangeRequestsCnt}개)
+        </h2>
+        <div className={styles.expandableContent}>  
+          <div className={styles.listHeader}>
+            <div>상대 책</div>
+            <div>내 책</div>
+          </div>
+          <InfiniteScroll
+            dataLength={rejectedExchangeRequests.length}
+            next={loadMoreRejectedExchangeRequests}
+            hasMore={rejectedExchangeRequests.length < rejectedExchangeRequestsCnt}
+            loader={<h4>Loding...</h4>}
+            scrollableTarget="rejectedExchangeRequestsList"
+          >
+            <ListComponent
+              items={rejectedExchangeRequests}
+              emptyMessage="목록이 없습니다"
+              renderItem={(item) => (
+                <div className={styles.exchangeBook}>
+                  <div className={styles.senderBook}>{item.receiverBook.bookInfo.title}</div>
+                  <div className={styles.receiverBook}>{item.senderBook.bookInfo.title}</div>
+                </div>
+              )}
+            />
+          </InfiniteScroll>
         </div>
-        <InfiniteScroll
-          dataLength={rejectedExchangeRequests.length}
-          next={loadMoreRejectedExchangeRequests}
-          hasMore={rejectedExchangeRequests.length < rejectedExchangeRequestsCnt}
-          loader={<h4>Loding...</h4>}
-          scrollableTarget="rejectedExchangeRequestsList"
-        >
-          <ListComponent
-            items={rejectedExchangeRequests}
-            emptyMessage="목록이 없습니다"
-            renderItem={(item) => (
-              <div className={styles.exchangeBook}>
-                <div className={styles.senderBook}>{item.receiverBook.bookInfo.title}</div>
-                <div className={styles.receiverBook}>{item.senderBook.bookInfo.title}</div>
-              </div>
-            )}
-          />
-        </InfiniteScroll>
       </div>
 
       <Modal
