@@ -37,7 +37,7 @@ public class UserbookQueryRepository {
 
 	public Page<UserbookWithLikeStatus> findTradeablePage(TradeableUserbookCondition condition, Pageable pageable) {
 		BooleanExpression[] tradeableExpressions = {isKeywordInTitleOrAuthor(condition.keyword()),
-			hasRegisterType(condition.registerType()), canExecuteTrade(condition.registerType()),
+			hasRegisterType(condition.registerType()), isNotInactive(), isNotExchanged(),
 			isAreaCodeInList(condition.areaCodeList())};
 		return findPageWithLikeAndExpressions(condition.userId(), pageable, tradeableExpressions);
 	}
@@ -146,5 +146,9 @@ public class UserbookQueryRepository {
 		}
 
 		return userbook.tradeStatus.eq(tradeStatus);
+	}
+
+	private BooleanExpression isNotExchanged() {
+		return userbook.tradeStatus.ne(TradeStatus.EXCHANGED);
 	}
 }

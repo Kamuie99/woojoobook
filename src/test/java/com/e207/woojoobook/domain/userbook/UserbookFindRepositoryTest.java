@@ -108,8 +108,8 @@ class UserbookQueryRepositoryTest {
 		// given
 		RegisterType registerRental = RegisterType.RENTAL;
 		Set<RegisterType> expectedRegisterTypes = Set.of(RegisterType.RENTAL, RegisterType.RENTAL_EXCHANGE);
-		Set<TradeStatus> expectedTradeStatus = Set.of(TradeStatus.RENTAL_AVAILABLE,
-			TradeStatus.RENTAL_EXCHANGE_AVAILABLE);
+		Set<TradeStatus> expectedTradeStatus = Set.of(TradeStatus.RENTAL_AVAILABLE, TradeStatus.EXCHANGE_AVAILABLE,
+			TradeStatus.RENTAL_EXCHANGE_AVAILABLE, TradeStatus.RENTED);
 
 		List<Book> bookList = Stream.generate(this::createRandomBook).limit(6).toList();
 		bookList.forEach(em::persist);
@@ -138,7 +138,8 @@ class UserbookQueryRepositoryTest {
 			registerRental);
 
 		// when
-		Page<UserbookWithLikeStatus> pageResult = userbookQueryRepository.findTradeablePage(condition, PageRequest.of(0, 10));
+		Page<UserbookWithLikeStatus> pageResult = userbookQueryRepository.findTradeablePage(condition,
+			PageRequest.of(0, 10));
 		List<UserbookWithLikeStatus> result = pageResult.getContent();
 
 		// then
