@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 
 import com.e207.woojoobook.api.user.request.LoginRequest;
 import com.e207.woojoobook.api.user.request.UserDeleteRequest;
+import com.e207.woojoobook.api.user.request.UserUpdateRequest;
 import com.e207.woojoobook.api.user.response.UserInfoResponse;
 import com.e207.woojoobook.domain.chatroom.ChatRoom;
 import com.e207.woojoobook.domain.chatroom.ChatRoomRepository;
@@ -32,6 +33,8 @@ import com.e207.woojoobook.domain.user.point.PointHistory;
 import com.e207.woojoobook.domain.user.point.PointRepository;
 import com.e207.woojoobook.domain.userbook.Userbook;
 import com.e207.woojoobook.domain.userbook.UserbookRepository;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
 
 import jakarta.persistence.EntityManager;
@@ -217,6 +220,37 @@ class UserServiceTest {
 		assertEquals(result.get("isFirstLogin"), false);
 		assertEquals(this.userPersonalFacade.getUserPoints(savedUser.getId()), 0);
 		assertEquals(this.userPersonalFacade.getUserExperience(savedUser.getId()), 0);
+	}
+
+	@DisplayName("중복된 닉네임이 있다면 회원 정보 수정은 에러를 발생")
+	@Test
+	void checkDuplicatedNickname() {
+		// given
+		this.userRepository.save(
+			User.builder()
+				.email("test1@test.com")
+				.password("password")
+				.nickname("nickname")
+				.areaCode("12345678")
+				.build()
+		);
+
+		User updateUser = this.userRepository.save(
+			User.builder()
+				.email("test2@test.com")
+				.password("password")
+				.nickname("anotherNickname")
+				.areaCode("12345678")
+				.build()
+		);
+
+		UserUpdateRequest request = new UserUpdateRequest("nickname", "12345678");
+		given(this.userHelper.findCurrentUser()).willReturn(updateUser);
+
+		// expected
+		ErrorException errorException =
+			assertThrows(ErrorException.class, () -> this.userService.update(request));
+		assertEquals(errorException.getErrorCode().getMessage(), ErrorCode.NotAcceptDuplicate.getMessage());
 	}
 
 	private static User cretaeInfoUser(String email, String nickname, String area) {

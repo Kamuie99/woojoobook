@@ -113,6 +113,9 @@ public class UserService {
 	@Transactional
 	public void update(UserUpdateRequest userUpdateRequest) {
 		User user = this.userHelper.findCurrentUser();
+		if(checkDuplicateNickname(userUpdateRequest.nickname())){
+			throw new ErrorException(ErrorCode.NotAcceptDuplicate);
+		};
 		user.update(userUpdateRequest.nickname(), userUpdateRequest.areaCode());
 	}
 
