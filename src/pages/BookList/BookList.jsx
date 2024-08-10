@@ -60,9 +60,7 @@ const BookList = () => {
 
   const handleChatOpen = (ownerId) => {
     setReceiverId(ownerId);
-    
     setShowChatModal(true);
-    
   }
 
   // useEffect(() => {
@@ -351,7 +349,7 @@ const BookList = () => {
       </div>
       )}
       {selectedBook && <BookModal book={selectedBook} onClose={closeModal} onChatOpen={handleChatOpen} />}
-      {showChatModal && <Chatting directMessage={receiverId} onClose={() => setShowChatModal(false)}/>}
+      {showChatModal && <Chatting directMessage={receiverId} onClose={() => {setShowChatModal(false)}} />}
       </>
   )
 }

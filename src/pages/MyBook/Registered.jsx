@@ -29,6 +29,10 @@ const Registered = () => {
       localStorage.removeItem('tradeStatus');
     }
   }, [tradeStatus]);
+
+  useEffect(() => {
+    console.log(registeredUserbooks);
+  }, [registeredUserbooks])
   
   const handleSelectChange = (e) => {
     setTradeStatus(e.target.value)
@@ -38,25 +42,43 @@ const Registered = () => {
 
   const fetchRegisteredUserbooks = async (tradeStatus, init = false) => {
     try {
-      const response = await axiosInstance.get('/users/userbooks/registered', {
-        params: {
-          tradeStatus,
-          page: init ? 0 : page,
-          size: 10
-        }
-      });
-      const newItems = response.data.content;
+      const [registeredResponse, rentalResponse] = await Promise.all([
+        axiosInstance.get('/users/userbooks/registered', {
+          params: {
+            tradeStatus,
+            page: init ? 0 : page,
+            size: 10
+          }
+        }),
+        axiosInstance.get('/rentals', {
+          params: {
+            userCondition: "RECEIVER",
+            rentalStatus: "IN_PROGRESS",
+            size: registeredUserbooksCount ? registeredUserbooksCount : 100,
+          }
+        })
+      ])
+      const registeredBooks = registeredResponse.data.content;
+      const rentedBooks = rentalResponse.data.content;
+
+      const mergedBooks = registeredBooks.map(book => {
+        const rentedBook = rentedBooks.find(rental => rental.userbook.id === book.id);
+        return rentedBook
+          ? { ...book, startDate: rentedBook.startDate, endDate: rentedBook.endDate }
+          : book;
+      })
+      // const newItems = response.data.content;
       if (init) {
-        setRegisteredUserbooks(newItems);
+        setRegisteredUserbooks(mergedBooks);
         setPage(1);
       } else {
-        setRegisteredUserbooks(prev => [...prev,...newItems]);
+        setRegisteredUserbooks(prev => [...prev,...mergedBooks]);
         setPage(prev => prev + 1);
       }
       if (tradeStatus === '') {
-        setTotalElementsCount(response.data.totalElements);
+        setTotalElementsCount(registeredResponse.data.totalElements);
       }
-      setRegisteredUserbooksCount(response.data.totalElements);
+      setRegisteredUserbooksCount(registeredResponse.data.totalElements);
     } catch (error) {
       console.error(error);
     }

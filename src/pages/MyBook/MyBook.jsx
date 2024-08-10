@@ -63,7 +63,7 @@ const MyBook = () => {
       <Header />
       <div className={styles.title}>
         <div className={styles.titleDiv}>
-          <FaBook /> 내 책 관리
+          <FaBook /> 우주도서 관리
         </div>
       </div>
       <div className={styles.selector}>
@@ -71,7 +71,7 @@ const MyBook = () => {
           className={`${styles.selectButton} ${activeContent === 'registered' ? styles.activeButton : ''}`}
           onClick={() => setActiveContent('registered')}
         >
-          내 책 관리
+          나의 우주도서
         </button>
         <button
           className={`${styles.selectButton} ${activeContent === 'liked' ? styles.activeButton : ''}`}

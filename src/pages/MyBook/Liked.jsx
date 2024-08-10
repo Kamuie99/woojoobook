@@ -51,7 +51,7 @@ const Liked = () => {
     <div
       className={styles.likedUserbooksList}
       id="likedUserbooksList"
-      style={{ height: 'calc(100vh - 300px)', overflow: 'auto' }}
+      // style={{ height: 'calc(100vh - 300px)', overflow: 'auto' }}
     >
       <InfiniteScroll
         dataLength={likedUserbooks.length}

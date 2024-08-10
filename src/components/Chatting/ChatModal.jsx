@@ -14,7 +14,7 @@ import ChatManagement from './ChatManagement';
 import Swal from 'sweetalert2'
 
 const ChatModal = ({ open, receiverId, setReceiverId, handleClose, isClosing, isLoading, handleAnimationEnd, chatRooms, chatRoom, setChatRoom }) => {
-  const { isLoggedIn, sub: userId } = useContext(AuthContext);
+  const { isLoggedIn, sub: userId, client } = useContext(AuthContext);
   const [isVisible, setIsVisible] = useState(false);
   const [openChatManagement, setOpenChatManagement] = useState(false);
 
@@ -121,6 +121,7 @@ const ChatModal = ({ open, receiverId, setReceiverId, handleClose, isClosing, is
                 <ChatManagement
                   chatRooms={chatRooms}
                   userId={userId}
+                  fetchOrCreateChatRoom={fetchOrCreateChatRoom}
                 />
               ) : (
                 <ChatList

@@ -19,12 +19,24 @@ const Chatting = ({ directMessage = null, onClose }) => {
 
   const location = useLocation();
   const excludedPaths = ['/login', '/register'];
-
+  
   useEffect(() => {
     if (!isLoggedIn) {
       setOpen(false);
     }
   }, [isLoggedIn, open])
+
+  useEffect(() => {
+    if (directMessage) {
+      setOpen(true);
+      fetchChatRooms();
+      setTimeout(() => {
+        setReceiverId(directMessage);
+      }, 100);
+      return;
+    }
+    setOpen(false);
+  }, [directMessage]);
 
   const fetchChatRooms = async () => {
     try {
@@ -39,18 +51,6 @@ const Chatting = ({ directMessage = null, onClose }) => {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (directMessage) {
-      setOpen(true);
-      fetchChatRooms();
-      setTimeout(() => {
-        setReceiverId(directMessage);
-      }, 100);
-      return;
-    }
-    setOpen(false);
-  }, [directMessage]);
 
   const toggleOpen = () => {
     if (!isLoggedIn) {
@@ -86,6 +86,7 @@ const Chatting = ({ directMessage = null, onClose }) => {
       setTimeout(() => {
         setIsClosing(false);
         setOpen(false);
+        onClose();
       }, 500);
       setIsLoading(true);
     }

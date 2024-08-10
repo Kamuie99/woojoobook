@@ -28,7 +28,7 @@ const BookStatusChangeModal = ({ isOpen, onClose, registerType, qualityStatus, h
     }
     return qualityMap[condition] || '';
   };
-
+  
   const getQualityText = (quality) => {
     const qualityMap = {
       'VERY_GOOD': { text: '매우 좋음', color: '#65C964' },
@@ -47,6 +47,7 @@ const BookStatusChangeModal = ({ isOpen, onClose, registerType, qualityStatus, h
         confirmButtonText: '확인',
         icon: 'info'
       })
+      return;
     }
     Swal.fire({
       title: "상태를 변경하시겠습니까?",

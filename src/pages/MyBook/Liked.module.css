@@ -16,13 +16,22 @@
 }
 
 .likedUserbooksList {
-  height: 80vh;
+  height: calc(100vh - 300px);
   overflow: auto;
 }
 
 .likedUserbooksList::-webkit-scrollbar {
+  width: 10px;
+}
+
+.likedUserbooksList::-webkit-scrollbar-thumb {
   background-color: var(--accent-sub-color);
   border-radius: 10px;
-  line-height: 1.15;
-  width: 10px;
+  height: 30px;
+  min-height: 30px;
+}
+
+.likedUserbooksList::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 10px;
 }

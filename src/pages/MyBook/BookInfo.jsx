@@ -8,6 +8,7 @@ import styles from './BookInfo.module.css';
 import axiosInstance from "../../util/axiosConfig";
 import BookStatusChangeModal from "./BookStatusChangeModal";
 import BookModal from '../MyLibrary/BookModal'
+import { FiX } from "react-icons/fi";
 
 const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
   const { sub: userId } = useContext(AuthContext);
@@ -30,7 +31,6 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
       icon: icon
     });
   }
-  
 
   const renderRegisterType = (registerType) => {
     const typeMap = {
@@ -53,6 +53,16 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
     };
     return statusMap[tradeStatus] || tradeStatus;
   };
+
+  const renderTradeStatusFromRegisterType = (registerType) => {
+    const statusMap = {
+      'RENTAL': '대여 가능',
+      'EXCHANGE': '교환 가능',
+      'RENTAL_EXCHANGE': '대여, 교환 가능',
+      'UNAVAILABLE': '거래 불가능'
+    }
+    return statusMap[registerType] || '대여중';
+  }
 
   const fetchEmotionImage = (qualityStatus) => {
     const qualityMap = {
@@ -84,6 +94,9 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
   }
 
   const deleteUserbook = async (book) => {
+    const newRegisterType = 'UNAVAILABLE';
+    const newTradeStatus = 'UNAVAILABLE';
+
     if (book.tradeStatus === 'RENTED') {
       showAlert('삭제 불가능', '대여중인 도서는 삭제할 수 없습니다.', 'error');
       return;
@@ -104,7 +117,12 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
             canRent: false, canExchange: false, quality: item.qualityStatus,
           });
           if (response.status === 200) {
-            showAlert('삭제 완료', '도서가 성공적으로 삭제되었습니다.', 'success')            
+            showAlert('삭제 완료', '도서가 성공적으로 삭제되었습니다.', 'success');
+            setBookInfo((prev) => ({
+              ...prev,
+              registerType: newRegisterType,
+              tradeStatus: newTradeStatus,
+            }))
             fetchRegisteredUserbooks(localStorage.getItem('tradeStatus'), true);
           } else {
             showAlert('삭제 실패', '도서 삭제에 실패하였습니다.', 'error')
@@ -161,7 +179,7 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
     }
   }
 
-  const giveBack = async (bookId) => {
+  const returnUserbook = async (book) => {
     Swal.fire({
       title: "확실히 받납 받으셨나요?",
       icon: "question",
@@ -173,17 +191,24 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axiosInstance.put(`/userbooks/${bookId}/return`)
-          console.log(response.data)
+          const response = await axiosInstance.put(`/userbooks/${book.id}/return`)
+          console.log(book.registerType)
+          const newTradeStatus = renderTradeStatusFromRegisterType(book.registerType);
           if (response.status === 200) {
             showAlert('반납 완료', '성공적으로 반납 되었습니다.', 'success')
+            setBookInfo((prev) => ({
+             ...prev,
+              tradeStatus: newTradeStatus
+            }))
             fetchRegisteredUserbooks(localStorage.getItem('tradeStatus'), true)
           } else {
             showAlert('반납 실패', '반납에 실패하였습니다.', 'error')
+            fetchRegisteredUserbooks(localStorage.getItem('tradeStatus'), true)
           }
         } catch (error) {
           console.error(error);
           showAlert('반납 실패', '반납에 실패하였습니다.', 'error')
+          fetchRegisteredUserbooks(localStorage.getItem('tradeStatus'), true)
         }
       }
     })
@@ -238,9 +263,16 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
       </div>
       <div className={styles.status}>
         {editable && bookInfo.tradeStatus === "RENTED" && (
-          <div className={styles.giveBackSubmitButton} onClick={() => giveBack(item.id)}>
-            반납 확인
-          </div>
+          <>
+            <div className={styles.rentalDate}>
+              <p><strong>대여 기간 |</strong></p>
+              <p>{bookInfo.startDate.slice(0, 10)} 부터</p>
+              <p>{bookInfo.endDate.slice(0, 10)} 까지</p>
+            </div>
+            <div className={styles.giveBackSubmitButton} onClick={() => returnUserbook(item)}>
+              반납 확인
+            </div>
+          </>
         )}
         {!editable && (
           <div className={styles.statusIcon}>
