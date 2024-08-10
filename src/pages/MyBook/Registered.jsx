@@ -76,7 +76,7 @@ const Registered = () => {
         <option value="RENTAL_AVAILABLE">대여 가능</option>
         <option value="EXCHANGE_AVAILABLE">교환 가능</option>
         <option value="RENTED">대여중</option>
-        <option value="UNAVAILABLE">거래 불가능</option>
+        {/* <option value="UNAVAILABLE">거래 불가능</option> */}
       </select>
     </div>
     <div

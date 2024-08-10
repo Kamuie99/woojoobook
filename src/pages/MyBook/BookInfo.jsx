@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { getEmotionImage } from '../../util/get-emotion-image';
 import { HiOutlinePencilSquare } from "react-icons/hi2";
-import { IoHeartSharp } from "react-icons/io5";
+import { IoHeartSharp, IoTrashOutline  } from "react-icons/io5";
 import Swal from 'sweetalert2'
 import styles from './BookInfo.module.css';
 import axiosInstance from "../../util/axiosConfig";
@@ -22,6 +22,15 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
       setEditable(true);
     };
   }, []);
+
+  const showAlert = (title, text, icon) => {
+    Swal.fire({
+      title: title,
+      text: text,
+      icon: icon
+    });
+  }
+  
 
   const renderRegisterType = (registerType) => {
     const typeMap = {
@@ -74,6 +83,40 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
     setOpen(false);
   }
 
+  const deleteUserbook = async (book) => {
+    if (book.tradeStatus === 'RENTED') {
+      showAlert('삭제 불가능', '대여중인 도서는 삭제할 수 없습니다.', 'error');
+      return;
+    }
+    Swal.fire({
+      title: "삭제하시겠습니까?",
+      text: "삭제한 데이터는 되돌릴 수 없습니다.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axiosInstance.put(`/userbooks/${book.id}`, {
+            canRent: false, canExchange: false, quality: item.qualityStatus,
+          });
+          if (response.status === 200) {
+            showAlert('삭제 완료', '도서가 성공적으로 삭제되었습니다.', 'success')            
+            fetchRegisteredUserbooks(localStorage.getItem('tradeStatus'), true);
+          } else {
+            showAlert('삭제 실패', '도서 삭제에 실패하였습니다.', 'error')
+          }
+        } catch (error) {
+          console.error(error);
+          showAlert('삭제 실패', '도서 삭제에 실패하였습니다.', 'error')
+        }
+      }
+    })
+  }
+
   const handleSave = async (canRent, canExchange, quality) => {
     const tradeStatus = localStorage.getItem('tradeStatus');
     const newRegisterType =
@@ -120,44 +163,30 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
 
   const giveBack = async (bookId) => {
     Swal.fire({
-      title: "반납하시겠습니까?",
+      title: "확실히 받납 받으셨나요?",
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "반납",
-      cancelButtonText: "취소"
+      confirmButtonText: "네",
+      cancelButtonText: "아니요"
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           const response = await axiosInstance.put(`/userbooks/${bookId}/return`)
           console.log(response.data)
           if (response.status === 200) {
-            Swal.fire({
-              title: "반납 완료",
-              text: "성공적으로 반납 되었습니다.",
-              icon: "success"
-            })
+            showAlert('반납 완료', '성공적으로 반납 되었습니다.', 'success')
+            fetchRegisteredUserbooks(localStorage.getItem('tradeStatus'), true)
           } else {
-            Swal.fire({
-              title: "반납 실패",
-              text: "반납에 실패하였습니다.",
-              icon: "error"
-            })
+            showAlert('반납 실패', '반납에 실패하였습니다.', 'error')
           }
         } catch (error) {
           console.error(error);
-          Swal.fire({
-            title: "반납 실패",
-            text: "반납에 실패하였습니다.",
-            icon: "error"
-          })
+          showAlert('반납 실패', '반납에 실패하였습니다.', 'error')
         }
       }
     })
-    const tradeStatus = localStorage.getItem('tradeStatus')
-    console.log(tradeStatus)
-    fetchRegisteredUserbooks(tradeStatus, true)
   }
 
   const removeWish = async (bookId, wished = true) => {
@@ -234,6 +263,13 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
           qualityStatus={bookInfo.qualityStatus}
           handleSave={handleSave}
         />
+        {editable && bookInfo.tradeStatus !== 'RENTED' && (
+          <IoTrashOutline
+            onClick={() => deleteUserbook(item)}
+            className={styles.deleteUserbook}
+            size={30}
+          />
+        )}
         {showModal && bookDetail && (
           <BookModal
             book={bookDetail}

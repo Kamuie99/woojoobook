@@ -38,7 +38,7 @@ function App() {
           <Route path='/:userId/mybook' element={<MyBook/>} />
           <Route path='/:userId/myactivity' element={<MyActivity />} />
           <Route path='/:userId/mylibrary' element={<MyLibrary />} />
-          <Route path='/:userId/mypage' element={<MyPage />} />
+          <Route path='/mypage' element={<MyPage />} />
           <Route path='/userupdate' element={<UserUpdate />} />
           <Route path='/passwordchange' element={<PasswordChange />} />
           <Route path='/booklist' element={<BookList />} />

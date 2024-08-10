@@ -117,7 +117,7 @@ const UserUpdate = () => {
           text: "회원정보가 성공적으로 변경되었습니다.",
           icon: "success"
         });
-        navigate(`/${userId}/mypage`);
+        navigate(-1);
       } else {
         Swal.fire({
           title: '정보 수정에 실패했습니다. 다시 시도해 주세요.',

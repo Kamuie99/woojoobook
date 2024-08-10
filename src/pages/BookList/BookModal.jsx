@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './BookModal.module.css';
 import { getEmotionImage } from '../../util/get-emotion-image';
 import axiosInstance from '../../util/axiosConfig';
@@ -109,7 +110,17 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
               <p><strong>출판일 |</strong> {userbook.bookInfo.publicationDate}</p>
             </div>
             <p><strong>저자 |</strong> {userbook.bookInfo.author}</p>
-            <p><strong className={styles.specialUser}>책권자 |</strong> {userbook.ownerInfo.nickname}</p>
+            <div className={styles.tooltipContainer}>
+              <p className={styles.toLibraryButton}>
+                <Link to={`/${userbook.ownerInfo.id}/mylibrary`}>
+                  <strong className={styles.specialUser}>책권자 |</strong> {userbook.ownerInfo.nickname}
+                </Link>
+              </p>
+              {<span className={styles.libraryTooltip}>
+                {book.userbook.ownerInfo.nickname === user.nickname ?
+                  '내' : `${book.userbook.ownerInfo.nickname} 님의`} 서재로 이동하기
+              </span>}
+            </div>
           </div>
         </div>
         <div className={styles.buttonGroup}>

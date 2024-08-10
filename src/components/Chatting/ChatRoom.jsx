@@ -15,6 +15,7 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [newMessageAlert, setNewMessageAlert] = useState(false);
+  const [isMessageEndVisible, setIsMessageEndVisible] = useState(true);
   const scrollBarRef = useRef(null);
   const messagesEndRef = useRef(null);
   const loadMoreMessagesTarget = useRef(null);
@@ -33,14 +34,17 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
         console.log('수신된 메시지:', message.body);
         const messageBody = JSON.parse(message.body);
         const scrollableDiv = scrollBarRef.current;
-        const isAtBottom = scrollableDiv.scrollHeight - scrollableDiv.scrollTop === scrollableDiv.clientHeight;
-      
+        
+        const heightDiff = scrollableDiv.scrollHeight - scrollableDiv.scrollTop - 555
+        const isAtBottom = Math.abs(heightDiff) < 1
+
         setMessages((prev) => [
           { userId: messageBody.userId, content: messageBody.content },
           ...prev,
         ]);
-
-        if (!isAtBottom && messageBody.userId != userId) {
+        if (isAtBottom) {
+          scrollToBottom();
+        } else if (messageBody.userId != userId) {
           setNewMessageAlert(true); // 새로운 메시지가 도착했음을 알림
         }
       }, 500, { leading: true, trailing: false}));
@@ -83,7 +87,30 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
       }
     };
   }, [hasMore]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        setIsMessageEndVisible(entries[0].isIntersecting);
+      },
+      { threshold: 0 }
+    );
+    if (messagesEndRef.current) {
+      observer.observe(messagesEndRef.current);
+    }
+    return () => {
+      if (messagesEndRef.current) {
+        observer.unobserve(messagesEndRef.current);
+      }
+    };
+  }, []);
   
+  useEffect(() => {
+    if (isMessageEndVisible) {
+      setNewMessageAlert(false);
+    }
+  }, [isMessageEndVisible]);
+
   const scrollToBottom = () => {
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -192,7 +219,7 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
       </div>
       <Snackbar
         open={newMessageAlert}
-        autoHideDuration={5000}
+        // autoHideDuration={5000}
         onClose={handleCloseSnackbar}
         message="새 메시지가 도착했습니다."
         action={

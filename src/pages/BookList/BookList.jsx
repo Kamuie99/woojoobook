@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useContext } from "react";
-import { Link } from 'react-router-dom';
 import { useSearch } from '../../contexts/SearchContext';
 import { LuBookPlus } from "react-icons/lu";
 import { IoHeartOutline, IoHeartSharp } from "react-icons/io5";
@@ -284,16 +283,9 @@ const BookList = () => {
                     <h3 onClick={() => openModal(book)} >{book.userbook.bookInfo.title}</h3>
                     <div className={styles.innerBox}>
                       <p><strong>저자 |</strong> {truncateAuthor(book.userbook.bookInfo.author)}</p>
-                      <div className={styles.tooltipContainer}>
-                        <p className={styles.ownerNickname}>
-                          <Link to={`/${book.userbook.ownerInfo.id}/mylibrary`}>
-                            <strong>책권자 |</strong> {book.userbook.ownerInfo.nickname}
-                          </Link>
-                        </p>
-                        {<span className={styles.tooltip}>
-                          {book.userbook.ownerInfo.nickname} 님의 서재로 이동하기
-                        </span>}
-                      </div>
+                      <p className={styles.ownerNickname}>
+                        <strong>책권자 |</strong> {book.userbook.ownerInfo.nickname}
+                      </p>
                       <p>책 ID {book.userbook.id}</p>
                     </div>
                     <div className={styles.innerBox}>

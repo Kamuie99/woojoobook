@@ -44,7 +44,7 @@ const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles 
               {isLoggedIn ? (
                 <>
                   <button className='logout_button' onClick={handleLogout}>로그아웃<IoIosLogOut /></button>
-                  <Link to={`/${sub}/mypage`}>
+                  <Link to={`/mypage`}>
                     <button className='mypage_button'>마이페이지</button>
                   </Link>
                 </>
@@ -60,22 +60,24 @@ const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles 
               )}
             </div>
           </div>
-          <MenuItem component={<Link to='/booklist' />} icon={<CgPlayListSearch size={'25px'}/>}>우주 도서 검색</MenuItem>
-          <SubMenu label="나의 우주도서" icon={<FaSpaceAwesome size={'18px'}/>}>
-            <MenuItem component={<Link to='/bookregister' />}>우주도서 등록 </MenuItem>
-            <MenuItem component={<Link to={`/${sub}/mybook`} />}>우주도서 관리 </MenuItem>
-          </SubMenu>
-          <MenuItem 
-            component={<Link to={`/${sub}/mylibrary`} />} 
-            icon={<IoLibraryOutline size={'21px'}/>}
-          > 
-            나의 서재 
-          </MenuItem>
-          <MenuItem component={<Link to={`/${sub}/myactivity`} />} icon={<BsFillPersonLinesFill size={'20px'} /> }> 나의 활동 </MenuItem>
-          
+          {isLoggedIn && (
+            <> 
+              <MenuItem component={<Link to='/booklist' />} icon={<CgPlayListSearch size={'25px'}/>}>우주 도서 검색</MenuItem>
+              <SubMenu label="나의 우주도서" icon={<FaSpaceAwesome size={'18px'}/>}>
+                <MenuItem component={<Link to='/bookregister' />}>우주도서 등록 </MenuItem>
+                <MenuItem component={<Link to={`/${sub}/mybook`} />}>우주도서 관리 </MenuItem>
+              </SubMenu>
+              <MenuItem 
+                component={<Link to={`/${sub}/mylibrary`} />} 
+                icon={<IoLibraryOutline size={'21px'}/>}
+              > 
+                나의 서재 
+              </MenuItem>
+              <MenuItem component={<Link to={`/${sub}/myactivity`} />} icon={<BsFillPersonLinesFill size={'20px'} /> }> 나의 활동 </MenuItem>
+            </>
+          )}
           <MenuItem component={<Link to='/policy' />} icon={<RiCustomerService2Line size={'20px'}/>}> 이용 안내 및 정책 </MenuItem>
         </Menu>
-
       </ProSidebar>
     </div>
   );
