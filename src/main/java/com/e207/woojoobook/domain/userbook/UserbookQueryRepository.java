@@ -50,7 +50,7 @@ public class UserbookQueryRepository {
 
 	public Page<Userbook> findMyPage(MyUserbookCondition condition, Pageable pageable) {
 		BooleanExpression[] myUserbookExpressions = {isOwnedByUser(condition.userId()),
-			isTradeStatus(condition.tradeStatus()), isNotInactive()};
+			isTradeStatus(condition.tradeStatus()), isNotInactive(), isNotExchanged()};
 		return findPageWithExpressions(pageable, myUserbookExpressions);
 	}
 
