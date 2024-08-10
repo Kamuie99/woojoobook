@@ -163,7 +163,8 @@ const MyLibrary = () => {
               <button onClick={handleCreate} className={styles.createButton}>카테고리 생성</button>
             </div>
             <div className={styles.categoriesContainer}>
-              {sortedCategories.map((category, index) => (
+            {sortedCategories.length > 0 ? (
+              sortedCategories.map((category, index) => (
                 <CategoryItem
                   key={category.id}
                   index={index}
@@ -175,7 +176,12 @@ const MyLibrary = () => {
                   saveCategoryOrder={isOwnLibrary ? saveCategoryOrder : null}
                   onEmptyBoxClick={() => handleEmptyBoxClick(category)}
                 />
-              ))}
+              ))
+            ) : (
+              <div className={styles.emptyCategory} onClick={handleCreate}>
+                <span>+</span>
+              </div>
+            )}
             </div>
 
             <Modal

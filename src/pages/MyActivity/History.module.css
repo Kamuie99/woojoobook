@@ -63,6 +63,14 @@
   padding: 0 10px;
   display: flex;
   justify-content: space-between;
+  gap: 10px;
+}
+
+.listItem > div:first-child {
+  width: 85%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .modalBook {
@@ -77,6 +85,20 @@
   margin-bottom: 30px;
 }
 
+.modalImg {
+  padding-top: 10px;
+  height: 350px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.modalImg img {
+  max-height: 100%;
+  object-fit: cover;
+}
+
 .modalBookImg {
   width: 50%;
 }
@@ -86,7 +108,7 @@
   padding: 0 20px;
 }
 
-.modalBookInfo h2 {
+.modalBookInfo h2, .exModalBook h2 {
   margin: 15px 0 5px 0;
   font-weight: bold;
 }

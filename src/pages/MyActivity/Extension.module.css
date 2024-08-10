@@ -51,6 +51,7 @@
 }
 
 .listItem > div:first-child {
+  width: 85%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -58,7 +59,9 @@
 
 .modalBook {
   display: flex;
-  margin-bottom: 30px;
+  margin: 20px auto;
+  height: 380px;
+  align-items: center;
 }
 
 .modalContent {
@@ -72,6 +75,10 @@
 
 .modalBookImg {
   width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 .modalBookInfo {
@@ -86,7 +93,8 @@
 
 .modalBookImg img {
   width: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  max-height: 100%;
 }
 
 .rentalInfo {

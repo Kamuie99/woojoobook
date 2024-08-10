@@ -52,11 +52,6 @@
   width: 45%;
 }
 
-.senderBook img, .receiverBook img {
-  width: 100%;
-  object-fit: cover;
-}
-
 .receiverBook {
   text-align: right;
 }
@@ -64,10 +59,6 @@
 .receiverBook > * {
   display: flex;
   justify-content: flex-end;
-}
-
-.receiverBook img {
-  margin-left: auto;
 }
 
 .modalBook h2, .exchangeInfo h2{
@@ -78,6 +69,15 @@
 .modalImg {
   padding-top: 10px;
   height: 350px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.modalImg img {
+  max-height: 100%;
+  object-fit: cover;
 }
 
 .modalContent {
@@ -101,7 +101,6 @@
 }
 
 .buttons {
-  margin-top: 15px;
   display: flex;
   justify-content: center;
   gap: 20px;

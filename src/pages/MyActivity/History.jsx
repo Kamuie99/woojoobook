@@ -132,11 +132,19 @@ const History = (userId) => {
               </div>
               <div className={styles.modalBookInfo}>
                 <h2>제목</h2>
-                <p>{selectedItem.userbook.bookInfo.title}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.userbook.bookInfo.title}
+                </div>
                 <h2>저자</h2>
-                <p>{selectedItem.userbook.bookInfo.author}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.userbook.bookInfo.author}
+                </div>
                 <h2>책권자</h2>
-                <p>{selectedItem.userbook.ownerInfo.nickname}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.userbook.ownerInfo.nickname}
+                </div>
+                <h2></h2>
+                <div className={styles.modalContent}></div>
               </div>
             </div>
             <div className={styles.rentalInfo}>
@@ -155,19 +163,31 @@ const History = (userId) => {
                 <div className={styles.exModalBook}>
                   <div className={styles.senderBook}>
                     <p>상대 책</p>
-                    <img src={selectedItem.receiverBook.bookInfo.thumbnail} alt="" />
+                    <div className={styles.modalImg}>
+                      <img src={selectedItem.receiverBook.bookInfo.thumbnail} alt="" />
+                    </div>
                     <h2>제목</h2>
-                    <p>{selectedItem.receiverBook.bookInfo.title}</p>
+                    <div className={styles.modalContent}>
+                      {selectedItem.receiverBook.bookInfo.title}
+                    </div>
                     <h2>저자</h2>
-                    <p>{selectedItem.receiverBook.bookInfo.author}</p>
+                    <div className={styles.modalContent}>
+                      {selectedItem.receiverBook.bookInfo.author}
+                    </div>
                   </div>
                   <div className={styles.receiverBook}>
                     <p>내 책</p>
-                    <img src={selectedItem.senderBook.bookInfo.thumbnail} alt="" />
+                    <div className={styles.modalImg}>
+                      <img src={selectedItem.senderBook.bookInfo.thumbnail} alt="" />
+                    </div>
                     <h2>제목</h2>
-                    <p>{selectedItem.senderBook.bookInfo.title}</p>
+                    <div className={styles.modalContent}>
+                      {selectedItem.senderBook.bookInfo.title}
+                    </div>
                     <h2>저자</h2>
-                    <p>{selectedItem.senderBook.bookInfo.author}</p>
+                    <div className={styles.modalContent}>
+                      {selectedItem.senderBook.bookInfo.author}
+                    </div>
                   </div>
                 </div>
               </>
@@ -175,20 +195,32 @@ const History = (userId) => {
               <>
                 <div className={styles.exModalBook}>
                   <div className={styles.senderBook}>
-                    <p>상대 책</p>
-                    <img src={selectedItem.senderBook.bookInfo.thumbnail} alt="" />
+                    <h2>상대 책</h2>
+                    <div className={styles.modalImg}>
+                      <img src={selectedItem.senderBook.bookInfo.thumbnail} alt="" />
+                    </div>
                     <h2>제목</h2>
-                    <p>{selectedItem.senderBook.bookInfo.title}</p>
+                    <div className={styles.modalContent}>
+                      {selectedItem.senderBook.bookInfo.title}
+                    </div>
                     <h2>저자</h2>
-                    <p>{selectedItem.senderBook.bookInfo.author}</p>
+                    <div className={styles.modalContent}>
+                      {selectedItem.senderBook.bookInfo.author}
+                    </div>
                   </div>
                   <div className={styles.receiverBook}>
-                    <p>내 책</p>
-                    <img src={selectedItem.receiverBook.bookInfo.thumbnail} alt="" />
+                    <h2>내 책</h2>
+                    <div className={styles.modalImg}>
+                      <img src={selectedItem.receiverBook.bookInfo.thumbnail} alt="" />
+                    </div>
                     <h2>제목</h2>
-                    <p>{selectedItem.receiverBook.bookInfo.title}</p>
+                    <div className={styles.modalContent}>
+                      {selectedItem.receiverBook.bookInfo.title}
+                    </div>
                     <h2>저자</h2>
-                    <p>{selectedItem.receiverBook.bookInfo.author}</p>
+                    <div className={styles.modalContent}>
+                      {selectedItem.receiverBook.bookInfo.author}
+                    </div>
                   </div>
                 </div>
               </>

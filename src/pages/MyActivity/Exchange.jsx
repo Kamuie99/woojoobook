@@ -288,11 +288,17 @@ const Exchange = () => {
                   <img src={selectedItem.receiverBook.bookInfo.thumbnail} alt="" />
                 </div>
                 <h2>제목</h2>
-                <p>{selectedItem.receiverBook.bookInfo.title}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.receiverBook.bookInfo.title}
+                </div>
                 <h2>저자</h2>
-                <p>{selectedItem.receiverBook.bookInfo.author}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.receiverBook.bookInfo.author}
+                </div>
                 <h2>교환승인자</h2>
-                <p>{selectedItem.receiverBook.ownerInfo.nickname}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.receiverBook.ownerInfo.nickname}
+                </div>
               </div>
               <div className={styles.receiverBook}>
                 <h2>내 책</h2>
@@ -300,12 +306,18 @@ const Exchange = () => {
                   <img src={selectedItem.senderBook.bookInfo.thumbnail} alt="" />
                 </div>
                 <h2>제목</h2>
-                <p>{selectedItem.senderBook.bookInfo.title}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.senderBook.bookInfo.title}
+                </div>
                 <h2>저자</h2>
-                <p>{selectedItem.senderBook.bookInfo.author}</p>
+                <div className={styles.modalContent}>
+                  {selectedItem.senderBook.bookInfo.author}
+                </div>
               </div>
             </div>
-            <button className={styles.modalButton} onClick={() => handleCancelExchange(selectedItem.id)}>신청취소</button>
+            <div className={styles.buttons}>
+              <button className={styles.modalButton} onClick={() => handleCancelExchange(selectedItem.id)}>신청취소</button>
+            </div>
           </>
         );
       case MODAL_TYPES.RECEIVED_REQUEST:
