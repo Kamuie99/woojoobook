@@ -79,17 +79,23 @@ const BookSearch = ({ onSelectBook }) => {
           <HiOutlineInformationCircle />
           등록을 원하시는 도서를 선택해주세요!  
         </div>
-        <ul className={styles.bookList}>
-          {bookList.map((book) => (
-            <li key={book.isbn} className={styles.bookItem} onClick={() => handleSelectBook(book)}>
-              <img src={book.thumbnail} alt={book.title} />
-              <div className={styles.bookDetails}>
-                <h3>{book.title}</h3>
-                <p>{book.author}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+        {bookList.length > 0 ? (
+          <ul className={styles.bookList}>
+            {bookList.map((book) => (
+              <li key={book.isbn} className={styles.bookItem} onClick={() => handleSelectBook(book)}>
+                <img src={book.thumbnail} alt={book.title} />
+                <div className={styles.bookDetails}>
+                  <h3>{book.title}</h3>
+                  <p>{book.author}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className={styles.noResults}>
+            <p>검색 결과가 없습니다. 책 제목을 확인해 주세요.</p>
+          </div>
+        )}
       </Modal>
     </div>
   );

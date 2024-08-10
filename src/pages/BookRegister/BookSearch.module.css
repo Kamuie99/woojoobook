@@ -89,3 +89,12 @@
   gap: 5px;
   font-size: 20px;
 }
+
+.noResults {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 16px;
+  color: #666;
+}
