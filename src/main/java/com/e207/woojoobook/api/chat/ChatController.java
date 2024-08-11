@@ -17,11 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.e207.woojoobook.api.chat.request.ChatCreateRequest;
 import com.e207.woojoobook.api.chat.response.ChatResponse;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,15 +65,26 @@ public class ChatController {
 	}
 
 	private Set<String> getAllAreaCodes() {
-		return redisTemplate.keys("area:*").stream()
+		Set<String> areaCodes = redisTemplate.keys("area:*");
+
+		if (Objects.isNull(areaCodes)) {
+			throw new ErrorException(ErrorCode.NotFound);
+		}
+
+		return areaCodes.stream()
 				.map(key -> key.substring("area:".length()))
 				.collect(Collectors.toSet());
 	}
 
 	private Set<UserOnResponse> getUsersByAreaCode(String areaCode) {
 		Set<Object> users = redisTemplate.opsForSet().members("area:" + areaCode);
+
+		if (Objects.isNull(users)) {
+			throw new ErrorException(ErrorCode.NotFound);
+		}
+
 		return users.stream()
-				.map(user -> (UserOnResponse) user)
+				.map(UserOnResponse.class::cast)
 				.collect(Collectors.toSet());
 	}
 }

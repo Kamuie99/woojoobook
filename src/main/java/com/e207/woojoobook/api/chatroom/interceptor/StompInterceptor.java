@@ -1,5 +1,8 @@
 package com.e207.woojoobook.api.chatroom.interceptor;
 
+import java.util.Map;
+import java.util.Objects;
+
 import com.e207.woojoobook.api.chat.response.UserOnResponse;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.global.exception.ErrorCode;
@@ -34,7 +37,12 @@ public class StompInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        if (accessor.getCommand() == StompCommand.CONNECT) {
+        Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
+        if (Objects.isNull(sessionAttributes)) {
+            throw new ErrorException(ErrorCode.ForbiddenError);
+        }
+
+		if (accessor.getCommand() == StompCommand.CONNECT) {
             String token = resolveToken(accessor.getFirstNativeHeader("Authorization"));
             if (token == null) {
                 throw new ErrorException(ErrorCode.ForbiddenError);
@@ -44,7 +52,9 @@ public class StompInterceptor implements ChannelInterceptor {
             User currentUser = this.userHelper.findCurrentUser();
 
             UserOnResponse dto = UserOnResponse.toDto(currentUser);
-            accessor.getSessionAttributes().put("id", currentUser.getId());
+
+
+            sessionAttributes.put("id", currentUser.getId());
             redisTemplate.opsForSet().add("area:" + currentUser.getAreaCode(), dto);
         }
 
@@ -53,7 +63,7 @@ public class StompInterceptor implements ChannelInterceptor {
         }
 
         if (accessor.getCommand() == StompCommand.DISCONNECT) {
-            Long userId = (Long) accessor.getSessionAttributes().get("id");
+            Long userId = (Long) sessionAttributes.get("id");
             if (userId != null) {
                 User user = this.userHelper.findById(userId);
                 if (user != null) {
