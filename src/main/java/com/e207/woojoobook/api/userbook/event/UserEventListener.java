@@ -2,6 +2,8 @@ package com.e207.woojoobook.api.userbook.event;
 
 import java.util.List;
 
+import com.e207.woojoobook.domain.exchange.Exchange;
+import com.e207.woojoobook.domain.exchange.ExchangeRepository;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +31,7 @@ public class UserEventListener {
 	private final WishbookRepository wishBookRepository;
 	private final RentalRepository rentalRepository;
 	private final ChatRoomRepository chatRoomRepository;
+	private final ExchangeRepository exchangeRepository;
 	private final UserHelper userHelper;
 
 	@Transactional
@@ -40,6 +43,9 @@ public class UserEventListener {
 		List<Rental> rentals = this.rentalRepository.findWithUserByUser(user);
 		List<ChatRoom> allBySender = this.chatRoomRepository.findAllBySender(user);
 		List<ChatRoom> allByReceiver = this.chatRoomRepository.findAllByReceiver(user);
+		List<Exchange> withSenderBySender = this.exchangeRepository.findWithSenderBySender(user);
+		List<Exchange> withReceiverByReceiver = this.exchangeRepository.findWithReceiverByReceiver(user);
+
 
 		User nullAdmin = this.userHelper.findNullAdmin();
 
@@ -48,6 +54,8 @@ public class UserEventListener {
 		rentals.forEach(rental -> rental.removeUser(nullAdmin));
 		allBySender.forEach(chatRoom -> chatRoom.removeSender(nullAdmin));
 		allByReceiver.forEach(chatRoom -> chatRoom.removeReceiver(nullAdmin));
+		withSenderBySender.forEach(chatRoom -> chatRoom.removeSender(nullAdmin));
+		withReceiverByReceiver.forEach(chatRoom -> chatRoom.removeReceiver(nullAdmin));
 		this.userRepository.delete(user);
 	}
 }

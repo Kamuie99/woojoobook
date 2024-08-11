@@ -67,4 +67,12 @@ public class Exchange {
 	public boolean isOffering() {
 		return this.exchangeStatus == IN_PROGRESS;
 	}
+
+	public void removeSender(User user) {
+		this.sender = user;
+	}
+
+	public void removeReceiver(User user) {
+		this.receiver = user;
+	}
 }

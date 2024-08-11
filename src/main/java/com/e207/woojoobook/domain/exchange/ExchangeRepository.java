@@ -3,6 +3,7 @@ package com.e207.woojoobook.domain.exchange;
 import java.util.List;
 import java.util.Optional;
 
+import com.e207.woojoobook.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -22,4 +23,6 @@ public interface ExchangeRepository extends JpaRepository<Exchange, Long>, Excha
 
 	// TODO <jhl221123> 의존성이 있는 곳 모두 동적 쿼리로 변경 후 삭제 필요
 	List<Exchange> findAllByReceiverBook(Userbook receiverBook);
+	List<Exchange> findWithSenderBySender(User sender);
+	List<Exchange> findWithReceiverByReceiver(User receiver);
 }
