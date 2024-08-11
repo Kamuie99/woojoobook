@@ -181,7 +181,7 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
 
   const returnUserbook = async (book) => {
     Swal.fire({
-      title: "확실히 받납 받으셨나요?",
+      title: "확실히 반납 받으셨나요?",
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",

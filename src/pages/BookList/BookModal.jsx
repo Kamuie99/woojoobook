@@ -79,6 +79,15 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
             confirmButtonText: '확인',
             icon: 'warning'
           });
+          const errMsg2 = error.response.data === '포인트가 부족합니다.' ?
+            '포인트가 부족합니다.' :
+            '대여 신청 중 오류가 발생했습니다.'
+          Swal.fire({
+            title: '포인트 부족',
+            text: errMsg2,
+            confirmButtonText: '확인',
+            icon: 'warning'
+          });
         }
       }
     }

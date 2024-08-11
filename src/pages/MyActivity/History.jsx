@@ -158,7 +158,7 @@ const History = (userId) => {
       case MODAL_TYPES.EXCHANGE_HISTORY:
         return (
           <>
-            {selectedItem.senderBook.ownerInfo.id === userId ? (
+            {selectedItem.senderBook.ownerInfo.id == userId.userId ? (
               <>
                 <div className={styles.exModalBook}>
                   <div className={styles.senderBook}>
@@ -189,6 +189,12 @@ const History = (userId) => {
                       {selectedItem.senderBook.bookInfo.author}
                     </div>
                   </div>
+                </div>
+                <div className={styles.rentalInfo}>
+                  <h2>교환자</h2>
+                  <p>{selectedItem.receiverBook.ownerInfo.nickname}</p>
+                  <h2>교환일</h2>
+                  <p>{selectedItem.exchangeDate.split('T')[0]}</p>
                 </div>
               </>
             ) : (
@@ -223,14 +229,20 @@ const History = (userId) => {
                     </div>
                   </div>
                 </div>
+                <div className={styles.rentalInfo}>
+                  <h2>교환자</h2>
+                  <p>{selectedItem.senderBook.ownerInfo.nickname}</p>
+                  <h2>교환일</h2>
+                  <p>{selectedItem.exchangeDate.split('T')[0]}</p>
+                </div>
               </>
             )}
-            <div className={styles.rentalInfo}>
+            {/* <div className={styles.rentalInfo}>
               <h2>교환자</h2>
               <p>{selectedItem.receiverBook.ownerInfo.nickname}</p>
               <h2>교환일</h2>
               <p>{selectedItem.exchangeDate.split('T')[0]}</p>
-            </div>
+            </div> */}
           </>
         );
       default:
@@ -297,21 +309,29 @@ const History = (userId) => {
             <ListComponent
               items={exchangeHistory}
               emptyMessage="목록이 없습니다"
-              renderItem={(item) => (
-                <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.EXCHANGE_HISTORY)} style={{cursor: 'pointer'}}>
-                {item.senderBook.ownerInfo.id === userId ? (
-                  <>
-                    <div className={styles.senderBook}>{item.receiverBook.bookInfo.title}</div>
-                    <div className={styles.receiverBook}>{item.senderBook.bookInfo.title}</div>
-                  </>
-                ) : (
-                  <>
-                    <div className={styles.senderBook}>{item.senderBook.bookInfo.title}</div>
-                    <div className={styles.receiverBook}>{item.receiverBook.bookInfo.title}</div>
-                  </>
-                )}
-              </div>
-              )}
+              renderItem={(item) => {
+                console.log('Item:', item);
+                console.log('userId:', userId);
+                console.log('Sender ID:', item.senderBook.ownerInfo.id);
+                console.log('Is sender:', item.senderBook.ownerInfo.id == userId);
+              
+                return (
+                  <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.EXCHANGE_HISTORY)} style={{cursor: 'pointer'}}>
+                    <div className={styles.senderBook}>
+                      {item.senderBook.ownerInfo.id == userId.userId 
+                        ? item.receiverBook.bookInfo.title
+                        : item.senderBook.bookInfo.title
+                      }
+                    </div>
+                    <div className={styles.receiverBook}>
+                      {item.senderBook.ownerInfo.id == userId.userId
+                        ? item.senderBook.bookInfo.title
+                        : item.receiverBook.bookInfo.title
+                      }
+                    </div>
+                  </div>
+                );
+              }}
             />
           </InfiniteScroll>
         </div>

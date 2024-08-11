@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { LuBookPlus } from "react-icons/lu";
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
 import Header from "../../components/Header";
 import BookSearch from "./BookSearch";
@@ -9,6 +10,7 @@ import styles from './BookRegister.module.css';
 import axiosInstance from '../../util/axiosConfig';
 
 const BookRegister = () => {
+  const { user } = useContext(AuthContext);
   const [selectedBook, setSelectedBook] = useState(null);
   const [isRentable, setIsRentable] = useState(false);
   const [isExchangeable, setIsExchangeable] = useState(false);
@@ -18,7 +20,7 @@ const BookRegister = () => {
 
   useEffect(() => {
     setIsFormValid(selectedBook && (isRentable || isExchangeable) && quality);
-  }, [selectedBook, isRentable, isExchangeable, quality]);
+  }, [selectedBook, isRentable, isExchangeable, quality, user]);
 
   const getRegisterType = () => {
     if (isRentable && isExchangeable) return 'RENTAL_EXCHANGE';
@@ -74,7 +76,7 @@ const BookRegister = () => {
           icon: 'success'
         });
         
-        navigate('/booklist');
+        navigate(`/${user.id}/mybook`);
       } catch (error) {
         await Swal.fire({
           title: '오류',
