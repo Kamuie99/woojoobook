@@ -11,6 +11,8 @@
 
 .messages_container {
   overflow-y: auto;
+  background-color: var(--main-color);
+  flex-grow: 1;
 }
 
 .message {
@@ -44,7 +46,7 @@
 }
 
 .received > p {
-  background-color: var(--sub-color);
+  background-color: #bde4e9;
   animation: visible 1s forwards;
 }
 
@@ -59,19 +61,21 @@
 }
 
 .message_input {
-  background-color: var(--main-color);
+  background-color: rgba(40, 226, 255, 0.05);
   font-family: none;
-
+  height: 55px !important;
+  width: 50%;
 }
 
 .message_input_container {
   display: flex;
-  padding: 8px 0px;
   position: absolute;
-  bottom: 65px;
+  bottom: 50px;
   width: calc(100% - 32px);
-  background-color: var(--main-color);
+  height: 80px;
   animation: visible 1.2s forwards;
+  align-content: center;
+  background-color: var(--main-color);
 }
 
 @keyframes visible {
@@ -85,11 +89,12 @@
 
 .message_input_button {
   flex: 1;
+  height: 55px !important;
   margin-left: 3px;
   display: flex;
   border: 1px solid rgba(0, 0, 0, 0.23);
   border-radius: 4px;
-  background-color: var(--main-color);
+  background-color: rgba(40, 226, 255, 0.05);
 }
 
 .input_button {

@@ -1,3 +1,4 @@
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -15,6 +16,8 @@ import ProtectedRoute from './util/ProtectedRoute';
 import Chatting from './components/Chatting/Chatting';
 import BookList from './pages/BookList/BookList';
 import TestPage from './pages/TestPage';
+import debounce from 'lodash.debounce';
+import { AuthContext } from './contexts/AuthContext';
 
 
 // 1. "/": home 페이지
@@ -22,8 +25,41 @@ import TestPage from './pages/TestPage';
 
 
 function App() {
+  const { sub: userId, client, isConnected } = useContext(AuthContext);
+  const [directMessage, setDirectMessage] = useState(null);
+  const [newMessage, setNewMessage] = useState(() => {
+    const storedValue = localStorage.getItem('newMessage')
+    return storedValue === 'true';
+  });
+  const newMessageChatRooms = useRef({});
+
   const location = useLocation();
   const excludedPaths = ['/login', '/register'];
+
+  const setNewMessageFalse = () => {
+    setNewMessage(false);
+    localStorage.setItem('newMessage', false);
+  }
+
+  useEffect(() => {
+    if (client.current && isConnected ) {
+      const destination = `/topic/user_${userId}`;
+      client.current.subscribe(destination, debounce((message) => {
+        console.log('수신된 메시지:', message.body);
+        const messageBody = JSON.parse(message.body);
+        newMessageChatRooms.current[messageBody.chatRoomId] = true;
+        setNewMessage(false)
+        setTimeout(() => {
+          setNewMessage(true);
+          localStorage.setItem('newMessage', true);
+        }, 100);
+      }))
+    }
+  }, [isConnected])
+
+  useEffect(() => {
+  }, [directMessage]);
+
   return (
     <>
       <Routes>
@@ -41,13 +77,22 @@ function App() {
           <Route path='/mypage' element={<MyPage />} />
           <Route path='/userupdate' element={<UserUpdate />} />
           <Route path='/passwordchange' element={<PasswordChange />} />
-          <Route path='/booklist' element={<BookList />} />
+          <Route path='/booklist' element={<BookList setDirectMessage={setDirectMessage}/>} />
           <Route path='/test' element={<TestPage />} />
         </Route>
           
         <Route path="*" element={<Notfound />} />
       </Routes>
-      {!excludedPaths.includes(location.pathname) && <Chatting />}
+      {!excludedPaths.includes(location.pathname) &&
+        <Chatting
+          onClose={() => {setNewMessageFalse()}}
+          newMessageChatRooms={newMessageChatRooms}
+          newMessage={newMessage}
+          setNewMessage={setNewMessage}
+          directMessage={directMessage}
+          setDirectMessage={setDirectMessage}
+        />
+      }
     </>
   )
 }

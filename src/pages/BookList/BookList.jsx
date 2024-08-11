@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useContext } from "react";
+import { useRef, useState, useEffect, useCallback, useContext } from "react";
 import { useSearch } from '../../contexts/SearchContext';
 import { LuBookPlus } from "react-icons/lu";
 import { IoHeartOutline, IoHeartSharp } from "react-icons/io5";
@@ -9,12 +9,11 @@ import { RiMenuSearchLine } from "react-icons/ri";
 import Header from "../../components/Header"
 import axiosInstance from './../../util/axiosConfig';
 import AreaSelector from "../../components/AreaSelector";
-import Chatting from "../../components/Chatting/Chatting";
 import BookModal from './BookModal';
 import Swal from 'sweetalert2'
 import styles from './BookList.module.css';
 
-const BookList = () => {
+const BookList = ({setDirectMessage}) => {
   const { searchTerm: initialSearchTerm } = useSearch();
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [inputValue, setInputValue] = useState(initialSearchTerm || '');
@@ -29,8 +28,6 @@ const BookList = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [userAreaName, setUserAreaName] = useState('');
-  const [showChatModal, setShowChatModal] = useState(false);
-  const [receiverId, setReceiverId] = useState('');
 
   useEffect(() => {
     fetchUserInfo();
@@ -59,8 +56,7 @@ const BookList = () => {
   };
 
   const handleChatOpen = (ownerId) => {
-    setReceiverId(ownerId);
-    setShowChatModal(true);
+    setDirectMessage(ownerId);
   }
 
   // useEffect(() => {
@@ -349,7 +345,6 @@ const BookList = () => {
       </div>
       )}
       {selectedBook && <BookModal book={selectedBook} onClose={closeModal} onChatOpen={handleChatOpen} />}
-      {showChatModal && <Chatting directMessage={receiverId} onClose={() => {setShowChatModal(false)}} />}
       </>
   )
 }

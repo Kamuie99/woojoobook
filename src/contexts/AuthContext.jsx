@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }) => {
       onConnect: () => {
         console.log('웹소켓 연결 성공');
         setIsConnected(true);
+        localStorage.setItem('lastCloseTime', Date.now());
       },
       onStompError: (frame) => {
         console.error('Broker reported error: ' + frame.headers['message']);

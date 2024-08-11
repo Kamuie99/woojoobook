@@ -33,6 +33,9 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
       subscription = client.current.subscribe(destination, debounce((message) => {
         console.log('수신된 메시지:', message.body);
         const messageBody = JSON.parse(message.body);
+        if (messageBody.chatRoomId != chatRoom.id) {
+          return;
+        }
         const scrollableDiv = scrollBarRef.current;
         
         const heightDiff = scrollableDiv.scrollHeight - scrollableDiv.scrollTop - 555

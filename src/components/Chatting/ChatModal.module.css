@@ -76,7 +76,7 @@
   padding: 16px;
   display: flex;
   flex-direction: column;
-  border: 5px solid black;
+  border: 5px solid var(--accent-color);
   border-radius: 20px;
   overflow: hidden;
   z-index: 800;
@@ -91,13 +91,21 @@
   animation: foldClose 0.5s ease forwards;
 }
 
-
 .loading {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1002;
+  background-color: black;
+  width: 100%;
+  height: 100%;
+}
+
+.loadingCircularProgress {
+  position: absolute;
+  top: 50%;
+  left: 45%;
 }
 
 .modalFooter {

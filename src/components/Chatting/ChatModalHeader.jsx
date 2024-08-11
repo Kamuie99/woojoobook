@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { IconButton } from '@mui/material';
 import { MdKeyboardArrowLeft } from "react-icons/md";
-import { CiMenuKebab } from "react-icons/ci";
 import styles from './ChatModalHeader.module.css';
 
 const ChatModalHeader = ({chatRoom, openChatManagement, handleBack}) => {
@@ -24,7 +23,7 @@ const ChatModalHeader = ({chatRoom, openChatManagement, handleBack}) => {
   return (
     <div className={styles.modalHeader}>
       {chatRoom ? (
-        <IconButton aria-label="back" onClick={handleBack}>
+        <IconButton aria-label="back" onClick={() => handleBack(chatRoom.id)}>
           <MdKeyboardArrowLeft size={30} />
         </IconButton>
       ) : (

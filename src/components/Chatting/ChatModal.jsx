@@ -11,28 +11,28 @@ import PhoneTopBar from './PhoneTopBar';
 import ChatModalHeader from './ChatModalHeader';
 import Draggable from 'react-draggable';
 import ChatManagement from './ChatManagement';
-import Swal from 'sweetalert2'
 
-const ChatModal = ({ open, receiverId, setReceiverId, handleClose, isClosing, isLoading, handleAnimationEnd, chatRooms, chatRoom, setChatRoom }) => {
-  const { isLoggedIn, sub: userId, client } = useContext(AuthContext);
-  const [isVisible, setIsVisible] = useState(false);
+const ChatModal = ({
+  open, isLoading, isClosing,
+  chatRoomsEndRef, receiverId, chatRooms, chatRoom, newMessage, newMessageChatRooms,
+  handleClose, handleAnimationEnd, setReceiverId, setChatRoom, setChatRooms, fetchChatRooms
+}) => {
+  const { sub: userId } = useContext(AuthContext);
   const [openChatManagement, setOpenChatManagement] = useState(false);
 
   useEffect(() => {
     if (open) {
       setChatRoom('');
-      setTimeout(() => {
-        setIsVisible(true);
-      }, 800);
+      fetchChatRooms(0, true);
     }
-  }, [open, setChatRoom]);
+  }, [open]);
 
   useEffect(() => {
     if (receiverId) {
       fetchOrCreateChatRoom(receiverId);
     }
   }, [receiverId]);
-
+  
   const fetchOrCreateChatRoom = async (newReceiverId) => {
     setReceiverId(newReceiverId);
     if (userId == newReceiverId) {
@@ -50,6 +50,8 @@ const ChatModal = ({ open, receiverId, setReceiverId, handleClose, isClosing, is
       if (data.isExist) {
         const roomResponse = await axiosInstance.get(`chatrooms/${userId}/${newReceiverId}`);
         const roomData = await roomResponse.data;
+        newMessageChatRooms.current[roomData.id] = false;
+        console.log(newMessageChatRooms);
         setChatRoom(roomData);
       } else {
         const newRoomResponse = await axiosInstance.post('chatrooms', {
@@ -68,12 +70,17 @@ const ChatModal = ({ open, receiverId, setReceiverId, handleClose, isClosing, is
     setOpenChatManagement(false);
     setReceiverId(receiverId);
     setChatRoom(chatRoom);
+    newMessageChatRooms.current[chatRoom.id] = false;
   };
 
-  const handleBack = () => {
+  const handleBack = (roomId) => {
     setReceiverId('');
     setChatRoom('');
+    fetchChatRooms(0, true);
     setOpenChatManagement(false);
+    if (roomId) {
+      newMessageChatRooms.current[roomId] = false;
+    }
   };
 
   const openManagement = () => {
@@ -107,7 +114,9 @@ const ChatModal = ({ open, receiverId, setReceiverId, handleClose, isClosing, is
           />
           {isLoading ? (
             <div className={styles.loading}>
-              <CircularProgress />
+              <CircularProgress
+                className={styles.loadingCircularProgress}
+              />
             </div>
           ) : (
             chatRoom ? (
@@ -128,14 +137,17 @@ const ChatModal = ({ open, receiverId, setReceiverId, handleClose, isClosing, is
                   chatRooms={chatRooms}
                   userId={userId}
                   onSelectRoom={handleSelectRoom}
-                  fetchOrCreateChatRoom={fetchOrCreateChatRoom}
+                  setChatRooms={setChatRooms}
+                  chatRoomsEndRef={chatRoomsEndRef}
+                  newMessage={newMessage}
+                  newMessageChatRooms={newMessageChatRooms}
                 />
               )
             )
           )}
           <div className={styles.modalFooter}>
             {/* TODO: 전체 채팅 보기 */}
-            <IconButton onClick={handleBack}>
+            <IconButton onClick={() => handleBack()}>
               <IoChatbubblesOutline size={30} />
             </IconButton>
             <IconButton onClick={openManagement}>

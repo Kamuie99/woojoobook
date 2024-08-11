@@ -3,3 +3,28 @@
   bottom: 16px;
   left: 16px;
 }
+
+.newMessage {
+  position: absolute;
+  top: 0;
+  right: 1px;
+  animation : shakeAlert 1s infinite linear;
+}
+
+@keyframes shakeAlert {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  25% {
+    transform: translateX(-3px) translateY(1px) rotate(-15deg);
+  }
+  50% {
+    transform: translateX(0) translateY(0);
+  }
+  75% {
+    transform: translateX(3px) translateY(1px) rotate(15deg);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}

@@ -16,14 +16,3 @@
 .modalTitle {
   align-self: center;
 }
-
-.sideMenuButton {
-  border-radius: 20px;
-  padding: 2px;
-  width: 30px;
-  height: 30px;
-}
-
-.sideMenuButton:hover {
-  background-color: rgba(0, 0, 0, 0.23);
-}
