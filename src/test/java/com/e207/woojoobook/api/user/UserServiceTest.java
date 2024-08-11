@@ -129,33 +129,6 @@ class UserServiceTest {
         );
     }
 
-    private Exchange createExchange(User savedUser, User testUser1, Userbook savedUserbook, Userbook testUserSavedBook1) {
-        return this.exchangeRepository.save(Exchange.builder()
-                .sender(savedUser)
-                .receiver(testUser1)
-                .senderBook(savedUserbook)
-                .receiverBook(testUserSavedBook1)
-                .build());
-    }
-
-    private User cretaeNullAdmin() {
-        return this.userRepository.save(
-                User.builder()
-                        .email("anonymous")
-                        .nickname("null")
-                        .password("null")
-                        .areaCode("null")
-                        .build()
-        );
-    }
-
-    private ChatRoom createChatRoom(User savedUser, User testUser1) {
-        return this.chatRoomRepository.save(ChatRoom.builder()
-                .sender(savedUser)
-                .receiver(testUser1)
-                .build());
-    }
-
     @DisplayName("회원의 포인트를 조회한다")
     @Test
     void findUserPoint() {
@@ -286,6 +259,36 @@ class UserServiceTest {
         assertEquals(errorException.getErrorCode().getMessage(), ErrorCode.NotAcceptDuplicate.getMessage());
     }
 
+    @Transactional
+    @DisplayName("회원 정보 수정에 닉네임은 변경되지 않는다면 닉네임 중복체크는 수행하지 않는다")
+    @Test
+    void doseNotCheckDuplicatedNickname_sameNickname() {
+        // given
+        User user = this.userRepository.save(
+                User.builder()
+                        .email("test1@test.com")
+                        .password("password")
+                        .nickname("nickname")
+                        .areaCode("12345678")
+                        .build()
+        );
+
+        String changeAreaCode = "987654321";
+        UserUpdateRequest request = new UserUpdateRequest("nickname", changeAreaCode);
+        given(this.userHelper.findCurrentUser()).willReturn(user);
+
+        // when
+        this.userService.update(request);
+
+        // then
+        Optional<User> optionalUser = this.userRepository.findById(user.getId());
+        assertAll(
+                () -> assertThat(optionalUser).isPresent(),
+                () -> assertThat(optionalUser.get().getNickname()).isEqualTo(user.getNickname()),
+                () -> assertThat(optionalUser.get().getAreaCode()).isEqualTo(changeAreaCode)
+        );
+    }
+
     private static User cretaeInfoUser(String email, String nickname, String area) {
         User user = User.builder()
                 .email(email)
@@ -335,5 +338,32 @@ class UserServiceTest {
                 .password(password)
                 .build();
         return user;
+    }
+
+    private Exchange createExchange(User savedUser, User testUser1, Userbook savedUserbook, Userbook testUserSavedBook1) {
+        return this.exchangeRepository.save(Exchange.builder()
+                .sender(savedUser)
+                .receiver(testUser1)
+                .senderBook(savedUserbook)
+                .receiverBook(testUserSavedBook1)
+                .build());
+    }
+
+    private User cretaeNullAdmin() {
+        return this.userRepository.save(
+                User.builder()
+                        .email("anonymous")
+                        .nickname("null")
+                        .password("null")
+                        .areaCode("null")
+                        .build()
+        );
+    }
+
+    private ChatRoom createChatRoom(User savedUser, User testUser1) {
+        return this.chatRoomRepository.save(ChatRoom.builder()
+                .sender(savedUser)
+                .receiver(testUser1)
+                .build());
     }
 }
