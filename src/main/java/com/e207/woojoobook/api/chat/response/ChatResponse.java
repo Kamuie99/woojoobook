@@ -4,15 +4,18 @@ import com.e207.woojoobook.domain.chat.Chat;
 
 import lombok.Builder;
 
-@Builder
-public record ChatResponse(Long id, Long chatRoomId, Long userId, String content) {
+import java.time.LocalDateTime;
 
-	public static ChatResponse of(Chat chat) {
-		return new ChatResponse(
-			chat.getId(),
-			chat.getChatRoom().getId(),
-			chat.getUserId(),
-			chat.getContent()
-		);
-	}
+@Builder
+public record ChatResponse(Long id, Long chatRoomId, Long userId, String content, LocalDateTime createdAt) {
+
+    public static ChatResponse of(Chat chat) {
+        return new ChatResponse(
+                chat.getId(),
+                chat.getChatRoom().getId(),
+                chat.getUserId(),
+                chat.getContent(),
+                chat.getCreatedAt()
+        );
+    }
 }

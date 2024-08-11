@@ -21,6 +21,8 @@ import com.e207.woojoobook.domain.chatroom.ChatRoomRepository;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.user.UserRepository;
 
+import java.time.LocalDateTime;
+
 @SpringBootTest
 class ChatRoomServiceTest {
 
@@ -129,24 +131,33 @@ class ChatRoomServiceTest {
 		User target = createUser("target");
 		User anotherUser1 = createUser("anotherUser1");
 		User anotherUser2 = createUser("anotherUser2");
+		User anotherUser3 = createUser("anotherUser3");
 		userRepository.save(target);
 		userRepository.save(anotherUser1);
 		userRepository.save(anotherUser2);
+		userRepository.save(anotherUser3);
 
 		ChatRoom chatRoom1 = createChatRoom(target, anotherUser1);
+		chatRoom1.changeModifiedAt(LocalDateTime.of(2024, 8, 11, 12, 0, 0)); // 순서 : 1
 		ChatRoom chatRoom2 = createChatRoom(anotherUser2, target);
-		ChatRoom chatRoom3 = createChatRoom(anotherUser1, anotherUser2);
+		chatRoom2.changeModifiedAt(LocalDateTime.of(2024, 8, 1, 12, 0, 0)); // 순서 : 3
+		ChatRoom chatRoom3 = createChatRoom(target, anotherUser3);
+		chatRoom3.changeModifiedAt(LocalDateTime.of(2024, 8, 6, 12, 0, 0)); // 순서 : 2
+		ChatRoom chatRoom4 = createChatRoom(anotherUser1, anotherUser2);
 		chatRoomRepository.save(chatRoom1);
 		chatRoomRepository.save(chatRoom2);
 		chatRoomRepository.save(chatRoom3);
+		chatRoomRepository.save(chatRoom4);
 
 		//when
 		Page<ChatRoomResponse> resultPage = chatRoomService.findPageByUserId(target.getId(), PageRequest.of(0, 10));
 
 		//then
-		assertThat(resultPage.getContent()).hasSize(2)
+
+		assertThat(resultPage.getContent()).hasSize(3)
 			.extracting("id")
-			.containsExactlyInAnyOrder(chatRoom1.getId(), chatRoom2.getId());
+			.containsExactly(chatRoom1.getId(), chatRoom3.getId(), chatRoom2.getId());
+
 	}
 
 	@Transactional

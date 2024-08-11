@@ -20,7 +20,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 		+ " or (cr.sender = :receiver and cr.receiver = :sender)")
 	Optional<ChatRoom> findBySenderAndReceiverWithUsers(@Param("sender") User sender, @Param("receiver") User receiver);
 
-	@Query("select cr from ChatRoom cr where cr.sender = :user or cr.receiver = :user")
+	@Query("select cr from ChatRoom cr where cr.sender = :user or cr.receiver = :user order by cr.modifiedAt desc")
 	Page<ChatRoom> findPageBySenderOrReceiver(@Param("user") User user, Pageable pageable);
 
 	List<ChatRoom> findAllBySender(User user);
