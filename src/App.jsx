@@ -43,31 +43,6 @@ function App() {
   }
 
   useEffect(() => {
-    setUser(null);
-    const fetchUserDetails = async () => {
-      if (token) {
-        try {
-          const response = await axiosInstance.get('/users', {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-    
-          if (response.status === 200) {
-            setUser(response.data);
-            return response.data;
-          } else {
-            throw new Error('사용자 정보를 가져오는데 실패했습니다.');
-          }
-        } catch (error) {
-          console.error('사용자 정보를 가져오는데 실패했습니다:', error);
-          setUser(null);
-          return null;
-        }
-      }
-    }
-    fetchUserDetails();
-  }, [token]);
-
-  useEffect(() => {
     if (client.current && isConnected ) {
       const destination = `/topic/user_${userId}`;
       client.current.subscribe(destination, debounce((message) => {

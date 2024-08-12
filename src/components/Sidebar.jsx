@@ -2,7 +2,7 @@ import Button from '../components/Button';
 import Swal from "sweetalert2";
 import { Sidebar as ProSidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import { Link, useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { IoMenu } from "react-icons/io5";
 import { AuthContext } from '../contexts/AuthContext';
 import { FaSpaceAwesome } from "react-icons/fa6";
@@ -10,14 +10,41 @@ import { CgPlayListSearch } from "react-icons/cg";
 import { IoLibraryOutline } from "react-icons/io5";
 import { BsFillPersonLinesFill } from "react-icons/bs";
 import { RiCustomerService2Line } from "react-icons/ri";
-
 import { IoIosLogIn, IoIosLogOut } from "react-icons/io";
+import axiosInstance from '../util/axiosConfig';
 import '../styles/Sidebar.css';
 
 // eslint-disable-next-line react/prop-types
 const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles }) => {
-  const { isLoggedIn, logout, user, sub } = useContext(AuthContext);
+  const { isLoggedIn, logout, user, sub, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user?.nickname === undefined) {
+      const token = localStorage.getItem('token');
+      const fetchUserDetails = async () => {
+        if (token) {
+          try {
+            const response = await axiosInstance.get('/users', {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+      
+            if (response.status === 200) {
+              setUser(response.data);
+              return response.data;
+            } else {
+              throw new Error('사용자 정보를 가져오는데 실패했습니다.');
+            }
+          } catch (error) {
+            console.error('사용자 정보를 가져오는데 실패했습니다:', error);
+            setUser(null);
+            return null;
+          }
+        }
+      }
+      fetchUserDetails();
+    }
+  }, [user])
 
   const handleLogout = () => {
     logout();

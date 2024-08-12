@@ -106,7 +106,6 @@ export const AuthProvider = ({ children }) => {
 
       if (response.status === 200) {
         setUser(response.data); // 응답이 성공적일 경우 유저 데이터 설정
-        console.log(response.data);
         return response.data;
       } else {
         throw new Error('사용자 정보를 가져오는데 실패했습니다.');
