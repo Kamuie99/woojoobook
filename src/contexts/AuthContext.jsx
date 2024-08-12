@@ -71,49 +71,32 @@ export const AuthProvider = ({ children }) => {
     logoutTimer.current = setTimeout(logout, 30 * 60 * 1000); // 30분 > 1분으로 수정
   };
 
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem('token', token);
-      setIsLoggedIn(true);
-      const decodedToken = jwtDecode(token); // jwt 토큰을 파싱해서
-      setSub(decodedToken.sub);  // 파싱한 값중 sub(유저 식별자) 값을 저장
-      fetchUserDetails(token); // Fetch user details when the token is set
-      connect(); // 토큰이 설정되면 connect 함수 호출
-      resetLogoutTimer();
+  // useEffect(() => {
+  //   if (token) {
+  //     localStorage.setItem('token', token);
+  //     setIsLoggedIn(true);
+  //     const decodedToken = jwtDecode(token); // jwt 토큰을 파싱해서
+  //     setSub(decodedToken.sub);  // 파싱한 값중 sub(유저 식별자) 값을 저장
+  //     fetchUserDetails(token); // Fetch user details when the token is set
+  //     connect(); // 토큰이 설정되면 connect 함수 호출
+  //     resetLogoutTimer();
 
-      // 사용자 활동 감지
-      const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
-      const handleUserActivity = () => resetLogoutTimer();
-      activityEvents.forEach(event => 
-        document.addEventListener(event, handleUserActivity)
-      );
-
-      // 페이지 떠날 때 로그아웃 처리
-      // const handleBeforeUnload = () => {
-      //   logout();
-      // };
-      // window.addEventListener('beforeunload', handleBeforeUnload);
-
-      // return () => {
-      //   activityEvents.forEach(event => 
-      //     document.removeEventListener(event, handleUserActivity)
-      //   );
-      //   window.removeEventListener('beforeunload', handleBeforeUnload);
-      //   if (logoutTimer.current) {
-      //     clearTimeout(logoutTimer.current);
-      //   }
-      // };
-    } else {
-      localStorage.removeItem('token');
-      setIsLoggedIn(false);
-      setSub('');
-      setUser(null);
-      if (client.current) {
-        client.current.deactivate();
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  //     // 사용자 활동 감지
+  //     const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+  //     const handleUserActivity = () => resetLogoutTimer();
+  //     activityEvents.forEach(event => 
+  //       document.addEventListener(event, handleUserActivity)
+  //     );
+  //   } else {
+  //     localStorage.removeItem('token');
+  //     setIsLoggedIn(false);
+  //     setSub('');
+  //     setUser(null);
+  //     if (client.current) {
+  //       client.current.deactivate();
+  //     }
+  //   }
+  // }, [token]);
 
   const fetchUserDetails = async (token) => {
     try {
@@ -123,6 +106,7 @@ export const AuthProvider = ({ children }) => {
 
       if (response.status === 200) {
         setUser(response.data); // 응답이 성공적일 경우 유저 데이터 설정
+        console.log(response.data);
         return response.data;
       } else {
         throw new Error('사용자 정보를 가져오는데 실패했습니다.');
@@ -164,7 +148,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, isLoggedIn, user, sub, client, isConnected, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ token, isLoggedIn, user, sub, client, isConnected, login, logout, updateUser, setUser }}>
       {children}
     </AuthContext.Provider>
   );

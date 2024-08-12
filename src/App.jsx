@@ -17,6 +17,8 @@ import Chatting from './components/Chatting/Chatting';
 import BookList from './pages/BookList/BookList';
 import TestPage from './pages/TestPage';
 import debounce from 'lodash.debounce';
+import axiosInstance from './util/axiosConfig';
+import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from './contexts/AuthContext';
 
 
@@ -25,7 +27,7 @@ import { AuthContext } from './contexts/AuthContext';
 
 
 function App() {
-  const { sub: userId, client, isConnected } = useContext(AuthContext);
+  const { sub: userId, client, isConnected, token, setUser } = useContext(AuthContext);
   const [directMessage, setDirectMessage] = useState(null);
   const [newMessage, setNewMessage] = useState(() => {
     const storedValue = localStorage.getItem('newMessage')
@@ -40,6 +42,31 @@ function App() {
     setNewMessage(false);
     localStorage.setItem('newMessage', false);
   }
+
+  useEffect(() => {
+    setUser(null);
+    const fetchUserDetails = async () => {
+      if (token) {
+        try {
+          const response = await axiosInstance.get('/users', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+    
+          if (response.status === 200) {
+            setUser(response.data);
+            return response.data;
+          } else {
+            throw new Error('사용자 정보를 가져오는데 실패했습니다.');
+          }
+        } catch (error) {
+          console.error('사용자 정보를 가져오는데 실패했습니다:', error);
+          setUser(null);
+          return null;
+        }
+      }
+    }
+    fetchUserDetails();
+  }, [token]);
 
   useEffect(() => {
     if (client.current && isConnected ) {
