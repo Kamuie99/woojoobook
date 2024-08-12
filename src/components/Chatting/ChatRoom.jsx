@@ -43,7 +43,11 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
         const isAtBottom = Math.abs(heightDiff) < 1
 
         setMessages((prev) => [
-          { userId: messageBody.userId, content: messageBody.content },
+          {
+            userId: messageBody.userId,
+            content: messageBody.content,
+            createdAt: messageBody.createdAt
+          },
           ...prev,
         ]);
         if (isAtBottom) {
@@ -204,7 +208,24 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
             <div key={index} className={
               `${styles.message} ${message.userId == userId ? styles.sent : styles.received}`
             }>
-              <p>{message.content}</p>
+              <p className={styles.createdAt}>{message.content}
+                <p className={styles.dateTime}>
+                  <p>
+                    {(parseInt(message.createdAt.slice(11, 13)) + 9 > 24
+                    ? parseInt(message.createdAt.slice(11, 13)) + 9 - 24
+                    : parseInt(message.createdAt.slice(11, 13)) + 9) > 12
+                      ? `오후`
+                      : `오전`}
+                  </p>
+                  <p>
+                  {(parseInt(message.createdAt.slice(11, 13)) + 9 > 24
+                    ? parseInt(message.createdAt.slice(11, 13)) + 9 - 24
+                    : parseInt(message.createdAt.slice(11, 13)) + 9) > 12
+                      ? `${parseInt(message.createdAt.slice(11, 13)) - 3}:${message.createdAt.slice(14, 16)}`
+                      : `${parseInt(message.createdAt.slice(11, 13)) + 9}:${message.createdAt.slice(14, 16)}`}
+                  </p>
+                </p>
+              </p>
             </div>
           ))}
         <div ref={messagesEndRef}/>

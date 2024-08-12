@@ -13,6 +13,7 @@
   overflow-y: auto;
   background-color: var(--main-color);
   flex-grow: 1;
+  position: relative;
 }
 
 .message {
@@ -58,6 +59,29 @@
   word-break: break-word;
   overflow-wrap: break-word;
   white-space: pre-wrap;
+}
+
+.createdAt {
+  position: relative;
+}
+
+.dateTime {
+  position: absolute;
+  font-size: 12px;
+  width: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sent .dateTime {
+  left: -40px;
+  bottom: 2px;
+}
+
+.received .dateTime {
+  right: -40px;
+  bottom: 2px;
 }
 
 .messageInput {
