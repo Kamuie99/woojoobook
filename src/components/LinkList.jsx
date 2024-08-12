@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import '../styles/LinkList.css'
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
