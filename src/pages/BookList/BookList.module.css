@@ -4,6 +4,47 @@
   overflow-y: auto;
 }
 
+.onlineUsersWrapper {
+  position: relative;
+}
+
+.peopleIcon {
+  cursor: pointer;
+}
+
+.onlineUsersPopup {
+  position: absolute;
+  width: 150px;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  font-size: 15px;
+}
+
+.onlineUserLink {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.onlineIndicator {
+  width: 8px;
+  height: 8px;
+  background-color: #2ecc71;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
 .innerBox {
   display: flex;
   flex-direction: row;
@@ -36,7 +77,7 @@
   flex-direction: column;
   justify-content: center;
   gap: 10px;
-  width: 50%;
+  width: 60%;
 }
 
 .description > h3 {
@@ -89,10 +130,11 @@
   border-radius: 0px !important;
   border: none;
   border-bottom: 2px solid black;
+  outline: none;
 }
 
 .status {
-  width: 20%;
+  width: 15%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -233,7 +275,7 @@
  * animation rotate-in-ver
  * ----------------------------------------
  */
- @-webkit-keyframes rotate-in-ver {
+@-webkit-keyframes rotate-in-ver {
   0% {
     -webkit-transform: rotateY(-360deg);
             transform: rotateY(-360deg);

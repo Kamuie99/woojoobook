@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -55,6 +55,7 @@ function App() {
         }, 100);
       }))
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected])
 
   useEffect(() => {

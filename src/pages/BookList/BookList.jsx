@@ -1,11 +1,14 @@
-import { useRef, useState, useEffect, useCallback, useContext } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import { useSearch } from '../../contexts/SearchContext';
+import { Link } from 'react-router-dom';
+
 import { LuBookPlus } from "react-icons/lu";
 import { IoHeartOutline, IoHeartSharp } from "react-icons/io5";
 import { getEmotionImage } from '../../util/get-emotion-image';
 import { AuthContext } from '../../contexts/AuthContext';
 import { FiMapPin } from "react-icons/fi";
 import { RiMenuSearchLine } from "react-icons/ri";
+import { BsPeople } from "react-icons/bs";
 import Header from "../../components/Header"
 import axiosInstance from './../../util/axiosConfig';
 import AreaSelector from "../../components/AreaSelector";
@@ -13,6 +16,7 @@ import BookModal from './BookModal';
 import Swal from 'sweetalert2'
 import styles from './BookList.module.css';
 
+// eslint-disable-next-line react/prop-types
 const BookList = ({setDirectMessage}) => {
   const { searchTerm: initialSearchTerm } = useSearch();
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
@@ -22,16 +26,44 @@ const BookList = ({setDirectMessage}) => {
   const [error, setError] = useState(null);
   const [areaNames, setAreaNames] = useState({});
   const [selectedArea, setSelectedArea] = useState(null);
-  const { user, sub: userId } = useContext(AuthContext);
+  const { user, sub: userId, client } = useContext(AuthContext);
   const [selectedBook, setSelectedBook] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [userAreaName, setUserAreaName] = useState('');
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [showOnlineUsers, setShowOnlineUsers] = useState(false);
 
   useEffect(() => {
     fetchUserInfo();
   }, []);
+
+  useEffect(() => {
+    if (selectedArea && selectedArea.areaCode) {
+      const destination = `/topic/area:${selectedArea.areaCode}`;
+      client.current.subscribe(destination, (message) => {
+        // console.log('수신된 메시지:', message.body);
+        const messageBody = JSON.parse(message.body);
+        // console.log(messageBody);
+        setOnlineUsers(messageBody);
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedArea]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showOnlineUsers && !event.target.closest(`.${styles.onlineUsersWrapper}`)) {
+        setShowOnlineUsers(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showOnlineUsers]);
 
   const fetchUserInfo = async () => {
     try {
@@ -58,10 +90,6 @@ const BookList = ({setDirectMessage}) => {
   const handleChatOpen = (ownerId) => {
     setDirectMessage(ownerId);
   }
-
-  // useEffect(() => {
-  //   console.log(books);
-  // }, [books])
 
   const fetchBooks = useCallback(async () => {
     setLoading(true);
@@ -98,7 +126,6 @@ const BookList = ({setDirectMessage}) => {
   }, [fetchBooks, currentPage, selectedArea]);
 
   const fetchAreaName = useCallback(async (areaCode) => {
-    // console.log(areaCode);
     if (areaCode) {
       try {
         const response = await axiosInstance.get('/area', { params: { areaCode } });
@@ -208,7 +235,7 @@ const BookList = ({setDirectMessage}) => {
       });
   
       if (!result.isConfirmed) {
-        return; // 사용자가 취소하거나 다른 행동을 한 경우 함수 종료
+        return;
       }
     }
     try {
@@ -221,12 +248,34 @@ const BookList = ({setDirectMessage}) => {
     }
   }
 
+  const toggleOnlineUsers = () => {
+    setShowOnlineUsers(!showOnlineUsers);
+  };
+
   return (
     <>
       <Header />
       <div className={styles.titleAndSearch}>
         <div className={styles.titleDiv}>
           <LuBookPlus /> 우주 도서 ({userAreaName || '지역 정보 로딩 중...'})
+          <div className={styles.onlineUsersWrapper}>
+            <BsPeople onClick={toggleOnlineUsers} className={styles.peopleIcon} />
+            {showOnlineUsers && (
+              <div className={styles.onlineUsersPopup}>
+                <p className={styles.onlineUserTitle}>현재 온라인 유저 ({onlineUsers.length})</p>
+                {onlineUsers.length > 0 ? (
+                  onlineUsers.map((user, index) => (
+                    <Link to={`/${user.id}/mylibrary`} key={index} className={styles.onlineUserLink}>
+                      <span className={styles.onlineIndicator}></span>
+                      {user.nickname}
+                    </Link>
+                  ))
+                ) : (
+                  <p>현재 온라인인 유저가 없습니다.</p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
       {isLoading ? (
