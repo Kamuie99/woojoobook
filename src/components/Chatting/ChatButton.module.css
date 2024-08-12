@@ -6,6 +6,7 @@
 
 .newMessage {
   position: absolute;
+  color: var(--contrast-color);
   top: -10px;
   right: -10px;
   animation : shakeAlert 1s infinite linear;
