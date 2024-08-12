@@ -210,12 +210,19 @@ const MyLibrary = () => {
         ) : (
           <main className={styles.main}>
             <div className={styles.categoriesContainer}>
-              {sortedCategories.map(category => (
-                <CategoryItem
-                  key={category.id}
-                  category={category}
-                />
-              ))}
+              {sortedCategories.length > 0? (
+                sortedCategories.map(category => (
+                  <CategoryItem
+                    key={category.id}
+                    category={category}
+              
+                  />
+                )) 
+              ) : (
+                <div className={styles.emptyCategoryNotOwn}>
+                  <span>서재가 비어있습니다.</span>
+                </div>
+              )}
             </div>
           </main>
         )}
