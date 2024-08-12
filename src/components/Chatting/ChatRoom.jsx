@@ -211,18 +211,14 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
               <p className={styles.createdAt}>{message.content}
                 <p className={styles.dateTime}>
                   <p>
-                    {(parseInt(message.createdAt.slice(11, 13)) + 9 > 24
+                    {(parseInt(message.createdAt.slice(11, 13)) + 9 >= 24
                     ? parseInt(message.createdAt.slice(11, 13)) + 9 - 24
                     : parseInt(message.createdAt.slice(11, 13)) + 9) > 12
                       ? `오후`
                       : `오전`}
                   </p>
                   <p>
-                  {(parseInt(message.createdAt.slice(11, 13)) + 9 > 24
-                    ? parseInt(message.createdAt.slice(11, 13)) + 9 - 24
-                    : parseInt(message.createdAt.slice(11, 13)) + 9) > 12
-                      ? `${parseInt(message.createdAt.slice(11, 13)) - 3}:${message.createdAt.slice(14, 16)}`
-                      : `${parseInt(message.createdAt.slice(11, 13)) + 9}:${message.createdAt.slice(14, 16)}`}
+                  {`${(parseInt(message.createdAt.slice(11, 13))+9)%24}:${message.createdAt.slice(14, 16)}`}
                   </p>
                 </p>
               </p>
