@@ -16,6 +16,10 @@
   position: relative;
 }
 
+.messagesContainer::-webkit-scrollbar {
+  display: none;
+}
+
 .message {
   display: flex;
   margin: 10px;
