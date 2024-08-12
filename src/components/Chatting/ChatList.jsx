@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IoPersonOutline, IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import styles from './ChatList.module.css';
 
-const ChatList = ({ chatRooms, userId, onSelectRoom, setChatRooms, chatRoomsEndRef, newMessage, newMessageChatRooms }) => {
+const ChatList = ({ chatRooms, userId, onSelectRoom, setChatRooms, newMessage, newMessageChatRooms }) => {
   useEffect(() => {
     const updateChatRooms = chatRooms.map((room) => {
       return {
@@ -27,7 +27,11 @@ const ChatList = ({ chatRooms, userId, onSelectRoom, setChatRooms, chatRoomsEndR
           }}
         >
           <IoPersonOutline size={40}/>
-          <p>{`${userId == room.receiverId ? room.senderNickname : room.receiverNickname}`}</p>
+          <p>
+            {userId == room.receiverId
+            ? room.senderNickname === 'anonymous' ? '(알 수 없음)' : room.senderNickname
+            : room.receiverNickname === 'anonymous' ? '(알 수 없음)' : room.receiverNickname}
+          </p>
           {room.hasNewMessage && (
             <IoChatbubbleEllipsesOutline
               className={styles.newMessage}
@@ -36,42 +40,8 @@ const ChatList = ({ chatRooms, userId, onSelectRoom, setChatRooms, chatRoomsEndR
           )}
         </div>
       ))}
-      <div ref={chatRoomsEndRef} />
     </div>
   );
 };
 
 export default ChatList;
-
-
-//   return (
-//     <div className={styles.chatList} id='chatList'>
-//       <List>
-//         {chatRooms.map((room) => (
-//           <React.Fragment key={room.id}>
-//             <ListItem
-//               className={styles.chatListItem}
-//               onClick={() => { 
-//                 let otherUserId = room.receiverId;
-//                 if (otherUserId == userId) otherUserId = room.senderId;
-//                 onSelectRoom(otherUserId, room);
-//                 console.log(room)
-//               }}
-//             >
-//               <ListItemText primary={`
-//                 ${userId == room.receiverId
-//                   ? room.senderNickname : room.receiverNickname}
-//               `} />
-//               {room.hasNewMessage && (
-//                 <div>new!</div>
-//               )}
-//             </ListItem>
-//             <Divider />
-//           </React.Fragment>
-//         ))}
-//         <div ref={chatRoomsEndRef}/>
-//       </List>
-//       {/* </InfiniteScroll> */}
-//     </div>
-//   );
-// };

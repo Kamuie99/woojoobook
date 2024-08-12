@@ -14,7 +14,7 @@ const ChatButton = ({toggleOpen, newMessage}) => {
       {newMessage && (
         <IoAlertCircleSharp
           className={styles.newMessage}
-          size={20}
+          size={30}
         />
       )}
       <IoChatbox size={30} />

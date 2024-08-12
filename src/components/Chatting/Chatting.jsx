@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 import axiosInstance from '../../util/axiosConfig';
@@ -16,8 +16,7 @@ const Chatting = ({ onClose, newMessageChatRooms, setNewMessage, newMessage, dir
   const [messages, setMessages] = useState([]);
   const [chatRooms, setChatRooms] = useState([]);
   const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(false);
-  const chatRoomsEndRef = useRef(null);
+  const [totalPages, setTotalPages] = useState(0);
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -25,7 +24,7 @@ const Chatting = ({ onClose, newMessageChatRooms, setNewMessage, newMessage, dir
   
   useEffect(() => {
     if (!isLoggedIn) {
-      setOpen(false);
+      handleClose();
     }
   }, [isLoggedIn, open])
 
@@ -40,25 +39,6 @@ const Chatting = ({ onClose, newMessageChatRooms, setNewMessage, newMessage, dir
     }, 100);
     setNewMessage(false);
   }, [directMessage]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          fetchMoreChatRooms();
-        }
-      },
-      { threshold: 1.0 }
-    );
-    if (chatRoomsEndRef.current) {
-      observer.observe(chatRoomsEndRef.current);
-    }
-    return () => {
-      if (chatRoomsEndRef.current) {
-        observer.unobserve(chatRoomsEndRef.current);
-      }
-    }
-  }, [hasMore]);
 
   useEffect(() => {
     if (page > 0) {
@@ -89,23 +69,17 @@ const Chatting = ({ onClose, newMessageChatRooms, setNewMessage, newMessage, dir
         };
       });
       if (init) {
-        setChatRooms(updateChatRooms);
         setPage(0);
-        setHasMore(true);
-      } else {
-        setChatRooms((prev) => [...prev, ...updateChatRooms]);
       }
-      setHasMore(data.content.length === 3);
+      setChatRooms(updateChatRooms);
+      setTotalPages(data.totalPages);
+      // setChatRooms((prev) => [...prev, ...updateChatRooms]);
     } catch (error) {
       console.error('채팅 룸 목록 조회 중 오류 발생:', error);
     }
   };
 
-  const fetchMoreChatRooms = () => {
-    setPage((prev) => prev + 1)
-  };
-
-  const toggleOpen = (e, directMessage = null) => {
+  const toggleOpen = () => {
     if (!isLoggedIn) {
       Swal.fire({
         title: '채팅을 하시려면 로그인 해주세요',
@@ -150,6 +124,14 @@ const Chatting = ({ onClose, newMessageChatRooms, setNewMessage, newMessage, dir
     }
   };
 
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < totalPages) {
+      setPage(newPage);
+      fetchChatRooms(newPage);
+    }
+  };
+
+
   return (
     <div>
       {!excludedPaths.includes(location.pathname) &&
@@ -163,9 +145,6 @@ const Chatting = ({ onClose, newMessageChatRooms, setNewMessage, newMessage, dir
           open={open}
           isLoading={isLoading}
           isClosing={isClosing}
-          chatRoomsEndRef={chatRoomsEndRef}
-          hasMore={hasMore}
-          fetchMoreChatRooms={fetchMoreChatRooms}
           receiverId={receiverId}
           chatRooms={chatRooms}
           chatRoom={chatRoom}
@@ -177,6 +156,9 @@ const Chatting = ({ onClose, newMessageChatRooms, setNewMessage, newMessage, dir
           setChatRoom={setChatRoom}
           setChatRooms={setChatRooms}
           fetchChatRooms={fetchChatRooms}
+          handlePageChange={handlePageChange}
+          currentPage={page}
+          totalPages={totalPages}
         />
       )}
     </div>

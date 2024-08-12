@@ -1,15 +1,15 @@
-.message_list {
+.messageList {
   flex-grow: 1;
   overflow-y: auto;
   padding-top: 50px;
-  padding-bottom: 120px;
+  padding-bottom: 100px;
 }
 
-.message_list::-webkit-scrollbar {
+.messageList::-webkit-scrollbar {
   display: none;
 }
 
-.messages_container {
+.messagesContainer {
   overflow-y: auto;
   background-color: var(--main-color);
   flex-grow: 1;
@@ -60,19 +60,26 @@
   white-space: pre-wrap;
 }
 
-.message_input {
-  background-color: rgba(40, 226, 255, 0.05);
+.messageInput {
   font-family: none;
-  height: 55px !important;
+  height: 50px !important;
   width: 50%;
+  padding: 0;
 }
 
-.message_input_container {
+.messageInput > * > input {
+  height: 15px;
+  background-color: var(--main-color);
+  filter: brightness(0.97);
+}
+
+.messageInputContainer {
   display: flex;
   position: absolute;
-  bottom: 50px;
+  bottom: 55px;
+  padding: 8px 2px;
   width: calc(100% - 32px);
-  height: 80px;
+  height: 62px;
   animation: visible 1.2s forwards;
   align-content: center;
   background-color: var(--main-color);
@@ -87,16 +94,27 @@
   }
 }
 
-.message_input_button {
+.messageInputButton {
   flex: 1;
-  height: 55px !important;
+  height: 48px !important;
+  width: 50px;
   margin-left: 3px;
   display: flex;
   border: 1px solid rgba(0, 0, 0, 0.23);
   border-radius: 4px;
-  background-color: rgba(40, 226, 255, 0.05);
+  background-color: var(--main-color);
+  justify-content: center;
+  filter: brightness(0.97);
 }
 
-.input_button {
+.inputButton {
   align-self: center;
+  width: 50px;
+  height: 50px;
+  padding: 17px;
+  color: black;
+}
+
+.inputButton:hover {
+  background-color: rgba(0, 0, 0, 0.08)
 }

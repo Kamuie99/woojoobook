@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Modal, Box, IconButton, CircularProgress, Backdrop } from '@mui/material';
-import { IoChatbubblesOutline, IoSettingsOutline  } from "react-icons/io5";
+import { Modal, Box, IconButton, CircularProgress } from '@mui/material';
+import { IoChatbubblesOutline, IoSettingsOutline, IoCaretBack, IoCaretForward, IoEllipse, IoEllipseOutline } from "react-icons/io5";
+import { FaExchangeAlt } from "react-icons/fa";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { AuthContext } from '../../contexts/AuthContext';
 import axiosInstance from '../../util/axiosConfig';
@@ -14,8 +15,9 @@ import ChatManagement from './ChatManagement';
 
 const ChatModal = ({
   open, isLoading, isClosing,
-  chatRoomsEndRef, receiverId, chatRooms, chatRoom, newMessage, newMessageChatRooms,
-  handleClose, handleAnimationEnd, setReceiverId, setChatRoom, setChatRooms, fetchChatRooms
+  receiverId, chatRooms, chatRoom, newMessage, newMessageChatRooms,
+  handleClose, handleAnimationEnd, setReceiverId, setChatRoom, setChatRooms, fetchChatRooms,
+  handlePageChange, currentPage, totalPages
 }) => {
   const { sub: userId } = useContext(AuthContext);
   const [openChatManagement, setOpenChatManagement] = useState(false);
@@ -51,7 +53,6 @@ const ChatModal = ({
         const roomResponse = await axiosInstance.get(`chatrooms/${userId}/${newReceiverId}`);
         const roomData = await roomResponse.data;
         newMessageChatRooms.current[roomData.id] = false;
-        console.log(newMessageChatRooms);
         setChatRoom(roomData);
       } else {
         const newRoomResponse = await axiosInstance.post('chatrooms', {
@@ -83,11 +84,11 @@ const ChatModal = ({
     }
   };
 
-  const openManagement = () => {
-    setReceiverId('');
-    setChatRoom('');
-    setOpenChatManagement(true);
-  }
+  // const openManagement = () => {
+  //   setReceiverId('');
+  //   setChatRoom('');
+  //   setOpenChatManagement(true);
+  // }
 
   return (
     <Draggable>
@@ -114,9 +115,7 @@ const ChatModal = ({
           />
           {isLoading ? (
             <div className={styles.loading}>
-              <CircularProgress
-                className={styles.loadingCircularProgress}
-              />
+              <CircularProgress className={styles.loadingCircularProgress} />
             </div>
           ) : (
             chatRoom ? (
@@ -133,15 +132,45 @@ const ChatModal = ({
                   fetchOrCreateChatRoom={fetchOrCreateChatRoom}
                 />
               ) : (
-                <ChatList
-                  chatRooms={chatRooms}
-                  userId={userId}
-                  onSelectRoom={handleSelectRoom}
-                  setChatRooms={setChatRooms}
-                  chatRoomsEndRef={chatRoomsEndRef}
-                  newMessage={newMessage}
-                  newMessageChatRooms={newMessageChatRooms}
-                />
+                <>
+                  <ChatList
+                    chatRooms={chatRooms}
+                    userId={userId}
+                    onSelectRoom={handleSelectRoom}
+                    setChatRooms={setChatRooms}
+                    newMessage={newMessage}
+                    newMessageChatRooms={newMessageChatRooms}
+                  />
+                  <div className={styles.pagination}>
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 0}
+                    >
+                      <IoCaretBack size={20}/>
+                    </button>
+                    {totalPages > 1 && (
+                    <div className={styles.paginationButton}>
+                      {Array.from({ length: totalPages }, (_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handlePageChange(index)}
+                          disabled={currentPage === index}
+                        >
+                          {currentPage === index
+                          ? <IoEllipse size={20}/>
+                          : <IoEllipseOutline size={20}/>}
+                        </button>
+                      ))}
+                    </div>
+                   )}
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages - 1}
+                    >
+                      <IoCaretForward size={20} />
+                    </button>
+                  </div>
+                </>
               )
             )
           )}
@@ -150,11 +179,11 @@ const ChatModal = ({
             <IconButton onClick={() => handleBack()}>
               <IoChatbubblesOutline size={30} />
             </IconButton>
-            <IconButton onClick={openManagement}>
+            {/* <IconButton onClick={openManagement}> */}
+            {/* <IconButton onClick={() => {handlePageChange(currentPage - 1)}}>
               <IoSettingsOutline size={30}/>
             </IconButton>
-            {/* TODO: 교환 채팅 필터링 */}
-            {/* <IconButton onClick={handleClose}>
+            <IconButton onClick={() => {handlePageChange(currentPage + 1)}}>
               <FaExchangeAlt size={25} />
             </IconButton> */}
             <IconButton aria-label="close" onClick={handleClose}>

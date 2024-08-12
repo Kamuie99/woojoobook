@@ -16,6 +16,7 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
   const [hasMore, setHasMore] = useState(true);
   const [newMessageAlert, setNewMessageAlert] = useState(false);
   const [isMessageEndVisible, setIsMessageEndVisible] = useState(true);
+  const [deactivateChat, setDeactivateChat] = useState(false);
   const scrollBarRef = useRef(null);
   const messagesEndRef = useRef(null);
   const loadMoreMessagesTarget = useRef(null);
@@ -31,7 +32,7 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
     if (client.current && chatRoom) {
       const destination = `/topic/user_${userId}`;
       subscription = client.current.subscribe(destination, debounce((message) => {
-        console.log('수신된 메시지:', message.body);
+        // console.log('수신된 메시지:', message.body);
         const messageBody = JSON.parse(message.body);
         if (messageBody.chatRoomId != chatRoom.id) {
           return;
@@ -48,7 +49,7 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
         if (isAtBottom) {
           scrollToBottom();
         } else if (messageBody.userId != userId) {
-          setNewMessageAlert(true); // 새로운 메시지가 도착했음을 알림
+          setNewMessageAlert(true);
         }
       }, 500, { leading: true, trailing: false}));
       return () => {
@@ -59,6 +60,11 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
   
   useEffect(() => {
     fetchChatMessages(0, true);
+    setDeactivateChat(false);
+    if (chatRoom.senderNickname === 'anonymous' ||
+      chatRoom.receiverNickname === 'anonymous') {
+      setDeactivateChat(true)
+    }
   }, [chatRoom]);
 
   
@@ -191,8 +197,8 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
   };
 
   return (
-    <div className={styles.message_list} ref={scrollBarRef}>
-      <div className={styles.messages_container}>
+    <div className={styles.messageList} ref={scrollBarRef}>
+      <div className={styles.messagesContainer}>
         <div ref={loadMoreMessagesTarget} />
           {[...messages].reverse().map((message, index) => (
             <div key={index} className={
@@ -204,20 +210,26 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
         <div ref={messagesEndRef}/>
       </div>
       <div className={`
-        ${styles.message_input_container}
+        ${styles.messageInputContainer}
       `}>
         <TextField
           value={chat}
           onChange={(e) => setChat(e.target.value)}
           onKeyDown={handleSendMessage}
-          placeholder="메시지 입력"
+          // placeholder="메시지 입력"
+          placeholder={deactivateChat ? '탈퇴한 사용자입니다.' : '메시지 입력'}
           fullWidth
-          className={styles.message_input}
+          className={styles.messageInput}
+          disabled={deactivateChat}
         />
-        <div className={styles.message_input_button}>
-          <Button onClick={handleSendMessageClick} className={styles.input_button}>
-            <BsArrowReturnLeft />
-          </Button>
+        <div className={styles.messageInputButton}>
+          <BsArrowReturnLeft
+            onClick={handleSendMessageClick}
+            className={styles.inputButton}
+            disabled={deactivateChat}  
+          />
+          {/* <Button>
+          </Button> */}
         </div>
       </div>
       <Snackbar

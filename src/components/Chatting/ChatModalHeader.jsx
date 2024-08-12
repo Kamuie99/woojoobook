@@ -23,8 +23,8 @@ const ChatModalHeader = ({chatRoom, openChatManagement, handleBack}) => {
   return (
     <div className={styles.modalHeader}>
       {chatRoom ? (
-        <IconButton aria-label="back" onClick={() => handleBack(chatRoom.id)}>
-          <MdKeyboardArrowLeft size={30} />
+        <IconButton aria-label="back" onClick={() => handleBack(chatRoom.id)}  className={styles.backButton}>
+          <MdKeyboardArrowLeft size={28}/>
         </IconButton>
       ) : (
         openChatManagement ? "채팅방 관리하기" : "전체 채팅 목록"
@@ -32,7 +32,7 @@ const ChatModalHeader = ({chatRoom, openChatManagement, handleBack}) => {
       <div className={styles.modalTitle}>
         <p>
           {chatRoom ?
-            `${receiverNickname} 님과의 채팅` :
+            `${receiverNickname === 'anonymous' ? '(알 수 없음)' : receiverNickname} 님과의 채팅` :
             <div></div>    
           }
         </p>

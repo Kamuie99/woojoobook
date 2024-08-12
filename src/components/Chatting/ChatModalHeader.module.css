@@ -16,3 +16,9 @@
 .modalTitle {
   align-self: center;
 }
+
+.modalHeader > button {
+  display: flex;
+  justify-content: start;
+  padding: 0px;
+}
