@@ -71,32 +71,32 @@ export const AuthProvider = ({ children }) => {
     logoutTimer.current = setTimeout(logout, 30 * 60 * 1000); // 30분 > 1분으로 수정
   };
 
-  // useEffect(() => {
-  //   if (token) {
-  //     localStorage.setItem('token', token);
-  //     setIsLoggedIn(true);
-  //     const decodedToken = jwtDecode(token); // jwt 토큰을 파싱해서
-  //     setSub(decodedToken.sub);  // 파싱한 값중 sub(유저 식별자) 값을 저장
-  //     fetchUserDetails(token); // Fetch user details when the token is set
-  //     connect(); // 토큰이 설정되면 connect 함수 호출
-  //     resetLogoutTimer();
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem('token', token);
+      setIsLoggedIn(true);
+      const decodedToken = jwtDecode(token); // jwt 토큰을 파싱해서
+      setSub(decodedToken.sub);  // 파싱한 값중 sub(유저 식별자) 값을 저장
+      fetchUserDetails(token); // Fetch user details when the token is set
+      connect(); // 토큰이 설정되면 connect 함수 호출
+      resetLogoutTimer();
 
-  //     // 사용자 활동 감지
-  //     const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
-  //     const handleUserActivity = () => resetLogoutTimer();
-  //     activityEvents.forEach(event => 
-  //       document.addEventListener(event, handleUserActivity)
-  //     );
-  //   } else {
-  //     localStorage.removeItem('token');
-  //     setIsLoggedIn(false);
-  //     setSub('');
-  //     setUser(null);
-  //     if (client.current) {
-  //       client.current.deactivate();
-  //     }
-  //   }
-  // }, [token]);
+      // 사용자 활동 감지
+      const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+      const handleUserActivity = () => resetLogoutTimer();
+      activityEvents.forEach(event => 
+        document.addEventListener(event, handleUserActivity)
+      );
+    } else {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+      setSub('');
+      setUser(null);
+      if (client.current) {
+        client.current.deactivate();
+      }
+    }
+  }, [token]);
 
   const fetchUserDetails = async (token) => {
     try {

@@ -18,7 +18,6 @@ import BookList from './pages/BookList/BookList';
 import TestPage from './pages/TestPage';
 import debounce from 'lodash.debounce';
 import axiosInstance from './util/axiosConfig';
-import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from './contexts/AuthContext';
 
 
