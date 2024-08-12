@@ -23,11 +23,16 @@ const Chatting = ({ onClose, newMessageChatRooms, setNewMessage, newMessage, dir
   const excludedPaths = ['/login', '/register'];
   
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn && open) {
       handleClose();
     }
-  }, [isLoggedIn, open])
-
+  }, [isLoggedIn]);
+  
+  useEffect(() => {
+    if (!isLoggedIn && open) {
+      setOpen(false);
+    }
+  }, [isLoggedIn, open]);
   useEffect(() => {
     if (directMessage == null) {
       return;
