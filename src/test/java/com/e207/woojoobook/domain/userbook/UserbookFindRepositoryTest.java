@@ -46,7 +46,7 @@ class UserbookQueryRepositoryTest {
 			em.persist(userbook);
 		}
 
-		UserbookListRequest request = new UserbookListRequest(user.getAreaCode(), null, null, 10);
+		UserbookListRequest request = new UserbookListRequest(user.getAreaCode(), null, null);
 
 		// when
 		var userbookListResponse = userbookQueryRepository.findUserbookListWithLikeStatus(user.getId(), request);

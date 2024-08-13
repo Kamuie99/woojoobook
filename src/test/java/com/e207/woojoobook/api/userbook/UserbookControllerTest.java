@@ -121,7 +121,7 @@ class UserbookControllerTest extends AbstractRestDocsTest {
 
 	private UserbookListRequest createFindRequest() {
 		return new UserbookListRequest("search keyword", null,
-			null, 10);
+			null);
 	}
 
 	private List<UserbookWithLike> createUserbookWithLikeList() {

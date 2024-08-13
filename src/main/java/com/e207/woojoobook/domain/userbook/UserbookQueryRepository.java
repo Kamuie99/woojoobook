@@ -33,6 +33,7 @@ public class UserbookQueryRepository {
 		TradeStatus.RENTAL_AVAILABLE, TradeStatus.RENTAL_EXCHANGE_AVAILABLE);
 	private static final BooleanExpression EXCHANGE_TRADE_EXPRESSION = userbook.tradeStatus.in(
 		TradeStatus.EXCHANGE_AVAILABLE, TradeStatus.RENTAL_EXCHANGE_AVAILABLE);
+	private static final int PAGE_SIZE = 20;
 
 	private final JPAQueryFactory queryFactory;
 
@@ -75,7 +76,7 @@ public class UserbookQueryRepository {
 				likeKeyword(request.keyword()),
 				gtUserbookId(request.userbookId())
 			).orderBy(userbook.id.desc())
-			.limit(request.pageSize())
+			.limit(PAGE_SIZE)
 			.fetch();
 	}
 

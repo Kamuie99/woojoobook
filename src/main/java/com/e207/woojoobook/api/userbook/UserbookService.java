@@ -61,8 +61,7 @@ public class UserbookService {
 	public List<UserbookWithLike> findUserbookWithLikeResponse(UserbookListRequest request) {
 		User currentUser = this.userHelper.findCurrentUser();
 		if(request.areaCode() == null) {
-			request = new UserbookListRequest(currentUser.getAreaCode(), request.keyword(), request.userbookId(),
-				request.pageSize());
+			request = new UserbookListRequest(currentUser.getAreaCode(), request.keyword(), request.userbookId());
 		}
 
 		return this.userbookQueryRepository.findUserbookListWithLikeStatus(currentUser.getId(), request);
