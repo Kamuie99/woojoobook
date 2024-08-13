@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class BookService {
-	private final BookSearchClient bookSearchClient;
+	private final BookSearchClient naverBookSearchClient;
 
 	@Transactional(readOnly = true)
 	public BookListResponse findBookList(BookFindRequest request) {
@@ -27,7 +27,7 @@ public class BookService {
 			return new BookListResponse(0, List.of());
 		}
 
-		return bookSearchClient.findBookByKeyword(keyword, startPage, size);
+		return naverBookSearchClient.findBookByKeyword(keyword, startPage, size);
 	}
 
 	private Integer startPage(Integer size, Integer page) {

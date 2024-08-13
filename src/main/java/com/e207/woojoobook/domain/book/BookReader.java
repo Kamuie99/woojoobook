@@ -14,14 +14,14 @@ import lombok.AllArgsConstructor;
 public class BookReader {
 
 	private BookRepository bookRepository;
-	private BookSearchClient bookSearchClient;
+	private BookSearchClient naverBookSearchClient;
 
 	public Book findBookOrSave(String isbn) {
 		return bookRepository.findById(isbn).orElseGet(() -> processBookNotExist(isbn));
 	}
 
 	private Book processBookNotExist(String isbn) {
-		return bookSearchClient.findBookByIsbn(isbn)
+		return naverBookSearchClient.findBookByIsbn(isbn)
 			.map(BookResponse::toEntity)
 			.map(bookRepository::save)
 			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));

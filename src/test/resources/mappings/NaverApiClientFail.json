@@ -1,0 +1,15 @@
+{
+  "request": {
+    "url": "/v1/search/book.json?query=fail&start=1&display=5",
+    "method": "GET",
+    "headers": {
+      "Content-Type": {
+        "equalTo": "application/json"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "fixedDelayMilliseconds": 2100
+  }
+}

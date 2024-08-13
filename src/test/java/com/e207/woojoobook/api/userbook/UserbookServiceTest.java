@@ -30,7 +30,7 @@ import com.e207.woojoobook.api.userbook.request.UserbookCreateRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookUpdateRequest;
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
-import com.e207.woojoobook.client.BookSearchClient;
+import com.e207.woojoobook.client.NaverBookSearchClient;
 import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.book.BookRepository;
 import com.e207.woojoobook.domain.exchange.Exchange;
@@ -55,9 +55,9 @@ import jakarta.transaction.Transactional;
 class UserbookServiceTest {
 
 	@MockBean
-	private BookSearchClient bookSearchClient;
-	@MockBean
 	private UserHelper userHelper;
+	@MockBean
+	private NaverBookSearchClient naverBookSearchClient;
 	@MockBean
 	private JavaMailSender mailSender;
 	@Autowired
@@ -70,10 +70,9 @@ class UserbookServiceTest {
 	private RentalRepository rentalRepository;
 	@Autowired
 	private ExchangeRepository exchangeRepository;
-
-	private User currentUser;
 	@Autowired
 	private UserRepository userRepository;
+	private User currentUser;
 
 	@BeforeEach
 	public void setUp() {
@@ -110,7 +109,7 @@ class UserbookServiceTest {
 		Book book = Book.builder().isbn(expectIsbn).description(RandomString.make()).build();
 
 		BookResponse bookResponse = BookResponse.of(book);
-		given(bookSearchClient.findBookByIsbn(any())).willReturn(Optional.of(bookResponse));
+		given(naverBookSearchClient.findBookByIsbn(any())).willReturn(Optional.of(bookResponse));
 
 		UserbookCreateRequest request = new UserbookCreateRequest(expectIsbn, RegisterType.RENTAL, QualityStatus.GOOD);
 

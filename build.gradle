@@ -78,16 +78,28 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-reactor-netty:3.3.0'
 
+    // circuit breaker
+    implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'com.github.codemonstur:embedded-redis:1.4.3'
-
+    testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
+    testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 ext {
     snippetsDir = file('build/generated-snippets')
+    set('springCloudVersion', "2023.0.3")
+}
+
+dependencyManagement {
+    imports {
+        // circuit breaker, wiremock 사용을 위한 spring cloud version
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 tasks.named('test') {

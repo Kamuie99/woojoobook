@@ -1,0 +1,70 @@
+{
+  "request": {
+    "url": "/v1/search/book.json?query=success&start=1&display=5",
+    "method": "GET",
+    "headers": {
+      "Content-Type": {
+        "equalTo": "application/json"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "lastBuildDate": "[naver] Mon, 12 Aug 2024 14:02:35 +0900",
+      "total": 5,
+      "start": 1,
+      "display": 5,
+      "items": [
+        {
+          "isbn": "9781599666020",
+          "title": "Reading  Success 3",
+          "author": "Ken Methold",
+          "publisher": "컴퍼스",
+          "pubdate": "20130725",
+          "image": "https://shopping-phinf.pstatic.net/main_3243908/32439082929.20221228072648.jpg",
+          "description": "Reading Success, Second Edition은 총 6권으로, 초등 중급에서 중급 중급에 이르는 학습자들을 위해 재미난 fiction과 유익한 non-fiction 지문을 적절히 섞어 다양한 내용에 대한 응용력을 기를 수 있도록 하였다. 효과적인 자기주도 학습을 도울 수 있도록 구성되어 있다.\n\nReading Success, Second Edition is a six-book reading series designed to help young English language learners develop reading fluency through basic texts written in natural English. The course progresses from the beginner to intermediate lev..."
+        },
+        {
+          "isbn": "9798881376635",
+          "title": "Unlocking Online Success (Strategies for Profitable Subscription Sites)",
+          "author": "Ethan Carter",
+          "publisher": "Blurb",
+          "pubdate": "20240506",
+          "image": "https://shopping-phinf.pstatic.net/main_4758023/47580230688.20240511071055.jpg",
+          "description": "In \"Unlocking Online Success,\" dive into a comprehensive guide that demystifies the art of building and monetizing subscription sites. Whether you're an aspiring entrepreneur or a seasoned business owner looking to enhance your online presence, this book is your roadmap to financial success in the digital realm.\n\nDiscover proven methods for boosting web traffic, increasing conversion rates, and retaining subscribers."
+        },
+        {
+          "isbn": "9781952402289",
+          "title": "Success",
+          "author": "Isabella Moore",
+          "publisher": "Ruthie Godfrey Books, LLC",
+          "pubdate": "20210806",
+          "image": "https://shopping-phinf.pstatic.net/main_3249304/32493045058.20220521001824.jpg",
+          "description": "Explore the question of success through this beautifully illustrated children's book touching on the themes of accomplishment, self-confidence, growth mindset, and identity. It's a perfect book to promote conversations on value and worth. The fourth book in a series of stories that are perfect for every classroom library and home library alike."
+        },
+        {
+          "isbn": "9781952402272",
+          "title": "Success",
+          "author": "Sophia Bennett",
+          "publisher": "Ruthie Godfrey Books, LLC",
+          "pubdate": "20210806",
+          "image": "https://shopping-phinf.pstatic.net/main_3255030/32550308786.20220523193837.jpg",
+          "description": "Explore the question of success through this beautifully illustrated children's book touching on the themes of accomplishment, self-confidence, growth mindset, and identity. It's a perfect book to promote conversations on value and worth. The fourth book in a series of stories that are perfect for every classroom library and home library alike."
+        },
+        {
+          "isbn": "9781638120513",
+          "title": "Physics of Entropy (Success)",
+          "author": "Liam Anderson",
+          "publisher": "P One Media Marketing Consultancy",
+          "pubdate": "20210613",
+          "image": "https://shopping-phinf.pstatic.net/main_3246753/32467531366.20220520012054.jpg",
+          "description": "Success as defined in physics is referred to as the Entropy cycle. This cycle, is considered to be natural to the way life and growth on the earth works. Everything has it's opposite and negentropy is opposite to entropy. The entropy cycle is simple terms talks about \"what goes up must come down\". We, as human beings are of the greatest intelligence of any known being."
+        }
+      ]
+    }
+  }
+}
