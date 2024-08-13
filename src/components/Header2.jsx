@@ -17,10 +17,6 @@ const Header2 = () => {
     navigate(-1); // 이전 페이지로 이동
   };
 
-  // const handleLogoClick = () => {
-  //   navigate('/'); // 홈으로 이동
-  // };
-
   const handleSidebarToggle = () => {
     setSidebarOpen(!sidebarOpen); // 사이드바 열림/닫힘 상태 토글
   };

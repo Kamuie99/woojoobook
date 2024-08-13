@@ -204,62 +204,53 @@ const Extension = () => {
       }
     })
   }
-
   const handleAccept = async (offerId, response) => {
-    if (response === true) {
-      Swal.fire({
+    const confirmationOptions = getConfirmationOptions(response);
+
+    Swal.fire(confirmationOptions).then(async (result) => {
+      if (result.isConfirmed) {
+        await processExtensionRequest(offerId, response);
+      }
+    });
+  };
+
+  const getConfirmationOptions = (response) => {
+    return response === true
+      ? {
         title: '연장 신청을 수락하시겠습니까?',
         showCancelButton: true,
         confirmButtonText: '수락',
         cancelButtonText: '취소',
         icon: 'question'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            await axiosInstance.put(`/extensions/${offerId}`, {
-              isApproved: response
-            })
-            await fetchReceivedExtensionRequests(true)
-            Swal.fire({
-              title: '연장 신청 수락',
-              text: '연장 신청을 수락했습니다.',
-              confirmButtonText: '확인',
-              icon: 'success'
-            })
-            closeModal()
-          } catch (error) {
-            console.log(error)
-          }
-        }
-      })
-    } else {
-      Swal.fire({
+      }
+      : {
         title: '연장 신청을 거절하시겠습니까?',
         showCancelButton: true,
         confirmButtonText: '거절',
         cancelButtonText: '취소',
         icon: 'question'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            await axiosInstance.put(`/extensions/${offerId}`, {
-              isApproved: response
-            })
-            await fetchReceivedExtensionRequests(true)
-            Swal.fire({
-              title: '연장 신청 거절',
-              text: '연장 신청을 거절했습니다.',
-              confirmButtonText: '확인',
-              icon: 'error'
-            })
-            closeModal()
-          } catch (error) {
-            console.log(error)
-          }     
-        }
-      })
+      };
+  };
+
+  const processExtensionRequest = async (offerId, response) => {
+    try {
+      await axiosInstance.put(`/extensions/${offerId}`, {
+        isApproved: response
+      });
+      await fetchReceivedExtensionRequests(true);
+
+      Swal.fire({
+        title: response === true ? '연장 신청 수락' : '연장 신청 거절',
+        text: response === true ? '연장 신청을 수락했습니다.' : '연장 신청을 거절했습니다.',
+        confirmButtonText: '확인',
+        icon: response === true ? 'success' : 'error'
+      });
+
+      closeModal();
+    } catch (error) {
+      console.log(error);
     }
-  }
+  };
 
   const openModal = (item, type) => {
     setSelectedItem(item);
@@ -282,7 +273,7 @@ const Extension = () => {
           <>
             <div className={styles.modalBook}>
               <div className={styles.modalBookImg}>
-                <img src={selectedItem.rentalResponse.userbook.bookInfo.thumbnail} alt=""/>
+                <img src={selectedItem.rentalResponse.userbook.bookInfo.thumbnail} alt="" />
               </div>
               <div className={styles.modalBookInfo}>
                 <h2>제목</h2>
@@ -313,7 +304,7 @@ const Extension = () => {
           <>
             <div className={styles.modalBook}>
               <div className={styles.modalBookImg}>
-                <img src={selectedItem.rentalResponse.userbook.bookInfo.thumbnail} alt=""/>
+                <img src={selectedItem.rentalResponse.userbook.bookInfo.thumbnail} alt="" />
               </div>
               <div className={styles.modalBookInfo}>
                 <h2>제목</h2>
@@ -357,7 +348,7 @@ const Extension = () => {
     <div className={styles.extensionContainer}>
       <div className={`${styles.extensionContainerInner} ${isExtensionRequestExpanded ? styles.expanded : ''}`}>
         <h2 onClick={() => toggleExpansion(setIsExtensionRequestExpanded)}>
-          <SiGitextensions size={'17px'}/> 연장 신청한 목록 (총 {extensionRequestsCnt}개)
+          <SiGitextensions size={'17px'} /> 연장 신청한 목록 (총 {extensionRequestsCnt}개)
         </h2>
         <div className={styles.expandableContent}>
           <div className={styles.listHeader}>
@@ -375,7 +366,7 @@ const Extension = () => {
               items={extensionRequests}
               emptyMessage="목록이 없습니다"
               renderItem={(item) => (
-                <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.EXTENSION_REQUEST)} style={{cursor: 'pointer'}}>
+                <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.EXTENSION_REQUEST)} style={{ cursor: 'pointer' }}>
                   <div>{item.rentalResponse.userbook.bookInfo.title}</div>
                   <div>{item.rentalResponse.userbook.ownerInfo.nickname}</div>
                 </div>
@@ -384,10 +375,10 @@ const Extension = () => {
           </InfiniteScroll>
         </div>
       </div>
-          
+
       <div className={`${styles.extensionContainerInner} ${isReceivedRequestExpanded ? styles.expanded : ''}`}>
         <h2 onClick={() => toggleExpansion(setIsReceivedRequestExpanded)}>
-          <SiGitextensions size={'17px'}/> 연장 신청 받은 목록 (총 {receivedExtensionRequestsCnt}개)
+          <SiGitextensions size={'17px'} /> 연장 신청 받은 목록 (총 {receivedExtensionRequestsCnt}개)
         </h2>
         <div className={styles.expandableContent}>
           <div className={styles.listHeader}>
@@ -405,7 +396,7 @@ const Extension = () => {
               items={receivedExtensionRequests}
               emptyMessage="목록이 없습니다"
               renderItem={(item) => (
-                <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{cursor: 'pointer'}}>
+                <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{ cursor: 'pointer' }}>
                   <div>{item.rentalResponse.userbook.bookInfo.title}</div>
                   <div>{item.rentalResponse.user.nickname}</div>
                 </div>
@@ -414,10 +405,10 @@ const Extension = () => {
           </InfiniteScroll>
         </div>
       </div>
-      
+
       <div className={`${styles.extensionContainerInner} ${isRejectedRequestExpanded ? styles.expanded : ''}`}>
         <h2 onClick={() => toggleExpansion(setIsRejectedRequestExpanded)}>
-          <SiGitextensions size={'17px'}/> 연장 신청 거절 당한 목록 (총 {rejectedExtensionRequestsCnt}개)
+          <SiGitextensions size={'17px'} /> 연장 신청 거절 당한 목록 (총 {rejectedExtensionRequestsCnt}개)
         </h2>
         <div className={styles.expandableContent}>
           <div className={styles.listHeader}>

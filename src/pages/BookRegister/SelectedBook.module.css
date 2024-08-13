@@ -61,10 +61,12 @@
 
 .checkboxGroup label {
   margin-right: 20px;
+  cursor: pointer;
 }
 
 .checkboxGroup input[type="checkbox"] {
   margin-right: 5px;
+  cursor: pointer; /* Add this line */
 }
 
 .bookCondition {
@@ -110,14 +112,4 @@
 
 .statusBoth {
   color: var(--contrast-color);
-}
-
-.checkboxGroup label {
-  margin-right: 20px;
-  cursor: pointer;
-}
-
-.checkboxGroup input[type="checkbox"] {
-  margin-right: 5px;
-  cursor: pointer; /* Add this line */
 }

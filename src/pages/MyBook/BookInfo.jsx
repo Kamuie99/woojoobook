@@ -8,7 +8,6 @@ import styles from './BookInfo.module.css';
 import axiosInstance from "../../util/axiosConfig";
 import BookStatusChangeModal from "./BookStatusChangeModal";
 import BookModal from '../MyLibrary/BookModal'
-import { FiX } from "react-icons/fi";
 
 const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
   const { sub: userId } = useContext(AuthContext);
@@ -137,12 +136,19 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
 
   const handleSave = async (canRent, canExchange, quality) => {
     const tradeStatus = localStorage.getItem('tradeStatus');
-    const newRegisterType =
-      canRent && canExchange ? 'RENTAL_EXCHANGE' :
-      canRent ? 'RENTAL' : canExchange ? 'EXCHANGE' : 'UNAVAILABLE';
-    const newTradeStatus =
-      canRent && canExchange? 'RENTAL_EXCHANGE_AVAILABLE' :
-      canRent ? 'RENTAL_AVAILABLE' : canExchange ? 'EXCHANGE_AVAILABLE' : 'UNAVAILABLE';
+    let newRegisterType = 'UNAVAILABLE';
+    let newTradeStatus = 'UNAVAILABLE';
+
+    if (canRent && canExchange) {
+      newRegisterType = 'RENTAL_EXCHANGE';
+      newTradeStatus = 'RENTAL_EXCHANGE_AVAILABLE';
+    } else if (canRent) {
+      newRegisterType = 'RENTAL';
+      newTradeStatus = 'RENTAL_AVAILABLE';
+    } else if (canExchange) {
+      newRegisterType = 'EXCHANGE';
+      newTradeStatus = 'EXCHANGE_AVAILABLE';
+    }
 
     try {
       const response = await axiosInstance.put(`/userbooks/${item.id}`, {

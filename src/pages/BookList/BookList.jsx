@@ -43,13 +43,10 @@ const BookList = ({setDirectMessage}) => {
     if (selectedArea && selectedArea.areaCode) {
       const destination = `/topic/area:${selectedArea.areaCode}`;
       client.current.subscribe(destination, (message) => {
-        // console.log('수신된 메시지:', message.body);
         const messageBody = JSON.parse(message.body);
-        // console.log(messageBody);
         setOnlineUsers(messageBody);
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedArea]);
 
   useEffect(() => {
@@ -264,8 +261,8 @@ const BookList = ({setDirectMessage}) => {
               <div className={styles.onlineUsersPopup}>
                 <p className={styles.onlineUserTitle}>현재 온라인 유저 ({onlineUsers.length})</p>
                 {onlineUsers.length > 0 ? (
-                  onlineUsers.map((user, index) => (
-                    <Link to={`/${user.id}/mylibrary`} key={index} className={styles.onlineUserLink}>
+                  onlineUsers.map((user) => (
+                    <Link to={`/${user.id}/mylibrary`} key={user.id} className={styles.onlineUserLink}>
                       <span className={styles.onlineIndicator}></span>
                       {user.nickname}
                     </Link>

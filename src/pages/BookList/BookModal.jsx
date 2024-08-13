@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import ExchangeModal from './ExchangeModal';
 
 const BookModal = ({ book, onClose, onChatOpen }) => {
-  const { user, sub: userId } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [showExchangeModal, setShowExchangeModal] = useState(false);
 
   const userbook = book.userbook;

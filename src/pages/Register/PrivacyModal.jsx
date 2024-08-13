@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import styles from './PrivacyModal.module.css';
 
 const PrivacyModal = ({ isOpen, onClose }) => {

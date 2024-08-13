@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import styles from './CategoryItem.module.css';
-import { useRef } from 'react';
 import { PiBookmarkFill } from "react-icons/pi";
 import BookModal from './BookModal';
 import axiosInstance from '../../util/axiosConfig.js';

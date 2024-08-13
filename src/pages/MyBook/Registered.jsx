@@ -67,7 +67,7 @@ const Registered = () => {
           ? { ...book, startDate: rentedBook.startDate, endDate: rentedBook.endDate }
           : book;
       })
-      // const newItems = response.data.content;
+      
       if (init) {
         setRegisteredUserbooks(mergedBooks);
         setPage(1);

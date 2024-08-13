@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Box, IconButton, Typography, FormControlLabel, Checkbox, Button, Backdrop } from '@mui/material';
-import { IoMdCloseCircleOutline } from "react-icons/io";
+import { Modal, Box, Typography, FormControlLabel, Checkbox, Button } from '@mui/material';
 import { getEmotionImage } from '../../util/get-emotion-image';
 import Swal from 'sweetalert2'
 import styles from './BookStatusChangeModal.module.css';

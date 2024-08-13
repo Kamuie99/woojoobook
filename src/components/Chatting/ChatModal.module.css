@@ -1,7 +1,7 @@
 :global(.MuiInputBase-root),
 :global(.MuiTypography-root),
 :global(.MuiButtonBase-root) {
-  font-family: "samsungGodik", sans-serif;
+  font-family: "samsungGodik", sans-serif !important;
   text-decoration: none !important;
 }
 

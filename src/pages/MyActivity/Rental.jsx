@@ -34,10 +34,10 @@ const Rental = () => {
   const [isRentalRequestsExpanded, setIsRentalRequestsExpanded] = useState(false);
   const [isReceivedRequestsExpanded, setIsReceivedRequestsExpanded] = useState(false);
   const [isRejectedRequestsExpanded, setIsRejectedRequestsExpanded] = useState(false);
-  
+
   useEffect(() => {
     fetchRentalList()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchRentalList = async () => {
@@ -106,9 +106,9 @@ const Rental = () => {
           size: 10
         }
       })
-      
+
       const newItems = response.data.content;
-      
+
       if (reset) {
         setCurrentRent(newItems);
         setCurrentRentPage(0);
@@ -120,7 +120,7 @@ const Rental = () => {
         });
         setCurrentRentPage(prev => prev + 1);
       }
-      
+
       setCurrentRentCnt(response.data.totalElements);
     } catch (error) {
       console.log(error);
@@ -138,9 +138,9 @@ const Rental = () => {
           size: 10
         }
       })
-      
+
       const newItems = response.data.content;
-      
+
       if (reset) {
         setRentalRequests(newItems);
         setRentalRequestsPage(0);
@@ -152,13 +152,13 @@ const Rental = () => {
         });
         setRentalRequestsPage(prev => prev + 1);
       }
-      
+
       setRentalRequestsCnt(response.data.totalElements);
     } catch (error) {
       console.log(error);
     }
   }
-  
+
 
   const fetchReceivedRentalRequests = async (reset = false) => {
     try {
@@ -219,15 +219,15 @@ const Rental = () => {
   const loadMoreCurrentRent = () => {
     fetchCurrentRent()
   }
-  
+
   const loadMoreRentalRequests = () => {
     fetchRentalRequests()
   }
-  
+
   const loadMoreReceivedRentalRequests = () => {
     fetchReceivedRentalRequests()
   }
-  
+
   const loadMoreRejectedRentalRequests = () => {
     fetchRejectedRentalRequests()
   }
@@ -292,62 +292,54 @@ const Rental = () => {
       }
     })
   }
-
   const handleAccept = async (offerId, response) => {
-    if (response === true) {
-      Swal.fire({
+    const confirmationOptions = getConfirmationOptions(response);
+
+    Swal.fire(confirmationOptions).then(async (result) => {
+      if (result.isConfirmed) {
+        await processRentalRequest(offerId, response);
+      }
+    });
+  };
+
+  const getConfirmationOptions = (response) => {
+    return response === true
+      ? {
         title: '대여 신청을 수락하시겠습니까?',
         showCancelButton: true,
         confirmButtonText: '수락',
         cancelButtonText: '취소',
-        icon: 'question'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            await axiosInstance.put(`/rentals/offer/${offerId}`, {
-              isApproved: response
-            })
-            await fetchReceivedRentalRequests(true)
-            Swal.fire({
-              title: '대여 신청 수락',
-              text: '대여 신청을 수락했습니다.',
-              confirmButtonText: '확인',
-              icon: 'success'
-            })
-            closeModal()
-          } catch (error) {
-            console.log(error)
-          }      
-        }
-      })
-    } else {
-      Swal.fire({
+        icon: 'question',
+      }
+      : {
         title: '대여 신청을 거절하시겠습니까?',
         showCancelButton: true,
         confirmButtonText: '거절',
         cancelButtonText: '취소',
-        icon: 'question'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            await axiosInstance.put(`/rentals/offer/${offerId}`, {
-              isApproved: response
-            })
-            await fetchReceivedRentalRequests(true)
-            Swal.fire({
-              title: '대여 신청 거절',
-              text: '대여 신청을 거절했습니다.',
-              confirmButtonText: '확인',
-              icon: 'error'
-            })
-            closeModal()
-          } catch (error) {
-            console.log(error)
-          }      
-        }
-      })
+        icon: 'question',
+      };
+  };
+
+  const processRentalRequest = async (offerId, response) => {
+    try {
+      await axiosInstance.put(`/rentals/offer/${offerId}`, {
+        isApproved: response,
+      });
+      await fetchReceivedRentalRequests(true);
+
+      Swal.fire({
+        title: response === true ? '대여 신청 수락' : '대여 신청 거절',
+        text: response === true ? '대여 신청을 수락했습니다.' : '대여 신청을 거절했습니다.',
+        confirmButtonText: '확인',
+        icon: response === true ? 'success' : 'error',
+      });
+
+      closeModal();
+    } catch (error) {
+      console.log(error);
     }
-  }
+  };
+
 
   const openModal = (item, type) => {
     setSelectedItem(item);
@@ -370,7 +362,7 @@ const Rental = () => {
           <>
             <div className={styles.modalBook}>
               <div className={styles.modalBookImg}>
-                <img src={selectedItem.userbook.bookInfo.thumbnail} alt=""/>
+                <img src={selectedItem.userbook.bookInfo.thumbnail} alt="" />
               </div>
               <div className={styles.modalBookInfo}>
                 <h2>제목</h2>
@@ -405,7 +397,7 @@ const Rental = () => {
           <>
             <div className={styles.modalBook}>
               <div className={styles.modalBookImg}>
-                <img src={selectedItem.userbook.bookInfo.thumbnail} alt=""/>
+                <img src={selectedItem.userbook.bookInfo.thumbnail} alt="" />
               </div>
               <div className={styles.modalBookInfo}>
                 <h2>제목</h2>
@@ -434,7 +426,7 @@ const Rental = () => {
           <>
             <div className={styles.modalBook}>
               <div className={styles.modalBookImg}>
-                <img src={selectedItem.userbook.bookInfo.thumbnail} alt=""/>
+                <img src={selectedItem.userbook.bookInfo.thumbnail} alt="" />
               </div>
               <div className={styles.modalBookInfo}>
                 <h2>제목</h2>
@@ -498,7 +490,7 @@ const Rental = () => {
               items={currentRent}
               emptyMessage="목록이 없습니다"
               renderItem={(item) => (
-                <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.CURRENT_RENT)} style={{cursor: 'pointer'}}>
+                <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.CURRENT_RENT)} style={{ cursor: 'pointer' }}>
                   <div>{item.userbook.bookInfo.title}</div>
                   <div>{item.userbook.ownerInfo.nickname}</div>
                 </div>
@@ -529,7 +521,7 @@ const Rental = () => {
               items={rentalRequests}
               emptyMessage="목록이 없습니다"
               renderItem={(item) => (
-                <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RENTAL_REQUEST)} style={{cursor: 'pointer'}}>
+                <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RENTAL_REQUEST)} style={{ cursor: 'pointer' }}>
                   <div>{item.userbook.bookInfo.title}</div>
                   <div>{item.userbook.ownerInfo.nickname}</div>
                 </div>
@@ -555,18 +547,18 @@ const Rental = () => {
             loader={<h4>Loading...</h4>}
             scrollableTarget="receivedRentalRequestsList"
           >
-          <ListComponent
-            items={receivedRentalRequests}
-            emptyMessage="목록이 없습니다"
-            renderItem={(item) => (
-              <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{cursor: 'pointer'}}>
-                <div>{item.userbook.bookInfo.title}</div>
-                <div>{item.user.nickname}</div>
-              </div>
-            )}
-          />
+            <ListComponent
+              items={receivedRentalRequests}
+              emptyMessage="목록이 없습니다"
+              renderItem={(item) => (
+                <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RECEIVED_REQUEST)} style={{ cursor: 'pointer' }}>
+                  <div>{item.userbook.bookInfo.title}</div>
+                  <div>{item.user.nickname}</div>
+                </div>
+              )}
+            />
           </InfiniteScroll>
-       </div>
+        </div>
       </div>
 
       <div className={`${styles.rentalContainerInner} ${isRejectedRequestsExpanded ? styles.expanded : ''}`}>
@@ -584,18 +576,18 @@ const Rental = () => {
             loader={<h4>Loading...</h4>}
             scrollableTarget="rejectedRentalRequestsList"
           >
-          <ListComponent
-            items={rejectedRentalRequests}
-            emptyMessage="목록이 없습니다"
-            renderItem={(item) => (
-              <div className={styles.listItem}>
-                <div>{item.userbook.bookInfo.title}</div>
-              </div>
-            )}
-          />
+            <ListComponent
+              items={rejectedRentalRequests}
+              emptyMessage="목록이 없습니다"
+              renderItem={(item) => (
+                <div className={styles.listItem}>
+                  <div>{item.userbook.bookInfo.title}</div>
+                </div>
+              )}
+            />
           </InfiniteScroll>
-         </div>
-       </div>
+        </div>
+      </div>
 
       <Modal
         isOpen={isModalOpen}

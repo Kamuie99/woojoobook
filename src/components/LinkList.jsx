@@ -6,33 +6,13 @@ import LinkItem from './LinkItem';
 import { LuBookPlus } from "react-icons/lu";
 import { FaBook } from "react-icons/fa";
 import { IoLibraryOutline } from "react-icons/io5";
-// import { GoLaw } from "react-icons/go";
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { BsFillPersonLinesFill } from "react-icons/bs";
 import { RiCustomerService2Line } from "react-icons/ri";
 
 const LinkList = () => {
   const { sub } = useContext(AuthContext)
-  const navigate = useNavigate();
-
-  const checkAuth = () => {
-    if (!sub) {
-      Swal.fire({
-        title: '권한이 없습니다.',
-        text: '로그인이 필요한 기능입니다',
-        icon: 'error',
-        confirmButtonText: '로그인',
-        allowOutsideClick: false,
-        allowEscapeKey: false
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate('/login');
-        }
-      });
-    }
-    return null;
-  }
 
   return (
     <div className="LinkList">

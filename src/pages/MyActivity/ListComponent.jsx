@@ -5,8 +5,8 @@ const ListComponent = ({ items, renderItem, emptyMessage }) => {
   return (
     <div className={styles.listContainer}>
       {items.length > 0 ? (
-        items.map((item, index) => (
-          <div key={index} className={styles.listItem}>
+        items.map((item) => (
+          <div key={item.id} className={styles.listItem}>
             {renderItem(item)}
           </div>
         ))

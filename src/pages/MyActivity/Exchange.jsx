@@ -207,60 +207,54 @@ const Exchange = () => {
   }
 
   const handleAccept = async (offerId, response) => {
-    if (response === true) {
-      Swal.fire({
-        title: '교환 신청을 수락하시겠습니까?',
-        showCancelButton: true,
-        confirmButtonText: '수락',
-        cancelButtonText: '취소',
-        icon: 'question'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            await axiosInstance.post(`/exchanges/offer/${offerId}`, {
-              status: "APPROVED"
-            })
-            await fetchReceivedExchangeRequests(true)
-            Swal.fire({
-              title: '교환 신청 수락',
-              text: '교환 신청을 수락했습니다.',
-              confirmButtonText: '확인',
-              icon: 'success'
-            })
-            closeModal()
-          } catch (error) {
-            console.log(error)
-          }
-        }
-      })
-    } else {
-      Swal.fire({
-        title: '교환 신청을 거절하시겠습니까?',
-        showCancelButton: true,
-        confirmButtonText: '거절',
-        cancelButtonText: '취소',
-        icon: "question",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            await axiosInstance.post(`/exchanges/offer/${offerId}`, {
-              status: "REJECTED"
-            })
-            await fetchReceivedExchangeRequests(true)
-            Swal.fire({
-              title: '교환 신청 거절',
-              text: '교환 신청을 거절했습니다.',
-              confirmButtonText: '확인',
-              icon: 'error'
-            })
-            closeModal()
-          } catch (error) {
-            console.log(error)
-          }
-        }
-      })
+    const confirmationOptions = getConfirmationOptions(response);
+    
+    Swal.fire(confirmationOptions).then(async (result) => {
+      if (result.isConfirmed) {
+        await processExchangeRequest(offerId, response);
+      }
+    });
+  };
+
+  const getConfirmationOptions = (response) => {
+    return response === true
+    ? {
+      title: '교환 신청을 수락하시겠습니까?',
+      showCancelButton: true,
+      confirmButtonText: '수락',
+      cancelButtonText: '취소',
+      icon: 'question'
     }
-  }
+    : {
+      title: '교환 신청을 거절하시겠습니까?',
+      showCancelButton: true,
+      confirmButtonText: '거절',
+      cancelButtonText: '취소',
+      icon: 'question',
+    };
+  };
+
+  const processExchangeRequest = async (offerId, response) => {
+    try {
+      const status = response === true ? "APPROVED" : "REJECTED";
+      const successMessage = response === true ? '교환 신청을 수락했습니다.' : '교환 신청을 거절했습니다.';
+      const successIcon = response === true ? 'success' : 'error';
+
+      await axiosInstance.post(`/exchanges/offer/${offerId}`, { status });
+      await fetchReceivedExchangeRequests(true);
+        
+      Swal.fire({
+        title: response === true ? '교환 신청 수락' : '교환 신청 거절',
+        text: successMessage,
+        confirmButtonText: '확인',
+        icon: successIcon
+      });
+
+      closeModal();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const openModal = (item, type) => {
     setSelectedItem(item);
