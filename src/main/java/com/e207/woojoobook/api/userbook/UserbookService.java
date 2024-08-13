@@ -1,5 +1,7 @@
 package com.e207.woojoobook.api.userbook;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -10,9 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.e207.woojoobook.api.userbook.event.ExperienceEvent;
 import com.e207.woojoobook.api.userbook.event.PointEvent;
 import com.e207.woojoobook.api.userbook.request.UserbookCreateRequest;
-import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
+import com.e207.woojoobook.api.userbook.request.UserbookListRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookUpdateRequest;
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
+import com.e207.woojoobook.api.userbook.response.UserbookWithLike;
 import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.book.BookReader;
 import com.e207.woojoobook.domain.user.User;
@@ -22,11 +25,10 @@ import com.e207.woojoobook.domain.userbook.MyExchangableUserbookCondition;
 import com.e207.woojoobook.domain.userbook.MyUserbookCondition;
 import com.e207.woojoobook.domain.userbook.RegisterType;
 import com.e207.woojoobook.domain.userbook.TradeStatus;
-import com.e207.woojoobook.domain.userbook.TradeableUserbookCondition;
 import com.e207.woojoobook.domain.userbook.Userbook;
+import com.e207.woojoobook.domain.userbook.UserbookQueryRepository;
 import com.e207.woojoobook.domain.userbook.UserbookReader;
 import com.e207.woojoobook.domain.userbook.UserbookStateManager;
-import com.e207.woojoobook.domain.userbook.UserbookWithLikeStatus;
 import com.e207.woojoobook.global.exception.ErrorCode;
 import com.e207.woojoobook.global.exception.ErrorException;
 import com.e207.woojoobook.global.helper.UserHelper;
@@ -40,36 +42,30 @@ public class UserbookService {
 	private final BookReader bookReader;
 	private final UserHelper userHelper;
 	private final UserbookStateManager userbookStateManager;
+	private final UserbookQueryRepository userbookQueryRepository;
 	private final ApplicationEventPublisher eventPublisher;
 
 	public UserbookService(@Value("${userbook.search.ereacode.count}") Integer MAX_AREA_CODE_SIZE,
 		UserbookReader userbookReader, BookReader bookReader, UserHelper userHelper,
-		UserbookStateManager userbookStateManager, ApplicationEventPublisher eventPublisher) {
+		UserbookStateManager userbookStateManager, UserbookQueryRepository userbookQueryRepository, ApplicationEventPublisher eventPublisher) {
 		this.MAX_AREA_CODE_SIZE = MAX_AREA_CODE_SIZE;
 		this.userbookReader = userbookReader;
 		this.bookReader = bookReader;
 		this.userHelper = userHelper;
 		this.userbookStateManager = userbookStateManager;
+		this.userbookQueryRepository = userbookQueryRepository;
 		this.eventPublisher = eventPublisher;
 	}
 
 	@Transactional(readOnly = true)
-	public Page<UserbookWithLikeResponse> findUserbookPage(UserbookPageFindRequest request, Pageable pageable) {
-		if (request.areaCodeList().size() > MAX_AREA_CODE_SIZE) {
-			throw new ErrorException(ErrorCode.IllegalArgument);
+	public List<UserbookWithLike> findUserbookWithLikeResponse(UserbookListRequest request) {
+		User currentUser = this.userHelper.findCurrentUser();
+		if(request.areaCode() == null) {
+			request = new UserbookListRequest(currentUser.getAreaCode(), request.keyword(), request.userbookId(),
+				request.pageSize());
 		}
 
-		User user = userHelper.findCurrentUser();
-		TradeableUserbookCondition condition = new TradeableUserbookCondition(request.keyword(), user.getId(),
-			request.areaCodeList(), request.registerType());
-
-		if (condition.areaCodeList().isEmpty()) {
-			condition.areaCodeList().add(user.getAreaCode());
-		}
-		Page<UserbookWithLikeStatus> userbookPage = this.userbookReader.findTradeablePageWithLikeStatus(condition,
-			pageable);
-
-		return userbookPage.map(UserbookWithLikeResponse::of);
+		return this.userbookQueryRepository.findUserbookListWithLikeStatus(currentUser.getId(), request);
 	}
 
 	@Transactional(readOnly = true)

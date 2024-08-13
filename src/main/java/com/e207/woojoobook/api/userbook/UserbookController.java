@@ -1,8 +1,7 @@
 package com.e207.woojoobook.api.userbook;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,10 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.e207.woojoobook.api.rental.RentalService;
 import com.e207.woojoobook.api.userbook.request.UserbookCreateRequest;
-import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
+import com.e207.woojoobook.api.userbook.request.UserbookListRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookUpdateRequest;
 import com.e207.woojoobook.api.userbook.response.UserbookCountResponse;
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
+import com.e207.woojoobook.api.userbook.response.UserbookWithLike;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,10 +34,11 @@ public class UserbookController {
 	private final RentalService rentalService;
 
 	@GetMapping
-	public ResponseEntity<Page<UserbookWithLikeResponse>> findUserbookPageList(
-		@ModelAttribute UserbookPageFindRequest request, @PageableDefault(sort = "title") Pageable pageable) {
-		Page<UserbookWithLikeResponse> userbookWithLikePage = this.userbookService.findUserbookPage(request, pageable);
-		return ResponseEntity.ok(userbookWithLikePage);
+	public ResponseEntity<List<UserbookWithLike>> findUserbookPageList(
+		@ModelAttribute UserbookListRequest request) {
+		var userbookWithLikeResponse = this.userbookService.findUserbookWithLikeResponse(
+			request);
+		return ResponseEntity.ok(userbookWithLikeResponse);
 	}
 
 	@PostMapping

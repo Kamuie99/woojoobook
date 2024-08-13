@@ -16,10 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
@@ -28,10 +24,11 @@ import com.e207.woojoobook.api.book.response.BookResponse;
 import com.e207.woojoobook.api.rental.RentalService;
 import com.e207.woojoobook.api.user.response.UserResponse;
 import com.e207.woojoobook.api.userbook.request.UserbookCreateRequest;
-import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
+import com.e207.woojoobook.api.userbook.request.UserbookListRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookUpdateRequest;
 import com.e207.woojoobook.api.userbook.response.UserbookCountResponse;
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
+import com.e207.woojoobook.api.userbook.response.UserbookWithLike;
 import com.e207.woojoobook.domain.user.UserRepository;
 import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.e207.woojoobook.global.security.SecurityConfig;
@@ -92,17 +89,18 @@ class UserbookControllerTest extends AbstractRestDocsTest {
 	@Test
 	void findListSuccess() throws Exception {
 		// given
-		UserbookPageFindRequest request = createFindRequest();
-		String requestJson = objectMapper.writeValueAsString(request);
-
-		Page<UserbookWithLikeResponse> response = createUserbookWithLikePage();
+		List<UserbookWithLike> response = createUserbookWithLikeList();
 		String responseJson = objectMapper.writeValueAsString(response);
-		given(userbookService.findUserbookPage(eq(request), any(Pageable.class))).willReturn(response);
+		given(userbookService.findUserbookWithLikeResponse(any())).willReturn(response);
 
 		// expected
-		mockMvc.perform(get("/userbooks").contentType(MediaType.APPLICATION_JSON).content(requestJson))
-			// .andExpect(content().json(responseJson)) // TODO <jhl221123> 테스트 수정 필요 
-			.andExpect(status().isOk());
+		mockMvc.perform(get("/userbooks")
+				.param("areaCode", "12345678")
+				.param("keyword", "")
+				.param("userbookId", "")
+				.param("pageSize", "10"))
+			.andExpect(status().isOk())
+			.andExpect(content().json(responseJson));
 	}
 
 	@DisplayName("총 사용자 도서 개수를 조회한다.")
@@ -121,18 +119,20 @@ class UserbookControllerTest extends AbstractRestDocsTest {
 			.andExpect(content().json(expectedResponse));
 	}
 
-	private UserbookPageFindRequest createFindRequest() {
-		return new UserbookPageFindRequest("search keyword", List.of("2644056000", "2644053500", "2644054500"),
-			RENTAL_EXCHANGE);
+	private UserbookListRequest createFindRequest() {
+		return new UserbookListRequest("search keyword", null,
+			null, 10);
 	}
 
-	private Page<UserbookWithLikeResponse> createUserbookWithLikePage() {
-		List<UserbookWithLikeResponse> userbookList = new ArrayList<>();
+	private List<UserbookWithLike> createUserbookWithLikeList() {
+		List<UserbookWithLike> userbookList = new ArrayList<>();
 		for (int i = 1; i <= 3; i++) {
-			UserbookResponse response = createUserbookResponse(i);
-			userbookList.add(new UserbookWithLikeResponse(response, false));
+			BookResponse bookResponse = createBookResponse(String.valueOf(i), "title" + i);
+			UserResponse userResponse = createUserResponse(Long.valueOf(i), "test" + i + "@test.com", "test" + i);
+			userbookList.add(new UserbookWithLike(Long.valueOf(i), bookResponse,userResponse,
+				RENTAL_EXCHANGE, RENTAL_EXCHANGE.getDefaultTradeStatus(), GOOD, "12345678", true));
 		}
-		return new PageImpl<>(userbookList, PageRequest.of(0, 3), 3);
+		return userbookList;
 	}
 
 	private UserbookResponse createUserbookResponse(int idx) {

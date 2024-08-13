@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,13 +20,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import net.bytebuddy.utility.RandomString;
 
 import com.e207.woojoobook.api.book.response.BookResponse;
 import com.e207.woojoobook.api.userbook.request.UserbookCreateRequest;
-import com.e207.woojoobook.api.userbook.request.UserbookPageFindRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookUpdateRequest;
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
 import com.e207.woojoobook.client.NaverBookSearchClient;
@@ -79,26 +76,6 @@ class UserbookServiceTest {
 		currentUser = User.builder().build();
 		userRepository.save(currentUser);
 		given(userHelper.findCurrentUser()).willReturn(currentUser);
-	}
-
-	@DisplayName("지역 선택 개수를 초과하면 에러가 발생한다.")
-	@Test
-	void When_ExceedAreaCode_Expect_ThrowException() {
-		// given
-		Pageable pageable = Pageable.ofSize(10);
-
-		Integer MAX_AREA_CODE_SIZE = 3;
-		ReflectionTestUtils.setField(userbookService, "MAX_AREA_CODE_SIZE", MAX_AREA_CODE_SIZE);
-
-		List<String> areaCodeList = List.of("대구", "대전", "부산", "울산");
-		UserbookPageFindRequest request = new UserbookPageFindRequest(null, areaCodeList, null);
-
-		// when
-		ThrowableAssert.ThrowingCallable expectException = () -> userbookService.findUserbookPage(request,
-			pageable);
-
-		// then
-		assertThatThrownBy(expectException);
 	}
 
 	@DisplayName("사용자가 등록하려는 도서가 저장되어 있지 않으면 저장 후 등록한다.")

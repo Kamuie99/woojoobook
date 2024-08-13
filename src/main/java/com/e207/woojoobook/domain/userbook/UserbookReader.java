@@ -19,10 +19,6 @@ public class UserbookReader {
 	private final UserbookQueryRepository userbookQueryRepository;
 	private final WishbookRepository wishbookRepository;
 
-	public Page<UserbookWithLikeStatus> findTradeablePageWithLikeStatus(TradeableUserbookCondition condition, Pageable pageable) {
-		return this.userbookQueryRepository.findTradeablePage(condition, pageable);
-	}
-
 	public Page<Userbook> findMyExchangablePage(MyExchangableUserbookCondition condition, Pageable pageable) {
 		return this.userbookQueryRepository.findMyExchangablePage(condition, pageable);
 	}

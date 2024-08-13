@@ -3,7 +3,6 @@ package com.e207.woojoobook.domain.userbook;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -14,11 +13,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import net.bytebuddy.utility.RandomString;
 
+import com.e207.woojoobook.api.userbook.request.UserbookListRequest;
 import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.user.User;
 
@@ -31,121 +30,30 @@ class UserbookQueryRepositoryTest {
 	@Autowired
 	TestEntityManager em;
 
-	@DisplayName("키워드를 입력하면 제목, 저자에 키워드가 포함된 결과를 반환한다.")
-	@Test
-	void findUserbookPageListByKeyword() {
-		// given
-		String expectedKeyword = "우주";
-
-		List<Book> bookList = List.of(createBookByKeywordInTitle(expectedKeyword),
-			createBookByKeywordInAuthor(expectedKeyword), createBookByKeywordInTitle("지구"));
-		bookList.forEach(em::persist);
-
-		List<User> userList = Stream.generate(this::createRandomUser).limit(3).toList();
-		userList.forEach(em::persist);
-
-		RegisterType registerRental = RegisterType.RENTAL;
-		TradeStatus canRent = TradeStatus.RENTAL_AVAILABLE;
-
-		List<Userbook> userbookList = List.of(createUserbook(userList.get(0), bookList.get(0), registerRental, canRent),
-			createUserbook(userList.get(1), bookList.get(1), registerRental, canRent),
-			createUserbook(userList.get(2), bookList.get(2), registerRental, canRent));
-		userbookList.forEach(em::persist);
-
-		TradeableUserbookCondition condition = new TradeableUserbookCondition(expectedKeyword, userList.get(0).getId(),
-			List.of(), null);
-
-		// when
-		Page<UserbookWithLikeStatus> pageResult = userbookQueryRepository.findTradeablePage(condition,
-			PageRequest.of(0, 10));
-		List<UserbookWithLikeStatus> result = pageResult.getContent();
-
-		// then
-		assertThat(result).isNotEmpty();
-		assertThat(result).map(UserbookWithLikeStatus::book)
-			.allMatch(book -> book.getTitle().contains(expectedKeyword) || book.getAuthor().contains(expectedKeyword));
-	}
-
-	@DisplayName("지역 코드 목록을 입력하면 지역코드 목록에 포함된 사용자 도서만 반환한다.")
+	@DisplayName("지역 코드를 입력하면 지역코드 목록에 포함된 사용자 도서만 반환한다.")
 	@Test
 	void findUserbookPageListByAreaCode() {
 		// given
-		List<String> expectedAreaCodeList = List.of("대구", "대전");
-
 		List<Book> bookList = Stream.generate(this::createRandomBook).limit(5).toList();
 		bookList.forEach(em::persist);
 
-		List<User> userList = List.of(createUserByAreaCode("부산"), createUserByAreaCode("부산"),
-			createUserByAreaCode("대구"), createUserByAreaCode("대전"), createUserByAreaCode("대전"));
-		userList.forEach(em::persist);
+		User user = createUserByAreaCode("부산");
+		em.persist(user);
 
-		RegisterType registerRental = RegisterType.RENTAL;
-		TradeStatus canRent = TradeStatus.RENTAL_AVAILABLE;
+		for (Book book : bookList) {
+			Userbook userbook = createUserbook(user, book, RegisterType.RENTAL_EXCHANGE,
+				RegisterType.RENTAL_EXCHANGE.getDefaultTradeStatus());
+			em.persist(userbook);
+		}
 
-		List<Userbook> userbookList = List.of(createUserbook(userList.get(0), bookList.get(0), registerRental, canRent),
-			createUserbook(userList.get(1), bookList.get(1), registerRental, canRent),
-			createUserbook(userList.get(2), bookList.get(2), registerRental, canRent),
-			createUserbook(userList.get(3), bookList.get(3), registerRental, canRent),
-			createUserbook(userList.get(4), bookList.get(4), registerRental, canRent));
-		userbookList.forEach(em::persist);
-
-		TradeableUserbookCondition condition = new TradeableUserbookCondition(null, userList.get(0).getId(),
-			expectedAreaCodeList, null);
+		UserbookListRequest request = new UserbookListRequest(user.getAreaCode(), null, null, 10);
 
 		// when
-		Page<UserbookWithLikeStatus> pageResult = userbookQueryRepository.findTradeablePage(condition,
-			PageRequest.of(0, 10));
-		List<UserbookWithLikeStatus> result = pageResult.getContent();
+		var userbookListResponse = userbookQueryRepository.findUserbookListWithLikeStatus(user.getId(), request);
 
 		// then
-		assertThat(result).isNotEmpty();
-		assertThat(result).map(UserbookWithLikeStatus::areaCode).allMatch(expectedAreaCodeList::contains);
-	}
-
-	@DisplayName("등록 타입을 입력하면 동일한 등록 타입에 거래 가능한 사용자 도서만 반환한다.")
-	@Test
-	void findUserbookPageListByRegisterType() {
-		// given
-		RegisterType registerRental = RegisterType.RENTAL;
-		Set<RegisterType> expectedRegisterTypes = Set.of(RegisterType.RENTAL, RegisterType.RENTAL_EXCHANGE);
-		Set<TradeStatus> expectedTradeStatus = Set.of(TradeStatus.RENTAL_AVAILABLE, TradeStatus.EXCHANGE_AVAILABLE,
-			TradeStatus.RENTAL_EXCHANGE_AVAILABLE, TradeStatus.RENTED);
-
-		List<Book> bookList = Stream.generate(this::createRandomBook).limit(6).toList();
-		bookList.forEach(em::persist);
-
-		List<User> userList = Stream.generate(this::createRandomUser).limit(6).toList();
-		userList.forEach(em::persist);
-
-		RegisterType registerExchange = RegisterType.EXCHANGE;
-		RegisterType registerRentalAndExchange = RegisterType.RENTAL_EXCHANGE;
-
-		TradeStatus canRentAndExchange = TradeStatus.RENTAL_EXCHANGE_AVAILABLE;
-		TradeStatus canRent = TradeStatus.RENTAL_AVAILABLE;
-		TradeStatus canExchange = TradeStatus.EXCHANGE_AVAILABLE;
-		TradeStatus rented = TradeStatus.RENTED;
-		TradeStatus unavailable = TradeStatus.UNAVAILABLE;
-
-		List<Userbook> userbookList = List.of(createUserbook(userList.get(0), bookList.get(0), registerRental, canRent),
-			createUserbook(userList.get(1), bookList.get(1), registerExchange, canExchange),
-			createUserbook(userList.get(2), bookList.get(2), registerRentalAndExchange, canRentAndExchange),
-			createUserbook(userList.get(3), bookList.get(3), registerRentalAndExchange, canExchange),
-			createUserbook(userList.get(4), bookList.get(4), registerRental, rented),
-			createUserbook(userList.get(5), bookList.get(5), registerRental, unavailable));
-		userbookList.forEach(em::persist);
-
-		TradeableUserbookCondition condition = new TradeableUserbookCondition(null, userList.get(0).getId(), List.of(),
-			registerRental);
-
-		// when
-		Page<UserbookWithLikeStatus> pageResult = userbookQueryRepository.findTradeablePage(condition,
-			PageRequest.of(0, 10));
-		List<UserbookWithLikeStatus> result = pageResult.getContent();
-
-		// then
-		assertThat(result).isNotEmpty();
-		assertThat(result).map(UserbookWithLikeStatus::registerType).allMatch(expectedRegisterTypes::contains);
-		assertThat(result).map(UserbookWithLikeStatus::tradeStatus).allMatch(expectedTradeStatus::contains);
+		assertThat(userbookListResponse).isNotEmpty();
+		assertThat(userbookListResponse.size()).isEqualTo(bookList.size());
 	}
 
 	@DisplayName("사용자 등록 도서 조회 시, 사용자와 책 정보도 함께 조회한다.")

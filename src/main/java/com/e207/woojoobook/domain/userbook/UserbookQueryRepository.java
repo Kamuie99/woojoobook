@@ -14,6 +14,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.e207.woojoobook.api.book.response.BookResponse;
+import com.e207.woojoobook.api.user.response.UserResponse;
+import com.e207.woojoobook.api.userbook.request.UserbookListRequest;
+import com.e207.woojoobook.api.userbook.response.UserbookWithLike;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -35,11 +40,68 @@ public class UserbookQueryRepository {
 		this.queryFactory = new JPAQueryFactory(em);
 	}
 
-	public Page<UserbookWithLikeStatus> findTradeablePage(TradeableUserbookCondition condition, Pageable pageable) {
-		BooleanExpression[] tradeableExpressions = {isKeywordInTitleOrAuthor(condition.keyword()),
-			hasRegisterType(condition.registerType()), isNotInactive(), isNotExchanged(),
-			isAreaCodeInList(condition.areaCodeList())};
-		return findPageWithLikeAndExpressions(condition.userId(), pageable, tradeableExpressions);
+	public List<UserbookWithLike> findUserbookListWithLikeStatus(Long userId, UserbookListRequest request) {
+		return queryFactory.select(
+			Projections.constructor(
+				UserbookWithLike.class,
+				userbook.id,
+				Projections.constructor(BookResponse.class,
+					userbook.book.isbn,
+					userbook.book.title,
+					userbook.book.author,
+					userbook.book.publisher,
+					userbook.book.publicationDate,
+					userbook.book.thumbnail,
+					userbook.book.description
+				),
+				Projections.constructor(UserResponse.class,
+					userbook.user.id,
+					userbook.user.nickname,
+					userbook.user.email
+				),
+				userbook.registerType,
+				userbook.tradeStatus,
+				userbook.qualityStatus,
+				userbook.areaCode,
+				wishbook.isNotNull()
+			))
+			.from(userbook)
+			.join(userbook.book, book)
+			.join(userbook.user, user)
+			.leftJoin(wishbook)
+			.on(wishbook.user.id.eq(userId).and(wishbook.userbook.eq(userbook)))
+			.where(
+				eqAreaCode(request.areaCode()),
+				likeKeyword(request.keyword()),
+				gtUserbookId(request.userbookId())
+			).orderBy(userbook.id.desc())
+			.limit(request.pageSize())
+			.fetch();
+	}
+
+	private BooleanExpression eqAreaCode(String areaCode) {
+		if (StringUtils.isEmpty(areaCode)) {
+			return null;
+		}
+		return userbook.areaCode.eq(areaCode);
+	}
+
+	private BooleanExpression gtUserbookId(Long userbookId) {
+		if(userbookId == null) {
+			return null;
+		}
+		return userbook.id.gt(userbookId);
+	}
+
+	private BooleanExpression likeKeyword(String keyword) {
+		if (StringUtils.isEmpty(keyword)) {
+			return null;
+		}
+		return book.title.contains(keyword)
+			.or(book.author.contains(keyword))
+			.or(book.publisher.contains(keyword))
+			.or(book.isbn.eq(keyword))
+			.or(book.description.contains(keyword));
 	}
 
 	public Page<Userbook> findMyExchangablePage(MyExchangableUserbookCondition condition, Pageable pageable) {
@@ -52,26 +114,6 @@ public class UserbookQueryRepository {
 		BooleanExpression[] myUserbookExpressions = {isOwnedByUser(condition.userId()),
 			isTradeStatus(condition.tradeStatus()), isNotInactive(), isNotExchanged()};
 		return findPageWithExpressions(pageable, myUserbookExpressions);
-	}
-
-	private Page<UserbookWithLikeStatus> findPageWithLikeAndExpressions(Long userId, Pageable pageable,
-		BooleanExpression... expressions) {
-		List<UserbookWithLikeStatus> content = this.queryFactory.select(
-				new QUserbookWithLikeStatus(userbook.id, userbook.book, userbook.user, userbook.registerType,
-					userbook.tradeStatus, userbook.qualityStatus, userbook.areaCode, wishbook.isNotNull()))
-			.from(userbook)
-			.join(userbook.book, book)
-			.join(userbook.user, user)
-			.leftJoin(wishbook)
-			.on(wishbook.user.id.eq(userId).and(wishbook.userbook.eq(userbook)))
-			.where(expressions)
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
-			.fetch();
-
-		Long count = this.countWithExpressions(expressions);
-
-		return new PageImpl<>(content, pageable, count);
 	}
 
 	private Page<Userbook> findPageWithExpressions(Pageable pageable, BooleanExpression... expressions) {
