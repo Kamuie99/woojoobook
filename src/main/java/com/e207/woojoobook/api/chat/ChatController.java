@@ -45,6 +45,11 @@ public class ChatController {
 		return ResponseEntity.ok(chatResponsePage);
 	}
 
+	@GetMapping("/usersOn/{areaCode}")
+	public ResponseEntity<Set<UserOnResponse>> findUsersOn(@PathVariable("areaCode") String areaCode) {
+		return ResponseEntity.ok(getUsersByAreaCode(areaCode));
+	}
+
 	@MessageMapping("/chat")
 	public void createChatMessage(@Valid ChatCreateRequest request) {
 		Long senderId = request.senderId();
