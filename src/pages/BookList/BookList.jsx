@@ -1,7 +1,6 @@
-import { useState, useEffect, useCallback, useContext } from "react";
+import { useState, useEffect, useCallback, useContext, useRef } from "react";
 import { useSearch } from '../../contexts/SearchContext';
 import { Link } from 'react-router-dom';
-
 import { LuBookPlus } from "react-icons/lu";
 import { IoHeartOutline, IoHeartSharp } from "react-icons/io5";
 import { getEmotionImage } from '../../util/get-emotion-image';
@@ -28,39 +27,40 @@ const BookList = ({setDirectMessage}) => {
   const [selectedArea, setSelectedArea] = useState(null);
   const { user, sub: userId, client } = useContext(AuthContext);
   const [selectedBook, setSelectedBook] = useState(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [userAreaName, setUserAreaName] = useState('');
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [showOnlineUsers, setShowOnlineUsers] = useState(false);
+  const [lastUserbook, setLastUserBook] = useState(null);
+  const [isBottomVisible, setIsBottomVisible] = useState(false);
+  const mainRef = useRef(null);
 
   useEffect(() => {
     fetchUserInfo();
   }, []);
 
-  useEffect(() => {
-    if (selectedArea && selectedArea.areaCode) {
-      const destination = `/topic/area:${selectedArea.areaCode}`;
-      client.current.subscribe(destination, (message) => {
-        const messageBody = JSON.parse(message.body);
-        setOnlineUsers(messageBody);
-      });
-    }
-  }, [selectedArea]);
+  // useEffect(() => {
+  //   if (selectedArea && selectedArea.areaCode) {
+  //     const destination = `/topic/area:${selectedArea.areaCode}`;
+  //     client.current.subscribe(destination, (message) => {
+  //       const messageBody = JSON.parse(message.body);
+  //       setOnlineUsers(messageBody);
+  //     });
+  //   }
+  // }, [selectedArea]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (showOnlineUsers && !event.target.closest(`.${styles.onlineUsersWrapper}`)) {
-        setShowOnlineUsers(false);
-      }
-    };
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (showOnlineUsers && !event.target.closest(`.${styles.onlineUsersWrapper}`)) {
+  //       setShowOnlineUsers(false);
+  //     }
+  //   };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showOnlineUsers]);
+  //   document.addEventListener('mousedown', handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener('mousedown', handleClickOutside);
+  //   };
+  // }, [showOnlineUsers]);
 
   const fetchUserInfo = async () => {
     try {
@@ -88,39 +88,55 @@ const BookList = ({setDirectMessage}) => {
     setDirectMessage(ownerId);
   }
 
-  const fetchBooks = useCallback(async () => {
+  const fetchBooks = useCallback(async (userbookId = null, init = true) => {
     setLoading(true);
     setError(null);
     try {
+      // String areaCode, String keyword, Long userbookId, int pageSize
+      const prevScrollTop = mainRef.current ? mainRef.current.scrollTop : 0;
+      const prevScrollHeight = mainRef.current ? mainRef.current.scrollHeight : 0;
+
       const params = { 
         keyword: searchTerm,
-        page: currentPage,
-        size: 10
+        userbookId,
       };
       if (selectedArea && selectedArea.areaCode) {
-        params.areaCodeList = selectedArea.areaCode;
+        params.areaCode = selectedArea.areaCode;
       }
       const response = await axiosInstance.get('/userbooks', { params });
-      setBooks(response.data.content);
-      setTotalPages(response.data.totalPages);
+      if (init) {
+        setBooks(response.data);
+      } else {
+        setBooks(prev => [...prev,...response.data]);
+        setTimeout(() => {
+          if (mainRef.current) {
+            const newScrollHeight = mainRef.current.scrollHeight;
+            mainRef.current.scrollTop = prevScrollTop
+            //  + (newScrollHeight - prevScrollHeight);
+          }
+        }, 0);
+      }
       return response.data.content;
     } catch (err) {
-      setError('힝 실패했음...')
+      setError('로딩중 ..')
       console.error('Error fetching Books: ', err)
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, selectedArea, currentPage]);
+  }, [selectedArea]);
 
   useEffect(() => {
     if (selectedArea) {
-      fetchBooks().then(fetchedBooks => {
-        if (fetchedBooks) {
-          fetchAreaNames(fetchedBooks);
-        }
-      });
+      fetchBooks()
     }
-  }, [fetchBooks, currentPage, selectedArea]);
+  }, [selectedArea]);
+
+  useEffect(() => {
+    if (books) {
+      setLastUserBook(books[books.length - 1]);
+    }
+    console.log(books)
+  }, [books])
 
   const fetchAreaName = useCallback(async (areaCode) => {
     if (areaCode) {
@@ -144,33 +160,53 @@ const BookList = ({setDirectMessage}) => {
   }, [user?.areaCode, fetchAreaName]);
 
   useEffect(() => {
-    fetchBooks().then(fetchedBooks => {
-      if (fetchedBooks) {
-        fetchAreaNames(fetchedBooks);
+    const handleScroll = () => {
+      if (mainRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = mainRef.current;
+        const isBottom = scrollTop + clientHeight >= scrollHeight - 520;
+        setIsBottomVisible(isBottom);
       }
-    });
-  }, [fetchBooks, currentPage]);
+    };
 
-  const fetchAreaNames = async (books) => {
-    const areaPromises = books.map(book => 
-      axiosInstance.get('/area', { params: { areaCode: book.userbook.areaCode } })
-    );
-    
-    try {
-      const areaResponses = await Promise.all(areaPromises);
-      const newAreaNames = {};
-      areaResponses.forEach((response, index) => {
-        newAreaNames[books[index].userbook.areaCode] = response.data.dongName;
-      });
-      setAreaNames(newAreaNames);
-    } catch (err) {
-      console.error('지역코드로 동 이름 조회중 에러가 발생: ', err);
+    const mainElement = mainRef.current;
+    if (mainElement) {
+      mainElement.addEventListener('scroll', handleScroll);
     }
-  };
+
+    return () => {
+      if (mainElement) {
+        mainElement.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isBottomVisible) {
+      fetchBooks(lastUserbook.userbookid, false)
+      // 추가 작업 수행
+    }
+  }, [isBottomVisible]);
+
+  // const fetchAreaNames = async (books) => {
+  //   const areaPromises = books.map(book => 
+  //     axiosInstance.get('/area', { params: { areaCode: book.areaCode } })
+  //   );
+    
+  //   try {
+  //     const areaResponses = await Promise.all(areaPromises);
+  //     const newAreaNames = {};
+  //     areaResponses.forEach((response, index) => {
+  //       newAreaNames[books[index].userbook.areaCode] = response.data.dongName;
+  //     });
+  //     setAreaNames(newAreaNames);
+  //     console.log(areaNames)
+  //   } catch (err) {
+  //     console.error('지역코드로 동 이름 조회중 에러가 발생: ', err);
+  //   }
+  // };
 
   const handleSearch = () => {
     setSearchTerm(inputValue);
-    setCurrentPage(0);
   };
 
   const handleInputChange = (e) => {
@@ -187,7 +223,6 @@ const BookList = ({setDirectMessage}) => {
     setSelectedArea(area);
     setUserAreaName(area ? area.dongName : '');
     setBooks([]);
-    setCurrentPage(0);
   };
 
   const openModal = (book) => {
@@ -197,10 +232,6 @@ const BookList = ({setDirectMessage}) => {
   const closeModal = () => {
     setSelectedBook(null);
     fetchBooks();
-  };
-
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
   };
 
   const getQualityEmoticon = (qualityStatus) => {
@@ -238,7 +269,7 @@ const BookList = ({setDirectMessage}) => {
     try {
       await axiosInstance.post(`/userbooks/${bookId}/wish`, {userId, wished})
       setBooks(prev => prev.map(book =>
-        book.userbook.id === bookId ? {...book, like: !book.like } : book
+        book.userbookid === bookId ? {...book, likeStatus: !book.likeStatus } : book
       ));
     } catch (err) {
       console.error('toggle wish 에러 :', err);
@@ -297,61 +328,61 @@ const BookList = ({setDirectMessage}) => {
           </div>  
         </div>
       )}
-      <main className={styles.main}>
+      <main className={styles.main} ref={mainRef}>
         {loading && <p>로딩중...</p>}
         {error && <p>{error}</p>}
         {!loading && !error && (
           books.length > 0 ? (
             <div className={styles.list}>
               {books.map((book) => (
-                <div key={book.userbook.id} className={styles.item}>
+                <div key={book.userbookId} className={styles.item}>
                   <div className={styles.imageContainer}>
                     <img 
-                      src={getQualityEmoticon(book.userbook.qualityStatus)} 
-                      alt={book.userbook.qualityStatus} 
+                      src={getQualityEmoticon(book.qualityStatus)} 
+                      alt={book.qualityStatus} 
                       className={styles.qualityEmoticon}
                     />
                     <img 
-                      src={book.userbook.bookInfo.thumbnail} 
-                      alt={book.userbook.bookInfo.title} 
+                      src={book.book.thumbnail} 
+                      alt={book.book.title} 
                       style={{ width: '100px', height: '140px' }}
                       className={styles.thumbnail}
                       onClick={() => openModal(book)}
                     />
                   </div>
                   <div className={styles.description}>
-                    <h3 onClick={() => openModal(book)} >{book.userbook.bookInfo.title}</h3>
+                    <h3 onClick={() => openModal(book)} >{book.book.title}</h3>
                     <div className={styles.innerBox}>
-                      <p><strong>저자 |</strong> {truncateAuthor(book.userbook.bookInfo.author)}</p>
+                      <p><strong>저자 |</strong> {truncateAuthor(book.book.author)}</p>
                       <p className={styles.ownerNickname}>
-                        <strong>책권자 |</strong> {book.userbook.ownerInfo.nickname}
+                        <strong>책권자 |</strong> {book.user.nickname}
                       </p>
-                      <p>책 ID {book.userbook.id}</p>
+                      <p>책 ID {book.id}</p>
                     </div>
                     <div className={styles.innerBox}>
-                      <p><strong>출판사 |</strong> {book.userbook.bookInfo.publisher}</p>
-                      <p><strong>출판일 |</strong> {book.userbook.bookInfo.publicationDate}</p>
+                      <p><strong>출판사 |</strong> {book.book.publisher}</p>
+                      <p><strong>출판일 |</strong> {book.book.publicationDate}</p>
                     </div>
                     <div className={styles.innerBox}>
-                      {book.userbook.tradeStatus === 'RENTAL_AVAILABLE' && <p className={styles.statusMessage}>대여가능</p>}
-                      {book.userbook.tradeStatus === 'EXCHANGE_AVAILABLE' && <p className={styles.statusMessage}>교환가능</p>}
-                      {book.userbook.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE' && <p className={styles.statusMessage}>대여, 교환가능</p>}
-                      {book.userbook.tradeStatus === 'RENTED' && <p className={styles.statusMessage2}>대여중</p>}
+                      {book.tradeStatus === 'RENTAL_AVAILABLE' && <p className={styles.statusMessage}>대여가능</p>}
+                      {book.tradeStatus === 'EXCHANGE_AVAILABLE' && <p className={styles.statusMessage}>교환가능</p>}
+                      {book.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE' && <p className={styles.statusMessage}>대여, 교환가능</p>}
+                      {book.tradeStatus === 'RENTED' && <p className={styles.statusMessage2}>대여중</p>}
                     </div>
                   </div>
                   <div className={styles.status}>
                     <div className={styles.statusIcon}>
                       <button
-                        onClick={() => toggleWish(book.userbook.id, book.like)}
+                        onClick={() => toggleWish(book.userbookid, book.likeStatus)}
                         style={{ color: 'var(--contrast-color)' }}
-                        className={`${styles.heartIcon} ${book.like ? styles.liked : ''}`}
+                        className={`${styles.heartIcon} ${book.likeStatus ? styles.liked : ''}`}
                         >
-                        {book.like ? <IoHeartSharp size={'30px'} /> : <IoHeartOutline size={'30px'}/>}
+                        {book.likeStatus ? <IoHeartSharp size={'30px'} /> : <IoHeartOutline size={'30px'}/>}
                       </button>
                     </div>
                     <div className={styles.statusDong}>
                       <button className={styles.region}>
-                        <FiMapPin  />{areaNames[book.userbook.areaCode] || '로딩 중...'}
+                        <FiMapPin  />{userAreaName || '로딩 중...'}
                       </button>
                     </div>
                   </div>
@@ -363,33 +394,6 @@ const BookList = ({setDirectMessage}) => {
           )
         )}
       </main>
-      {totalPages > 1 && (
-      <div className={styles.pagination}>
-        <button 
-          onClick={() => handlePageChange(currentPage - 1)} 
-          disabled={currentPage === 0}
-        >
-          이전
-        </button>
-        
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index}
-            onClick={() => handlePageChange(index)}
-            disabled={currentPage === index}
-          >
-            {index + 1}
-          </button>
-        ))}
-        
-        <button 
-          onClick={() => handlePageChange(currentPage + 1)} 
-          disabled={currentPage === totalPages - 1}
-        >
-          다음
-        </button>
-      </div>
-      )}
       {selectedBook && <BookModal book={selectedBook} onClose={closeModal} onChatOpen={handleChatOpen} />}
       </>
   )

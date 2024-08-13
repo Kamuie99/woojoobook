@@ -12,7 +12,6 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
   const { user } = useContext(AuthContext);
   const [showExchangeModal, setShowExchangeModal] = useState(false);
 
-  const userbook = book.userbook;
   const getQualityEmoticon = (qualityStatus) => {
     switch (qualityStatus) {
       case 'VERY_GOOD': return getEmotionImage(1);
@@ -24,9 +23,9 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
     }
   };
 
-  const isRentalEnabled = userbook.tradeStatus === 'RENTAL_AVAILABLE' || userbook.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE';
-  const isExchangeEnabled = userbook.tradeStatus === 'EXCHANGE_AVAILABLE' || userbook.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE';
-  const isOwner = user && user.id === userbook.ownerInfo.id;
+  const isRentalEnabled = book.tradeStatus === 'RENTAL_AVAILABLE' || book.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE';
+  const isExchangeEnabled = book.tradeStatus === 'EXCHANGE_AVAILABLE' || book.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE';
+  const isOwner = user && user.id === book.userbookid;
 
   const handleExchangeRequest = () => {
     if (isExchangeEnabled && !isOwner) {
@@ -44,9 +43,9 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
         title: '대여 신청 하시겠습니까?',
         html: `
         <div style="text-align: left; line-height: 1.5;">
-          <p><strong style="color: var(--contrast-color)">책권자 |</strong> ${userbook.ownerInfo.nickname}</p>
+          <p><strong style="color: var(--contrast-color)">책권자 |</strong> ${book.user.nickname}</p>
           <p><strong style="color: var(--accent-sub-color)">대여일 |</strong> 기본 7일</p>
-          <p><strong style="color: var(--accent-color)">책제목 |</strong> ${truncateTitle(userbook.bookInfo.title, 20)}</p>
+          <p><strong style="color: var(--accent-color)">책제목 |</strong> ${truncateTitle(book.book.title, 20)}</p>
         </div> 
         `,
         showCancelButton: true,
@@ -57,7 +56,7 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
 
       if (result.isConfirmed) {
         try {
-          const response = await axiosInstance.post(`/userbooks/${userbook.id}/rentals/offer`);
+          const response = await axiosInstance.post(`/userbooks/${book.userbookid}/rentals/offer`);
           console.log('대여 신청 성공:', response.data);
 
           await Swal.fire({
@@ -104,30 +103,30 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
         <button className={styles.closeButton} onClick={onClose}>×</button>
         <div className={styles.modalBody}>
           <div className={styles.bookImageContainer}>
-            <img src={userbook.bookInfo.thumbnail} alt={userbook.bookInfo.title} className={styles.bookThumbnail} />
+            <img src={book.book.thumbnail} alt={book.book.title} className={styles.bookThumbnail} />
             <img 
-              src={getQualityEmoticon(userbook.qualityStatus)} 
-              alt={userbook.qualityStatus} 
+              src={getQualityEmoticon(book.qualityStatus)} 
+              alt={book.qualityStatus} 
               className={styles.qualityEmoticon}
             />
           </div>
           <div className={styles.bookDetails}>
-            <h2 className={styles.bookTitle}>{userbook.bookInfo.title}</h2>
-            <p><strong>줄거리 |</strong> {userbook.bookInfo.description}</p>
+            <h2 className={styles.bookTitle}>{book.book.title}</h2>
+            <p><strong>줄거리 |</strong> {book.book.description}</p>
             <div className={styles.bookInfo}>
-              <p><strong>출판사 |</strong> {userbook.bookInfo.publisher}</p>
-              <p><strong>출판일 |</strong> {userbook.bookInfo.publicationDate}</p>
+              <p><strong>출판사 |</strong> {book.book.publisher}</p>
+              <p><strong>출판일 |</strong> {book.book.publicationDate}</p>
             </div>
-            <p><strong>저자 |</strong> {userbook.bookInfo.author}</p>
+            <p><strong>저자 |</strong> {book.book.author}</p>
             <div className={styles.tooltipContainer}>
               <p className={styles.toLibraryButton}>
-                <Link to={`/${userbook.ownerInfo.id}/mylibrary`}>
-                  <strong className={styles.specialUser}>책권자 |</strong> {userbook.ownerInfo.nickname}
+                <Link to={`/${book.user.id}/mylibrary`}>
+                  <strong className={styles.specialUser}>책권자 |</strong> {book.user.nickname}
                 </Link>
               </p>
               {<span className={styles.libraryTooltip}>
-                {book.userbook.ownerInfo.nickname === user.nickname ?
-                  '내' : `${book.userbook.ownerInfo.nickname} 님의`} 서재로 이동하기
+                {book.user.nickname === user.nickname ?
+                  '내' : `${book.user.nickname} 님의`} 서재로 이동하기
               </span>}
             </div>
           </div>
@@ -155,14 +154,14 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
                 </button>
                 {!isExchangeEnabled && <span className={styles.tooltip}>교환이 불가능한 도서입니다.</span>}
               </div>
-              <button onClick={(e) => handleNewChat(e, userbook.ownerInfo.id)} className={styles.tochatButton}>채팅하기</button>
+              <button onClick={(e) => handleNewChat(e, book.user.id)} className={styles.tochatButton}>채팅하기</button>
             </>
           )}
         </div>
       </div>
       {showExchangeModal && (
         <ExchangeModal 
-          receiverBook={userbook} 
+          receiverBook={book} 
           onClose={() => setShowExchangeModal(false)} 
         />
       )}
