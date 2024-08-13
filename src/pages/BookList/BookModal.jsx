@@ -69,24 +69,30 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
           onClose();
         } catch (error) {
           console.error('대여 신청 실패:', error.response);
-          const errMsg = error.response.data === '이미 존재합니다.' ?
-            '이미 대여 신청을 보냈습니다.' :
-            '대여 신청 중 오류가 발생했습니다.'
+          let title = '오류'
+          let errMsg = '대여 신청 중 오류가 발생했습니다.'
+          if (error.response.data === '이미 존재합니다.') {
+            errMsg = '이미 대여 신청을 보냈습니다.'
+          } else if (error.response.data === '포인트가 부족합니다.') {
+            errMsg = err.response.data
+            title = '포인트 부족'
+          }
+          
           Swal.fire({
-            title: '오류',
+            title: title,
             text: errMsg,
             confirmButtonText: '확인',
             icon: 'warning'
           });
-          const errMsg2 = error.response.data === '포인트가 부족합니다.' ?
-            '포인트가 부족합니다.' :
-            '대여 신청 중 오류가 발생했습니다.'
-          Swal.fire({
-            title: '포인트 부족',
-            text: errMsg2,
-            confirmButtonText: '확인',
-            icon: 'warning'
-          });
+          // const errMsg2 = error.response.data === '포인트가 부족합니다.' ?
+          //   '포인트가 부족합니다.' :
+          //   '대여 신청 중 오류가 발생했습니다.'
+          // Swal.fire({
+          //   title: '포인트 부족',
+          //   text: errMsg2,
+          //   confirmButtonText: '확인',
+          //   icon: 'warning'
+          // });
         }
       }
     }

@@ -39,7 +39,7 @@ const ExchangeModal = ({ receiverBook, onClose }) => {
       html: `
         <div style="text-align: left; line-height: 1.5;">
           <p><strong>내 책:</strong> ${selectedBook.bookInfo.title}</p>
-          <p><strong>상대방 책:</strong> ${receiverBook.bookInfo.title}</p>
+          <p><strong>상대방 책:</strong> ${receiverBook.book.title}</p>
         </div>
       `,
       showCancelButton: true,
@@ -50,9 +50,9 @@ const ExchangeModal = ({ receiverBook, onClose }) => {
 
     if (result.isConfirmed) {
       try {
-        const response = await axiosInstance.post(`/userbooks/${receiverBook.id}/exchanges/offer/${selectedBook.id}`, {
+        const response = await axiosInstance.post(`/userbooks/${receiverBook.userbookid}/exchanges/offer/${selectedBook.id}`, {
           senderBookId: selectedBook.id,
-          receiverBookId: receiverBook.id
+          receiverBookId: receiverBook.userbookid
         });
         console.log('교환 신청 성공:', response.data);
 

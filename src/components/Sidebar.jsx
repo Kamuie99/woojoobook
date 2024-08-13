@@ -15,30 +15,11 @@ import '../styles/Sidebar.css';
 // eslint-disable-next-line react/prop-types
 const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles }) => {
   const { isLoggedIn, logout, user, sub } = useContext(AuthContext);
-  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user) {
-      setIsLoading(false);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (!isLoading && user?.nickname === undefined) {
-      logout();
-      navigate('/');
-    }
-  }, [isLoading, user, logout, navigate]);
 
   const handleLogout = () => {
     logout();
     navigate('/');
-    Swal.fire({
-      title: '로그아웃 되었습니다.',
-      confirmButtonText: '확인',
-      icon: 'info'
-    })
   };
 
   return (

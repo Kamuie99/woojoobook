@@ -33,6 +33,7 @@ const Chatting = ({ onClose, newMessageChatRooms, setNewMessage, newMessage, dir
       setOpen(false);
     }
   }, [isLoggedIn, open]);
+
   useEffect(() => {
     if (directMessage == null) {
       return;
@@ -135,13 +136,13 @@ const Chatting = ({ onClose, newMessageChatRooms, setNewMessage, newMessage, dir
     }
   };
 
-
   return (
     <div>
       {!excludedPaths.includes(location.pathname) &&
         <ChatButton
           toggleOpen = {toggleOpen}
           newMessage = {newMessage}
+          isOpen = {open}
         />
       }
       {open && (

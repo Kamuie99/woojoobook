@@ -56,7 +56,7 @@ const PasswordChange = () => {
         setCurPassword('');
         setPassword('');
         setPasswordConfirm('');
-        navigate(`/${user.id}/mypage`);
+        navigate(`/mypage`);
       } else {
         Swal.fire({
           title: '비밀번호 변경을 실패했습니다.',

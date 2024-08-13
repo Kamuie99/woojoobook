@@ -94,7 +94,6 @@ const BookList = ({setDirectMessage}) => {
     try {
       // String areaCode, String keyword, Long userbookId, int pageSize
       const prevScrollTop = mainRef.current ? mainRef.current.scrollTop : 0;
-      const prevScrollHeight = mainRef.current ? mainRef.current.scrollHeight : 0;
 
       const params = { 
         keyword: searchTerm,
@@ -110,9 +109,7 @@ const BookList = ({setDirectMessage}) => {
         setBooks(prev => [...prev,...response.data]);
         setTimeout(() => {
           if (mainRef.current) {
-            const newScrollHeight = mainRef.current.scrollHeight;
             mainRef.current.scrollTop = prevScrollTop
-            //  + (newScrollHeight - prevScrollHeight);
           }
         }, 0);
       }
@@ -357,7 +354,7 @@ const BookList = ({setDirectMessage}) => {
                       <p className={styles.ownerNickname}>
                         <strong>책권자 |</strong> {book.user.nickname}
                       </p>
-                      <p>책 ID {book.id}</p>
+                      <p>책 ID {book.userbookid}</p>
                     </div>
                     <div className={styles.innerBox}>
                       <p><strong>출판사 |</strong> {book.book.publisher}</p>

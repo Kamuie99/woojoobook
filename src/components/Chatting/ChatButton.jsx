@@ -3,7 +3,7 @@ import { Fab } from '@mui/material';
 import { IoChatbox, IoAlertCircleSharp } from "react-icons/io5";
 import styles from "./ChatButton.module.css";
 
-const ChatButton = ({toggleOpen, newMessage}) => {
+const ChatButton = ({toggleOpen, newMessage, isOpen}) => {
   return (
     <Fab
       color="primary"
@@ -11,7 +11,7 @@ const ChatButton = ({toggleOpen, newMessage}) => {
       onClick={toggleOpen}
       className={styles.chat_button}
     >
-      {newMessage && (
+      {newMessage && !isOpen && (
         <IoAlertCircleSharp
           className={styles.newMessage}
           size={30}

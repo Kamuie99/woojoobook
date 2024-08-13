@@ -135,14 +135,11 @@ export const AuthProvider = ({ children }) => {
     if (client.current) {
       client.current.deactivate();
     }
-    if (logoutTimer.current) {
-      clearTimeout(logoutTimer.current);
-      Swal.fire({
-        title: '로그아웃 되었습니다.',
-        text: '장시간 사용이 없어 자동 로그아웃 되었습니다.',
-        icon: 'info'
-      })
-    }
+    Swal.fire({
+      title: '로그아웃 되었습니다.',
+      confirmButtonText: '확인',
+      icon: 'info'
+    })
   };
 
   const value = useMemo(() => ({

@@ -178,7 +178,12 @@ const UserUpdate = () => {
                   </button>
                 </div>
               </div>
-              {!isNicknameChecked && nickname !== originalNickname && (
+              {!nickname && (
+                <div style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                  닉네임을 입력해주세요.
+                </div>
+              )}
+              {nickname && !isNicknameChecked && nickname !== originalNickname && (
                 <div style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
                   닉네임 중복 체크를 해주세요.
                 </div>

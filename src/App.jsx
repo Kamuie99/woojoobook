@@ -47,12 +47,15 @@ function App() {
       client.current.subscribe(destination, debounce((message) => {
         console.log('수신된 메시지:', message.body);
         const messageBody = JSON.parse(message.body);
-        newMessageChatRooms.current[messageBody.chatRoomId] = true;
-        setNewMessage(false)
-        setTimeout(() => {
-          setNewMessage(true);
-          localStorage.setItem('newMessage', true);
-        }, 100);
+        console.log(messageBody.userId != userId);
+        if (messageBody.userId != userId) {
+          newMessageChatRooms.current[messageBody.chatRoomId] = true;
+          setNewMessage(false)
+          setTimeout(() => {
+            setNewMessage(true);
+            localStorage.setItem('newMessage', true);
+          }, 100);
+        }
       }))
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
