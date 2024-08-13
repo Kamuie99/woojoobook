@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../../util/axiosConfig';
 import Header2 from '../../components/Header2';
-import Logo from '../../assets/Logo.png';
+// import Logo from '../../assets/Logo.png';
+import Logo from '../../assets/logoWithLetter.webp';
 import '../../styles/Register.css';
 import EmailForm from './EmailForm';
 import VerificationForm from './VerificationForm';
@@ -162,7 +163,7 @@ const Register = () => {
       <Header2 />
       <main className='Register'>
         <Link to="/">
-          <img src={Logo} width='170px' alt="Home" style={{ cursor: 'pointer' }} />
+          <img src={Logo} width='400' alt="Home" style={{ cursor: 'pointer' }} />
         </Link>
         <div>
           {renderStep()}

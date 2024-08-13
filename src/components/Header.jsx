@@ -1,7 +1,8 @@
 
 import '../styles/Header.css';
 import Button from '../components/Button';
-import LogoSmall from '../assets/LogoSmall.png';
+// import LogoSmall from '../assets/LogoSmall.png';
+import LogoSmall from '../assets/logo_boomerang.webp';
 import Sidebar from '../components/Sidebar';
 
 import { useState, useEffect, useRef } from 'react';
@@ -58,7 +59,7 @@ const Header = () => {
         <Button text={<MdKeyboardArrowLeft size="40"/>} color="white"/>
       </div>
       <div className='header_center'>
-        <img onClick={handleLogoClick} src={LogoSmall} width="40px"/>
+        <img onClick={handleLogoClick} src={LogoSmall} width="90px"/>
       </div>
       <div className='header_right' onClick={handleSidebarToggle}>
         <Button text={<IoMenu size="30"/>} color="white"/>

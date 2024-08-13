@@ -5,7 +5,8 @@ import Header2 from "../components/Header2";
 import { AuthContext } from '../contexts/AuthContext';
 import Swal from 'sweetalert2';
 import '../styles/Login.css';
-import Logo from '../assets/Logo.png';
+// import Logo from '../assets/Logo.png';
+import Logo from '../assets/logoWithLetter.webp';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ const Login = () => {
       <Header2 />
       <main className='Login'>
         <Link to="/">
-          <img src={Logo} width='170px' alt="Home" style={{ cursor: 'pointer' }} />
+          <img src={Logo} width='320px' alt="Home" style={{ cursor: 'pointer' }} />
         </Link>
         <div>
           <form onSubmit={handleSubmit}>
