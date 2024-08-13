@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: center;
   flex: 1;
-  margin-top: 60px;
+  margin-top: 30px;
   gap: 20px;
 }
 
@@ -88,7 +88,7 @@
   justify-content: center;
   align-items: center;
   height: 30px;
-  margin-top: 20px;
+  margin-top: 5px;
   cursor: pointer;
 }
 
@@ -133,4 +133,8 @@
 .privacy-agreement {
   justify-content: flex-end !important;
   gap: 10px;
+}
+
+.Register img {
+  width: 250px;
 }

@@ -60,7 +60,7 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
     <form onSubmit={handleFinalSubmit}>
       <div className='titleBox'>
         <p>회원가입 (3/3)</p>
-        <h2>거의 다 됐습니다!</h2>
+        {/* <h2>거의 다 됐습니다!</h2> */}
       </div>
       <div className='input_button2'>
         <div>
@@ -106,7 +106,7 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
           </div>
           {siSelected ? (
             selectedAreaName ? (
-              <div style={{ marginTop: '20px' }}>선택된 지역: {selectedAreaName}</div>
+              <div>선택된 지역: {selectedAreaName}</div>
             ) : (
               <div style={{ color: 'red', fontSize: '0.8em', marginTop: '10px' }}>지역을 선택해주세요.</div>
             )

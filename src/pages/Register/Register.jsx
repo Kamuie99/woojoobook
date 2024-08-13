@@ -163,7 +163,7 @@ const Register = () => {
       <Header2 />
       <main className='Register'>
         <Link to="/">
-          <img src={Logo} width='400' alt="Home" style={{ cursor: 'pointer' }} />
+          <img src={Logo} alt="Home" style={{ cursor: 'pointer' }} />
         </Link>
         <div>
           {renderStep()}
