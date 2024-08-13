@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 import axiosInstance from '../../util/axiosConfig';
@@ -78,7 +78,6 @@ const Chatting = ({ onClose, newMessageChatRooms, setNewMessage, newMessage, dir
       }
       setChatRooms(updateChatRooms);
       setTotalPages(data.totalPages);
-      // setChatRooms((prev) => [...prev, ...updateChatRooms]);
     } catch (error) {
       console.error('채팅 룸 목록 조회 중 오류 발생:', error);
     }

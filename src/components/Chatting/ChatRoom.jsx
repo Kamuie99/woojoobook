@@ -32,7 +32,6 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
     if (client.current && chatRoom) {
       const destination = `/topic/user_${userId}`;
       subscription = client.current.subscribe(destination, debounce((message) => {
-        // console.log('수신된 메시지:', message.body);
         const messageBody = JSON.parse(message.body);
         if (messageBody.chatRoomId != chatRoom.id) {
           return;
@@ -204,26 +203,27 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
     <div className={styles.messageList} ref={scrollBarRef}>
       <div className={styles.messagesContainer}>
         <div ref={loadMoreMessagesTarget} />
-          {[...messages].reverse().map((message, index) => (
-            <div key={index} className={
+        {[...messages].reverse().map((message) => {
+          const originalHour = parseInt(message.createdAt.slice(11, 13), 10);
+          const adjustedHour = (originalHour + 9) % 24;
+          const period = adjustedHour > 12 ? '오후' : '오전';
+          const formattedHour = adjustedHour > 12 ? adjustedHour - 12 : adjustedHour;
+          const formattedTime = `${formattedHour}:${message.createdAt.slice(14, 16)}`;
+
+          return (
+            <div key={message.id} className={
               `${styles.message} ${message.userId == userId ? styles.sent : styles.received}`
             }>
-              <p className={styles.createdAt}>{message.content}
+              <p className={styles.createdAt}>
+                {message.content}
                 <p className={styles.dateTime}>
-                  <p>
-                    {(parseInt(message.createdAt.slice(11, 13)) + 9 >= 24
-                    ? parseInt(message.createdAt.slice(11, 13)) + 9 - 24
-                    : parseInt(message.createdAt.slice(11, 13)) + 9) > 12
-                      ? `오후`
-                      : `오전`}
-                  </p>
-                  <p>
-                  {`${(parseInt(message.createdAt.slice(11, 13))+9)%24}:${message.createdAt.slice(14, 16)}`}
-                  </p>
+                  <p>{period}</p>
+                  <p>{formattedTime}</p>
                 </p>
               </p>
             </div>
-          ))}
+          );
+        })}
         <div ref={messagesEndRef}/>
       </div>
       <div className={`

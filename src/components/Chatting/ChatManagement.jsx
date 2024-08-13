@@ -6,7 +6,6 @@ const ChatManagement = ({ chatRooms, userId, fetchOrCreateChatRoom }) => {
   const receiverIdRef = useRef(null);
 
   const deleteChatRooms = (roomId) => {
-    // TODO: 채팅 삭제
     console.log(roomId)
   };
   

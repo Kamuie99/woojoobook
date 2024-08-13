@@ -39,7 +39,7 @@ body {
 }
 
 body * {
-  font-family: "samsungGodik";
+  font-family: "samsungGodik", sans-serif;
 }
 
 :root {

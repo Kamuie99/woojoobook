@@ -12,7 +12,6 @@
 
 .chatListItem {
   background-color: var(--sub-color);
-  background: var(--sub-color);
   width: 72px;
   height: 72px;
   /* border: 1.85px solid var(--accent-color); */

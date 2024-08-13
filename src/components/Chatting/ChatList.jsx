@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { IoPersonOutline, IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import styles from './ChatList.module.css';
 
@@ -12,6 +12,12 @@ const ChatList = ({ chatRooms, userId, onSelectRoom, setChatRooms, newMessage, n
     })
     setChatRooms([...updateChatRooms]);
   }, [newMessage])
+
+  const getDisplayName = (room) => {
+    const isUserSender = userId == room.receiverId;
+    const nickname = isUserSender ? room.senderNickname : room.receiverNickname;
+    return nickname === 'anonymous' ? '(알 수 없음)' : nickname;
+  };
 
   return (
     <div className={styles.chatList} id="chatList">
@@ -28,9 +34,7 @@ const ChatList = ({ chatRooms, userId, onSelectRoom, setChatRooms, newMessage, n
         >
           <IoPersonOutline size={40}/>
           <p>
-            {userId == room.receiverId
-            ? room.senderNickname === 'anonymous' ? '(알 수 없음)' : room.senderNickname
-            : room.receiverNickname === 'anonymous' ? '(알 수 없음)' : room.receiverNickname}
+            {getDisplayName(room)}
           </p>
           {room.hasNewMessage && (
             <IoChatbubbleEllipsesOutline

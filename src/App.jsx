@@ -17,7 +17,6 @@ import Chatting from './components/Chatting/Chatting';
 import BookList from './pages/BookList/BookList';
 import TestPage from './pages/TestPage';
 import debounce from 'lodash.debounce';
-import axiosInstance from './util/axiosConfig';
 import { AuthContext } from './contexts/AuthContext';
 
 
@@ -26,7 +25,7 @@ import { AuthContext } from './contexts/AuthContext';
 
 
 function App() {
-  const { sub: userId, client, isConnected, token, setUser } = useContext(AuthContext);
+  const { sub: userId, client, isConnected } = useContext(AuthContext);
   const [directMessage, setDirectMessage] = useState(null);
   const [newMessage, setNewMessage] = useState(() => {
     const storedValue = localStorage.getItem('newMessage')
