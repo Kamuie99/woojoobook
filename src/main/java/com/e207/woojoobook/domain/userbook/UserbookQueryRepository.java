@@ -74,7 +74,7 @@ public class UserbookQueryRepository {
 			.where(
 				eqAreaCode(request.areaCode()),
 				likeKeyword(request.keyword()),
-				gtUserbookId(request.userbookId())
+				ltUserbookId(request.userbookId())
 			).orderBy(userbook.id.desc())
 			.limit(PAGE_SIZE)
 			.fetch();
@@ -87,11 +87,11 @@ public class UserbookQueryRepository {
 		return userbook.areaCode.eq(areaCode);
 	}
 
-	private BooleanExpression gtUserbookId(Long userbookId) {
+	private BooleanExpression ltUserbookId(Long userbookId) {
 		if(userbookId == null) {
 			return null;
 		}
-		return userbook.id.gt(userbookId);
+		return userbook.id.lt(userbookId);
 	}
 
 	private BooleanExpression likeKeyword(String keyword) {
