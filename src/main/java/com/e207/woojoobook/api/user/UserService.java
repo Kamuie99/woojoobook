@@ -3,6 +3,8 @@ package com.e207.woojoobook.api.user;
 import java.time.LocalDate;
 import java.util.Map;
 
+import com.e207.woojoobook.api.chat.event.UpdateRedisUserChangeEvent;
+import com.e207.woojoobook.api.chat.event.UserDeleteRedisEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -113,10 +115,16 @@ public class UserService {
 	@Transactional
 	public void update(UserUpdateRequest userUpdateRequest) {
 		User user = this.userHelper.findCurrentUser();
-		if(!userUpdateRequest.nickname().equals(user.getNickname()) && checkDuplicateNickname(userUpdateRequest.nickname())){
+		if (!userUpdateRequest.nickname().equals(user.getNickname()) && checkDuplicateNickname(
+			userUpdateRequest.nickname())) {
 			throw new ErrorException(ErrorCode.NotAcceptDuplicate);
-		};
+		}
+		;
+		String previousNickname = user.getNickname();
+		String previousAreaCode = user.getAreaCode();
 		user.update(userUpdateRequest.nickname(), userUpdateRequest.areaCode());
+
+		eventPublisher.publishEvent(new UpdateRedisUserChangeEvent(user, previousNickname, previousAreaCode));
 	}
 
 	@Transactional
@@ -132,6 +140,7 @@ public class UserService {
 		User user = this.userHelper.findCurrentUser();
 		checkPassword(user.getEmail(), userDeleteRequest.password());
 		this.eventPublisher.publishEvent(new UserDeleteEvent(user));
+		this.eventPublisher.publishEvent(new UserDeleteRedisEvent(user.getId(), user.getNickname(), user.getAreaCode()));
 	}
 
 	@Transactional(readOnly = true)
