@@ -77,7 +77,8 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
   const openBookModal = async (book) => {
     try {
       const response = await axiosInstance.get(`books?keyword=${book.isbn}&page=1`);
-      setBookDetail(response.data.bookList[0]);
+      console.log(response);
+      setBookDetail(response.data.bookItems[0]);
       setShowModal(true);
     } catch (error) {
       console.error('Error fetching book details:', error);

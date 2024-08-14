@@ -35,7 +35,9 @@ const BookSearch = ({ onSelectBook }) => {
           page: page
         }
       });
-      const newBooks = response.data.bookList.filter(book => !uniqueBooks.current.has(book.isbn));
+      const newBooktest = response.data
+      console.log(newBooktest.bookItems);
+      const newBooks = response.data.bookItems.filter(book => !uniqueBooks.current.has(book.isbn));
       newBooks.forEach(book => uniqueBooks.current.add(book.isbn));
       setBookList(newBooks);
       setModalIsOpen(true);
