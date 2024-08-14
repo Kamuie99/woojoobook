@@ -62,7 +62,7 @@ const UserUpdate = () => {
     
     try {
       const response = await axiosInstance.get(`/users/nicknames/${nickname}`);
-      setIsNicknameAvailable(!response.data.isDuplicate);
+      setIsNicknameAvailable(!response.data.isDuplicated);
       setIsNicknameChecked(true);
     } catch (error) {
       console.error('닉네임 중복 체크 중 오류 발생:', error);
