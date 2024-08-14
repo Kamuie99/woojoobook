@@ -23,9 +23,9 @@ const BookList = ({setDirectMessage}) => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [areaNames, setAreaNames] = useState({});
+  // const [areaNames, setAreaNames] = useState({});
   const [selectedArea, setSelectedArea] = useState(null);
-  const { user, sub: userId, client } = useContext(AuthContext);
+  const { user, sub: userId, client, isConnected } = useContext(AuthContext);
   const [selectedBook, setSelectedBook] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userAreaName, setUserAreaName] = useState('');
@@ -39,28 +39,49 @@ const BookList = ({setDirectMessage}) => {
     fetchUserInfo();
   }, []);
 
-  // useEffect(() => {
-  //   if (selectedArea && selectedArea.areaCode) {
-  //     const destination = `/topic/area:${selectedArea.areaCode}`;
-  //     client.current.subscribe(destination, (message) => {
-  //       const messageBody = JSON.parse(message.body);
-  //       setOnlineUsers(messageBody);
-  //     });
-  //   }
-  // }, [selectedArea]);
+  useEffect(() => {
+    let subscription;
+    if (!isConnected) {
+      return;
+    }
+  
+    if (selectedArea && selectedArea.areaCode) {
+      console.log(selectedArea.areaCode);
+      const destination = `/topic/area:${selectedArea.areaCode}`;
+      
+      subscription = client.current.subscribe(destination, (message) => {
+        const messageBody = JSON.parse(message.body);
+        setOnlineUsers(messageBody);
+      });
+    }
+  
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
+  }, [selectedArea]);
+  const fetchOnlineUsers = async (areaCode) => {
+    try {
+      const response = await axiosInstance.get(`usersOn/${areaCode}`);
+      setOnlineUsers(response.data)
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (showOnlineUsers && !event.target.closest(`.${styles.onlineUsersWrapper}`)) {
-  //       setShowOnlineUsers(false);
-  //     }
-  //   };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showOnlineUsers && !event.target.closest(`.${styles.onlineUsersWrapper}`)) {
+        setShowOnlineUsers(false);
+      }
+    };
 
-  //   document.addEventListener('mousedown', handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener('mousedown', handleClickOutside);
-  //   };
-  // }, [showOnlineUsers]);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showOnlineUsers]);
 
   const fetchUserInfo = async () => {
     try {
@@ -274,6 +295,7 @@ const BookList = ({setDirectMessage}) => {
   }
 
   const toggleOnlineUsers = () => {
+    fetchOnlineUsers(selectedArea.areaCode);
     setShowOnlineUsers(!showOnlineUsers);
   };
 
@@ -287,7 +309,9 @@ const BookList = ({setDirectMessage}) => {
             <BsPeople onClick={toggleOnlineUsers} className={styles.peopleIcon} />
             {showOnlineUsers && (
               <div className={styles.onlineUsersPopup}>
-                <p className={styles.onlineUserTitle}>현재 온라인 유저 ({onlineUsers.length})</p>
+                <p className={styles.onlineUserTitle}>
+                  <strong>{userAreaName}</strong> <br/>현재 온라인 유저 ({onlineUsers.length})
+                </p>
                 {onlineUsers.length > 0 ? (
                   onlineUsers.map((user) => (
                     <Link to={`/${user.id}/mylibrary`} key={user.id} className={styles.onlineUserLink}>

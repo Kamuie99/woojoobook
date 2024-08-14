@@ -141,7 +141,8 @@ const History = (userId) => {
                 </div>
                 <h2>책권자</h2>
                 <div className={styles.modalContent}>
-                  {selectedItem.userbook.ownerInfo.nickname}
+                  {selectedItem.userbook.ownerInfo.nickname === 'anonymous'
+                    ? '(알 수 없음)' : selectedItem.userbook.ownerInfo.nickname}
                 </div>
                 <h2></h2>
                 <div className={styles.modalContent}></div>
@@ -192,7 +193,10 @@ const History = (userId) => {
                 </div>
                 <div className={styles.rentalInfo}>
                   <h2>교환자</h2>
-                  <p>{selectedItem.receiverBook.ownerInfo.nickname}</p>
+                  <p>
+                    {selectedItem.userbook.ownerInfo.nickname === 'anonymous'
+                    ? '(알 수 없음)' : selectedItem.userbook.ownerInfo.nickname}
+                  </p>
                   <h2>교환일</h2>
                   <p>{selectedItem.exchangeDate.split('T')[0]}</p>
                 </div>
@@ -231,7 +235,10 @@ const History = (userId) => {
                 </div>
                 <div className={styles.rentalInfo}>
                   <h2>교환자</h2>
-                  <p>{selectedItem.senderBook.ownerInfo.nickname}</p>
+                  <p>
+                    {selectedItem.userbook.ownerInfo.nickname === 'anonymous'
+                    ? '(알 수 없음)' : selectedItem.userbook.ownerInfo.nickname}
+                  </p>
                   <h2>교환일</h2>
                   <p>{selectedItem.exchangeDate.split('T')[0]}</p>
                 </div>
@@ -282,7 +289,10 @@ const History = (userId) => {
               renderItem={(item) => (
                 <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RENTAL_HISTORY)} style={{cursor: 'pointer'}}>
                   <div>{item.userbook.bookInfo.title}</div>
-                  <div>{item.userbook.ownerInfo.nickname}</div>
+                  <div>
+                    {item.userbook.ownerInfo.nickname === 'anonymous'
+                    ? '(알 수 없음)' : item.userbook.ownerInfo.nickname}
+                  </div>
                 </div>
               )}
             />

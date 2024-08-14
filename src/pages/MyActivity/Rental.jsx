@@ -375,7 +375,8 @@ const Rental = () => {
                 </div>
                 <h2>책권자</h2>
                 <div className={styles.modalContent}>
-                  {selectedItem.userbook.ownerInfo.nickname}
+                {selectedItem.userbook.ownerInfo.nickname === 'anonymous'
+                    ? '(알 수 없음)' : selectedItem.userbook.ownerInfo.nickname}
                 </div>
                 <h2></h2>
                 <div className={styles.modalContent}></div>
@@ -410,7 +411,8 @@ const Rental = () => {
                 </div>
                 <h2>책권자</h2>
                 <div className={styles.modalContent}>
-                  {selectedItem.userbook.ownerInfo.nickname}
+                {selectedItem.userbook.ownerInfo.nickname === 'anonymous'
+                    ? '(알 수 없음)' : selectedItem.userbook.ownerInfo.nickname}
                 </div>
                 <h2></h2>
                 <div className={styles.modalContent}></div>
@@ -445,7 +447,10 @@ const Rental = () => {
             </div>
             <div className={styles.rentalInfo}>
               <h2>신청자</h2>
-              <p>{selectedItem.user.nickname}</p>
+              <p>
+                {selectedItem.user.nickname === 'anonymous'
+                ? '(알 수 없음)' : selectedItem.user.nickname}
+              </p>
             </div>
             <div className={styles.buttons}>
               <button className={styles.modalButton} onClick={() => handleAccept(selectedItem.id, true)}>수락</button>
@@ -492,7 +497,10 @@ const Rental = () => {
               renderItem={(item) => (
                 <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.CURRENT_RENT)} style={{ cursor: 'pointer' }}>
                   <div>{item.userbook.bookInfo.title}</div>
-                  <div>{item.userbook.ownerInfo.nickname}</div>
+                  <div>
+                    {item.userbook.ownerInfo.nickname === 'anonymous'
+                    ? '(알 수 없음)' : item.userbook.ownerInfo.nickname}
+                  </div>
                 </div>
               )}
             />
@@ -523,7 +531,10 @@ const Rental = () => {
               renderItem={(item) => (
                 <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.RENTAL_REQUEST)} style={{ cursor: 'pointer' }}>
                   <div>{item.userbook.bookInfo.title}</div>
-                  <div>{item.userbook.ownerInfo.nickname}</div>
+                  <div>
+                    {item.userbook.ownerInfo.nickname === 'anonymous'
+                    ? '(알 수 없음)' : item.userbook.ownerInfo.nickname}
+                  </div>
                 </div>
               )}
             />

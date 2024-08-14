@@ -291,7 +291,8 @@ const Exchange = () => {
                 </div>
                 <h2>교환승인자</h2>
                 <div className={styles.modalContent}>
-                  {selectedItem.receiverBook.ownerInfo.nickname}
+                  {selectedItem.receiverBook.ownerInfo.nickname === 'anonymous'
+                  ? '(알 수 없음)' : selectedItem.receiverBook.ownerInfo.nickname}
                 </div>
               </div>
               <div className={styles.receiverBook}>
@@ -333,7 +334,8 @@ const Exchange = () => {
                 </div>
                 <h2>교환신청자</h2>
                 <div className={styles.modalContent}>
-                  {selectedItem.senderBook.ownerInfo.nickname}
+                  {selectedItem.senderBook.ownerInfo.nickname === 'anonymous'
+                  ? '(알 수 없음)' : selectedItem.senderBook.ownerInfo.nickname}
                 </div>
               </div>
               <div className={styles.receiverBook}>

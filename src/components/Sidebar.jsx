@@ -69,7 +69,7 @@ const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles 
               <MenuItem component={<Link to={`/${sub}/myactivity`} />} icon={<BsFillPersonLinesFill size={'20px'} /> }> 나의 활동 </MenuItem>
             </>
           )}
-          <MenuItem component={<Link to='/policy' />} icon={<RiCustomerService2Line size={'20px'}/>}> 이용 안내 및 정책 </MenuItem>
+          <MenuItem component={<Link to='/policy' />} icon={<RiCustomerService2Line size={'20px'}/>}> 이용안내 및 정책 </MenuItem>
         </Menu>
       </ProSidebar>
     </div>

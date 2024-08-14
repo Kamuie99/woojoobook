@@ -4,6 +4,20 @@
   overflow-y: auto;
 }
 
+.main::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.main::-webkit-scrollbar-thumb {
+  background: var(--accent-sub-color);
+  border-radius: 10px;
+}
+
+.main::-webkit-scrollbar-track {
+  background: var(--main-color);
+}
+
 .onlineUsersWrapper {
   position: relative;
 }

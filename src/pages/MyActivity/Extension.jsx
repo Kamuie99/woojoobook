@@ -286,7 +286,8 @@ const Extension = () => {
                 </div>
                 <h2>책권자</h2>
                 <div className={styles.modalContent}>
-                  {selectedItem.rentalResponse.userbook.ownerInfo.nickname}
+                  {selectedItem.rentalResponse.userbook.ownerInfo.nickname
+                  ? '(알 수 없음)' : selectedItem.rentalResponse.userbook.ownerInfo.nickname}
                 </div>
               </div>
             </div>
@@ -319,7 +320,10 @@ const Extension = () => {
             </div>
             <div className={styles.rentalInfo}>
               <h2>신청자</h2>
-              <p>{selectedItem.rentalResponse.user.nickname}</p>
+              <p>
+                {selectedItem.rentalResponse.user.nickname === 'anonymous'
+                ? '(알 수 없음)': selectedItem.rentalResponse.user.nickname}
+              </p>
               <h2>반납 예정일</h2>
               <p>{selectedItem.rentalResponse.endDate.split('T')[0]}</p>
             </div>
@@ -368,7 +372,10 @@ const Extension = () => {
               renderItem={(item) => (
                 <div className={styles.listItem} onClick={() => openModal(item, MODAL_TYPES.EXTENSION_REQUEST)} style={{ cursor: 'pointer' }}>
                   <div>{item.rentalResponse.userbook.bookInfo.title}</div>
-                  <div>{item.rentalResponse.userbook.ownerInfo.nickname}</div>
+                  <div>
+                    {item.rentalResponse.userbook.ownerInfo.nickname === 'anonymous'
+                    ? '(알 수 없음)' : item.rentalResponse.userbook.ownerInfo.nickname}
+                  </div>
                 </div>
               )}
             />
