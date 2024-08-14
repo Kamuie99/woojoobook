@@ -31,14 +31,12 @@ import com.e207.woojoobook.global.security.SecurityUtil;
 import com.e207.woojoobook.global.security.jwt.JwtProvider;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
 public class UserController {
-
-	private static final String EMAIL_PATTERN = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-	private static final Pattern pattern = Pattern.compile(EMAIL_PATTERN);
 
 	private final UserService userService;
 	private final UserValidator userValidator;
@@ -88,8 +86,8 @@ public class UserController {
 	}
 
 	@GetMapping("/users/emails/{email}")
-	public ResponseEntity<?> checkDuplicateEmail(@PathVariable("email") String email) {
-		if (!pattern.matcher(email).matches()) {
+	public ResponseEntity<?> checkDuplicateEmail(@PathVariable("email") @Email String email, Errors errors) {
+		if (errors.hasErrors()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이메일 형식이 아닙니다,.");
 		}
 

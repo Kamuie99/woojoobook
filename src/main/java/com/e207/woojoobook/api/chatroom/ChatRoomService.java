@@ -78,7 +78,7 @@ public class ChatRoomService {
 	}
 
 	private void checkIfUsersAreDifferent(User sender, User receiver) {
-		if (sender.getId() == receiver.getId()) {
+		if (sender.getId().equals(receiver.getId())) {
 			throw new ErrorException(ErrorCode.BadRequest);
 		}
 	}

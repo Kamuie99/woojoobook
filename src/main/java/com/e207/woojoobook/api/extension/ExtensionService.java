@@ -3,6 +3,7 @@ package com.e207.woojoobook.api.extension;
 import static com.e207.woojoobook.domain.extension.ExtensionStatus.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -103,7 +104,7 @@ public class ExtensionService {
 	}
 
 	private static void validateIsOwner(User owner, User currentUser) {
-		if (owner.getId() != currentUser.getId()) {
+		if (!Objects.equals(owner.getId(), currentUser.getId())) {
 			throw new ErrorException(ErrorCode.ForbiddenError);
 		}
 	}
@@ -112,7 +113,7 @@ public class ExtensionService {
 		Rental rental = this.rentalRepository.findById(rentalId)
 			.orElseThrow(() -> new ErrorException(ErrorCode.NotFound));
 		User currentUser = this.userHelper.findCurrentUser();
-		if (currentUser.getId() != rental.getUser().getId()) {
+		if (!Objects.equals(currentUser.getId(), rental.getUser().getId())) {
 			throw new ErrorException(ErrorCode.ForbiddenError);
 		}
 		validateRentalStatus(rental);

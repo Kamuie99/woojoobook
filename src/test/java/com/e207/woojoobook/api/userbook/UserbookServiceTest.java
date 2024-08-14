@@ -115,7 +115,9 @@ class UserbookServiceTest {
 		List<Rental> result = rentalRepository.findAllByUserbook(userbook);
 
 		// then
-		assertThat(result).allMatch(rental -> rental.getRentalStatus() == RentalStatus.REJECTED);
+		assertThat(result)
+			.isNotEmpty()
+			.allMatch(rental -> rental.getRentalStatus() == RentalStatus.REJECTED);
 	}
 
 	@DisplayName("사용자 도서의 등록 상태가 교환 불가로 변경되면, 모든 교환 신청은 거절된다.")
@@ -141,7 +143,9 @@ class UserbookServiceTest {
 		List<Exchange> result = exchangeRepository.findAllByReceiverBook(receiverUserbook);
 
 		// then
-		assertThat(result).allMatch(exchange -> exchange.getExchangeStatus() == ExchangeStatus.REJECTED);
+		assertThat(result)
+			.isNotEmpty()
+			.allMatch(exchange -> exchange.getExchangeStatus() == ExchangeStatus.REJECTED);
 	}
 
 	@DisplayName("사용자가 등록한 도서를 조회할 수 있다.")
