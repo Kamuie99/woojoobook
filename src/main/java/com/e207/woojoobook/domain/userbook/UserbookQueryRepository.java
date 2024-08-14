@@ -74,7 +74,9 @@ public class UserbookQueryRepository {
 			.where(
 				eqAreaCode(request.areaCode()),
 				likeKeyword(request.keyword()),
-				ltUserbookId(request.userbookId())
+				ltUserbookId(request.userbookId()),
+				userbook.registerType.ne(RegisterType.INACTIVE)
+					.and(userbook.tradeStatus.notIn(TradeStatus.EXCHANGED, TradeStatus.UNAVAILABLE))
 			).orderBy(userbook.id.desc())
 			.limit(PAGE_SIZE)
 			.fetch();
