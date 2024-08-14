@@ -103,7 +103,7 @@ const History = (userId) => {
       setExchangeHistoryCnt(response.data.totalElements)
       setExchangePage(prev => prev + 1)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -121,7 +121,6 @@ const History = (userId) => {
 
   const renderModalContent = () => {
     if (!selectedItem) return null;
-
     switch (modalType) {
       case MODAL_TYPES.RENTAL_HISTORY:
         return (
@@ -194,8 +193,8 @@ const History = (userId) => {
                 <div className={styles.rentalInfo}>
                   <h2>교환자</h2>
                   <p>
-                    {selectedItem.userbook.ownerInfo.nickname === 'anonymous'
-                    ? '(알 수 없음)' : selectedItem.userbook.ownerInfo.nickname}
+                    {selectedItem.receiverBook.ownerInfo.nickname === 'anonymous'
+                    ? '(알 수 없음)' : selectedItem.receiverBook.ownerInfo.nickname}
                   </p>
                   <h2>교환일</h2>
                   <p>{selectedItem.exchangeDate.split('T')[0]}</p>
@@ -236,8 +235,8 @@ const History = (userId) => {
                 <div className={styles.rentalInfo}>
                   <h2>교환자</h2>
                   <p>
-                    {selectedItem.userbook.ownerInfo.nickname === 'anonymous'
-                    ? '(알 수 없음)' : selectedItem.userbook.ownerInfo.nickname}
+                    {selectedItem.senderBook.ownerInfo.nickname === 'anonymous'
+                    ? '(알 수 없음)' : selectedItem.senderBook.ownerInfo.nickname}
                   </p>
                   <h2>교환일</h2>
                   <p>{selectedItem.exchangeDate.split('T')[0]}</p>

@@ -44,13 +44,18 @@ const BookList = ({setDirectMessage}) => {
     if (!isConnected) {
       return;
     }
-  
+
     if (selectedArea && selectedArea.areaCode) {
       const destination = `/topic/area:${selectedArea.areaCode}`;
       
       subscription = client.current.subscribe(destination, (message) => {
         const messageBody = JSON.parse(message.body);
-        setOnlineUsers(messageBody);
+        // console.log(messageBody);
+        setOnlineUsers([]);
+        setTimeout(() => {
+          setOnlineUsers(messageBody);
+        }, 10);
+        // console.log(onlineUsers)
       });
     }
   
@@ -60,10 +65,15 @@ const BookList = ({setDirectMessage}) => {
       }
     };
   }, [selectedArea]);
+
   const fetchOnlineUsers = async (areaCode) => {
     try {
       const response = await axiosInstance.get(`usersOn/${areaCode}`);
-      setOnlineUsers(response.data)
+      setOnlineUsers([]);
+      setTimeout(() => {
+        setOnlineUsers(response.data)
+      }, 10);
+      console.log(onlineUsers)
     } catch (err) {
       console.error(err)
     }
@@ -133,6 +143,7 @@ const BookList = ({setDirectMessage}) => {
           }
         }, 0);
       }
+      console.log(books)
       return response.data.content;
     } catch (err) {
       setError('로딩중 ..')
@@ -227,7 +238,6 @@ const BookList = ({setDirectMessage}) => {
 
   const handleSearch = () => {
     setSearchTerm(inputValue);
-    console.log(inputValue);
   };
 
   const handleInputChange = (e) => {
