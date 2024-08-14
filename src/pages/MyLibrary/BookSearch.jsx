@@ -34,10 +34,11 @@ const BookSearch = ({ onSelect }) => {
       const response = await axiosInstance.get('/books', {
         params: {keyword: searchKeyword, page: searchPage}
       })
-      setBooks(response.data.bookList)
+      // console.log(response.data)
+      setBooks(response.data.bookItems)
       setMaxPage(response.data.maxPage)
       setPage(searchPage)
-      setNoResults(response.data.bookList.length === 0)
+      setNoResults(response.data.bookItems.length === 0)
     } catch (error) {
       console.error(error)
       setNoResults(true)

@@ -108,7 +108,7 @@ const BookList = ({setDirectMessage}) => {
     setDirectMessage(ownerId);
   }
 
-  const fetchBooks = useCallback(async (userbookId = null, init = true) => {
+  const fetchBooks = useCallback(async (searchTerm, userbookId = null, init = true) => {
     setLoading(true);
     setError(null);
     try {
@@ -144,7 +144,7 @@ const BookList = ({setDirectMessage}) => {
 
   useEffect(() => {
     if (selectedArea) {
-      fetchBooks()
+      fetchBooks(searchTerm)
     }
   }, [selectedArea]);
 
@@ -198,7 +198,7 @@ const BookList = ({setDirectMessage}) => {
 
   useEffect(() => {
     if (isBottomVisible) {
-      fetchBooks(lastUserbook.userbookid, false)
+      fetchBooks(searchTerm, lastUserbook.userbookid, false)
       // 추가 작업 수행
     }
   }, [isBottomVisible]);
@@ -221,8 +221,13 @@ const BookList = ({setDirectMessage}) => {
   //   }
   // };
 
+  useEffect(() => {
+    fetchBooks(searchTerm)
+  }, [searchTerm])
+
   const handleSearch = () => {
     setSearchTerm(inputValue);
+    console.log(inputValue);
   };
 
   const handleInputChange = (e) => {
@@ -247,7 +252,7 @@ const BookList = ({setDirectMessage}) => {
 
   const closeModal = () => {
     setSelectedBook(null);
-    fetchBooks();
+    fetchBooks(searchTerm);
   };
 
   const getQualityEmoticon = (qualityStatus) => {
@@ -353,8 +358,8 @@ const BookList = ({setDirectMessage}) => {
         {!loading && !error && (
           books.length > 0 ? (
             <div className={styles.list}>
-              {books.map((book) => (
-                <div key={book.userbookId} className={styles.item}>
+              {books.map((book, index) => (
+                <div key={index} className={styles.item}>
                   <div className={styles.imageContainer}>
                     <img 
                       src={getQualityEmoticon(book.qualityStatus)} 
