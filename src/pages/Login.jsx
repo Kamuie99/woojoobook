@@ -48,7 +48,7 @@ const Login = () => {
       <Header2 />
       <main className='Login'>
         <Link to="/">
-          <img src={Logo} width='320px' alt="Home" style={{ cursor: 'pointer' }} />
+          <img src={Logo} width='220px' alt="Home" style={{ cursor: 'pointer' }} />
         </Link>
         <div>
           <form onSubmit={handleSubmit}>

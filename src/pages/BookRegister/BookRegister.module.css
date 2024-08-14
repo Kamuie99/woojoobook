@@ -1,7 +1,7 @@
 .bookRegisterContainer {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100vh;
 }
 
 .bookRegister {
@@ -9,6 +9,11 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  min-height: calc(100vh - 60px);
+  background-image: url('../../assets/131313.png'); /* 배경 이미지 경로를 지정하세요 */
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 0 45px; /* 상단 45px는 배경 이미지 없음 */
 }
 
 .titleDiv {
