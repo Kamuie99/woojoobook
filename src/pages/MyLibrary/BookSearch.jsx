@@ -39,7 +39,7 @@ const BookSearch = ({ onSelect }) => {
       setPage(searchPage)
       setNoResults(response.data.bookList.length === 0)
     } catch (error) {
-      console.log(error)
+      console.error(error)
       setNoResults(true)
     }
   }, [])

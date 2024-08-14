@@ -45,8 +45,8 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
   const checkNicknameAvailability = async () => {
     try {
       const response = await axiosInstance.get(`/users/nicknames/${nickname}`);
-      console.log('서버 응답:', response.data);
-      console.log(nickname)
+      // console.log('서버 응답:', response.data);
+      // console.log(nickname)
       setIsNicknameAvailable(response.data.isDuplicated);
       setIsNicknameChecked(true);
     } catch (error) {

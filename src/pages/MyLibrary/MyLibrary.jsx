@@ -35,7 +35,7 @@ const MyLibrary = () => {
       setUserNickName(response.data.nickName)
       setCategories(response.data.libraryList)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -71,7 +71,7 @@ const MyLibrary = () => {
             icon: 'success'
           })
         } catch (error) {
-          console.log(error)
+          console.error(error)
           Swal.fire({
             title: '삭제 실패',
             text: '카테고리 삭제에 실패했습니다.',
@@ -95,7 +95,7 @@ const MyLibrary = () => {
       })
       setCreateModalIsOpen(false);
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }                                                                                                                                   
   }
 
@@ -112,7 +112,7 @@ const MyLibrary = () => {
       })
       setSelectedCategory(null)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 

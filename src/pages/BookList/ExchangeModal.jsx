@@ -54,7 +54,7 @@ const ExchangeModal = ({ receiverBook, onClose }) => {
           senderBookId: selectedBook.id,
           receiverBookId: receiverBook.userbookid
         });
-        console.log('교환 신청 성공:', response.data);
+        // console.log('교환 신청 성공:', response.data);
 
         await Swal.fire({
           title: '교환 신청 완료',

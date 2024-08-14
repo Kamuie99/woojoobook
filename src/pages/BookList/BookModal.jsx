@@ -57,7 +57,7 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
       if (result.isConfirmed) {
         try {
           const response = await axiosInstance.post(`/userbooks/${book.userbookid}/rentals/offer`);
-          console.log('대여 신청 성공:', response.data);
+          // console.log('대여 신청 성공:', response.data);
 
           await Swal.fire({
             title: '대여 신청 완료',

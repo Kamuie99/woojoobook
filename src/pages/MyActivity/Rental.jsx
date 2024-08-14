@@ -81,7 +81,7 @@ const Rental = () => {
       updateStateWithoutDuplicates(setReceivedRentalRequests, response3.data.content, setReceivedRentalRequestsCnt, setReceivedRentalRequestsPage, response3.data.totalElements);
       updateStateWithoutDuplicates(setRejectedRentalRequests, response4.data.content, setRejectedRentalRequestsCnt, setRejectedRentalRequestsPage, response4.data.totalElements);
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -123,7 +123,7 @@ const Rental = () => {
 
       setCurrentRentCnt(response.data.totalElements);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -155,7 +155,7 @@ const Rental = () => {
 
       setRentalRequestsCnt(response.data.totalElements);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -187,7 +187,7 @@ const Rental = () => {
       }
       setReceivedRentalRequestsCnt(response.data.totalElements)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -212,7 +212,7 @@ const Rental = () => {
       setRejectedRentalRequestsCnt(response.data.totalElements)
       setRejectedRentalRequestsPage(prev => prev + 1)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -252,7 +252,7 @@ const Rental = () => {
           })
           closeModal()
         } catch (error) {
-          console.log(error)
+          console.error(error)
           if (error.response.data === '이미 존재합니다.') {
             Swal.fire({
               title: '연장 신청 오류',
@@ -287,7 +287,7 @@ const Rental = () => {
           })
           closeModal()
         } catch (error) {
-          console.log(error)
+          console.error(error)
         }
       }
     })
@@ -336,7 +336,7 @@ const Rental = () => {
 
       closeModal();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

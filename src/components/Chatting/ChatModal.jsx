@@ -12,6 +12,7 @@ import PhoneTopBar from './PhoneTopBar';
 import ChatModalHeader from './ChatModalHeader';
 import Draggable from 'react-draggable';
 import ChatManagement from './ChatManagement';
+import Swal from 'sweetalert2';
 
 const ChatModal = ({
   open, isLoading, isClosing,
@@ -38,7 +39,11 @@ const ChatModal = ({
   const fetchOrCreateChatRoom = async (newReceiverId) => {
     setReceiverId(newReceiverId);
     if (userId == newReceiverId) {
-      console.log('sender와 receiver id가 같습니다.')
+      Swal.fire({
+        title: '잘못된 요청입니다',
+        confirmButtonText: '확인',
+        icon: 'error'
+      })
       return;
     }
     try {

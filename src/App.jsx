@@ -45,9 +45,8 @@ function App() {
     if (client.current && isConnected ) {
       const destination = `/topic/user_${userId}`;
       client.current.subscribe(destination, debounce((message) => {
-        console.log('수신된 메시지:', message.body);
+        // console.log('수신된 메시지:', message.body);
         const messageBody = JSON.parse(message.body);
-        console.log(messageBody.userId != userId);
         if (messageBody.userId != userId) {
           newMessageChatRooms.current[messageBody.chatRoomId] = true;
           setNewMessage(false)

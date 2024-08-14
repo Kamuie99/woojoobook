@@ -106,7 +106,7 @@ const UserUpdate = () => {
         nickname,
         areaCode: selectedArea.areaCode
       });
-      console.log(response);
+      // console.log(response);
       if (response.status === 200) {
         updateUser({
           nickname,

@@ -29,10 +29,6 @@ const Registered = () => {
       localStorage.removeItem('tradeStatus');
     }
   }, [tradeStatus]);
-
-  useEffect(() => {
-    console.log(registeredUserbooks);
-  }, [registeredUserbooks])
   
   const handleSelectChange = (e) => {
     setTradeStatus(e.target.value)

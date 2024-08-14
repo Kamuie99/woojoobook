@@ -77,7 +77,7 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
   const openBookModal = async (book) => {
     try {
       const response = await axiosInstance.get(`books?keyword=${book.isbn}&page=1`);
-      console.log(response);
+      // console.log(response);
       setBookDetail(response.data.bookItems[0]);
       setShowModal(true);
     } catch (error) {
@@ -199,7 +199,7 @@ const BookInfo = ({ item, onWishChange, fetchRegisteredUserbooks }) => {
       if (result.isConfirmed) {
         try {
           const response = await axiosInstance.put(`/userbooks/${book.id}/return`)
-          console.log(book.registerType)
+          // console.log(book.registerType)
           const newTradeStatus = renderTradeStatusFromRegisterType(book.registerType);
           if (response.status === 200) {
             showAlert('반납 완료', '성공적으로 반납 되었습니다.', 'success')

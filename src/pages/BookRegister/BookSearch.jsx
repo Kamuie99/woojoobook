@@ -36,7 +36,7 @@ const BookSearch = ({ onSelectBook }) => {
         }
       });
       const newBooktest = response.data
-      console.log(newBooktest.bookItems);
+      // console.log(newBooktest.bookItems);
       const newBooks = response.data.bookItems.filter(book => !uniqueBooks.current.has(book.isbn));
       newBooks.forEach(book => uniqueBooks.current.add(book.isbn));
       setBookList(newBooks);

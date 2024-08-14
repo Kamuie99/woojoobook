@@ -94,7 +94,7 @@ const MyPage = () => {
         icon: 'success'
       });
     } catch (error) {
-      console.log(error)
+      console.error(error)
       Swal.fire({
         title: '오류',
         text: '회원 탈퇴 중 문제가 발생했습니다. 다시 시도해 주세요.',

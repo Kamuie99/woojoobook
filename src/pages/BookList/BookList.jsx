@@ -46,7 +46,6 @@ const BookList = ({setDirectMessage}) => {
     }
   
     if (selectedArea && selectedArea.areaCode) {
-      console.log(selectedArea.areaCode);
       const destination = `/topic/area:${selectedArea.areaCode}`;
       
       subscription = client.current.subscribe(destination, (message) => {
@@ -153,7 +152,6 @@ const BookList = ({setDirectMessage}) => {
     if (books) {
       setLastUserBook(books[books.length - 1]);
     }
-    console.log(books)
   }, [books])
 
   const fetchAreaName = useCallback(async (areaCode) => {

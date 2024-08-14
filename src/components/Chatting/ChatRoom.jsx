@@ -170,7 +170,7 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
   };
 
   const sendMessage = async () => {
-    console.log('Attempting to send message', client.current);
+    // console.log('Attempting to send message', client.current);
     if (client.current && client.current.connected) {
       const newMessage = {
         content: chat,
@@ -183,7 +183,7 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
         destination: '/app/chat',
         body: JSON.stringify(newMessage),
       });
-      console.log('Message sent', newMessage);
+      // console.log('Message sent', newMessage);
       setChat('');
       scrollToBottom();
     } else {

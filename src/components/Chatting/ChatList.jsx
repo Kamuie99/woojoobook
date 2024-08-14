@@ -29,7 +29,6 @@ const ChatList = ({ chatRooms, userId, onSelectRoom, setChatRooms, newMessage, n
             let otherUserId = room.receiverId;
             if (otherUserId == userId) otherUserId = room.senderId;
             onSelectRoom(otherUserId, room);
-            console.log(room);
           }}
         >
           <IoPersonOutline size={40}/>

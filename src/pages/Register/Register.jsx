@@ -42,12 +42,12 @@ const Register = () => {
     try {
       // 이메일 중복 검사
       const checkResponse = await axiosInstance.get(`users/emails/${email}`);
-      console.log(checkResponse)
+      // console.log(checkResponse)
       if (checkResponse.data.isDuplicated  === true) {
         setEmailError('이미 가입된 이메일입니다.');
         return;
       }
-      console.log('중복아님')
+      // console.log('중복아님')
 
       // 중복이 없는경우 로직 실행
       await axiosInstance.post('users/emails', { email });

@@ -66,7 +66,7 @@ const Extension = () => {
       updateStateWithoutDuplicates(setReceivedExtensionRequests, response2.data.content, setReceivedExtensionRequestsCnt, setReceivedExtensionRequestsPage, response2.data.totalElements)
       updateStateWithoutDuplicates(setRejectedExtensionRequests, response3.data.content, setRejectedExtensionRequestsCnt, setRejectedExtensionRequestsPage, response3.data.totalElements)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -107,7 +107,7 @@ const Extension = () => {
       }
       setExtensionRequestsCnt(response.data.totalElements)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -138,7 +138,7 @@ const Extension = () => {
       }
       setReceivedExtensionRequestsCnt(response.data.totalElements)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -163,7 +163,7 @@ const Extension = () => {
       setRejectedExtensionRequestsCnt(response.data.totalElements)
       setRejectedExtensionRequestsPage(prev => prev + 1)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -199,7 +199,7 @@ const Extension = () => {
           })
           closeModal()
         } catch (error) {
-          console.log(error)
+          console.error(error)
         }
       }
     })
@@ -248,7 +248,7 @@ const Extension = () => {
 
       closeModal();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

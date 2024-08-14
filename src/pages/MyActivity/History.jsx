@@ -51,7 +51,7 @@ const History = (userId) => {
       updateStateWithoutDuplicates(setRentalHistory, response1.data.content, setRentalHistoryCnt, setRentalPage, response1.data.totalElements)
       updateStateWithoutDuplicates(setExchangeHistory, response2.data.content, setExchangeHistoryCnt, setExchangePage, response2.data.totalElements)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -82,7 +82,7 @@ const History = (userId) => {
       setRentalHistoryCnt(response.data.totalElements)
       setRentalPage(prev => prev + 1)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -320,10 +320,10 @@ const History = (userId) => {
               items={exchangeHistory}
               emptyMessage="목록이 없습니다"
               renderItem={(item) => {
-                console.log('Item:', item);
-                console.log('userId:', userId);
-                console.log('Sender ID:', item.senderBook.ownerInfo.id);
-                console.log('Is sender:', item.senderBook.ownerInfo.id == userId);
+                // console.log('Item:', item);
+                // console.log('userId:', userId);
+                // console.log('Sender ID:', item.senderBook.ownerInfo.id);
+                // console.log('Is sender:', item.senderBook.ownerInfo.id == userId);
               
                 return (
                   <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.EXCHANGE_HISTORY)} style={{cursor: 'pointer'}}>

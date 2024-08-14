@@ -66,7 +66,7 @@ const Exchange = () => {
       updateStateWithoutDuplicates(setReceivedExchangeRequests, response2.data.content, setReceivedExchangeRequestsCnt, setReceivedExchangeRequestsPage, response2.data.totalElements)
       updateStateWithoutDuplicates(setRejectedExchangeRequests, response3.data.content, setRejectedExchangeRequestsCnt, setRejectedExchangeRequestsPage, response3.data.totalElements)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -107,7 +107,7 @@ const Exchange = () => {
       }
       setExchangeRequestsCnt(response.data.totalElements);
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -138,7 +138,7 @@ const Exchange = () => {
       }
       setReceivedExchangeRequestsCnt(response.data.totalElements)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -164,7 +164,7 @@ const Exchange = () => {
       setRejectedExchangeRequestsCnt(response.data.totalElements)
       setRejectedExchangeRequestsPage(prev => prev + 1)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -200,7 +200,7 @@ const Exchange = () => {
           })
           closeModal()
         } catch (error) {
-          console.log(error)
+          console.error(error)
         }
       }
     })
@@ -252,7 +252,7 @@ const Exchange = () => {
 
       closeModal();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

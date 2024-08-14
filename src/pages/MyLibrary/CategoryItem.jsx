@@ -64,7 +64,7 @@ const CategoryItem = ({category, isOwnLibrary, index, onUpdate, onDelete, moveCa
     try {
       return typeof category.books === 'string' ? JSON.parse(category.books) : category.books
     } catch (error) {
-      console.log(error)
+      console.error(error)
       return []
     }
   })()

@@ -65,7 +65,7 @@ const PasswordChange = () => {
         });
       }
     } catch (error) {
-      console.log('비밀번호 변경 오류:', error);
+      console.error('비밀번호 변경 오류:', error);
       Swal.fire({
         title: '비밀번호 변경을 실패했습니다.: ' + (error.response?.data?.message || error.message),
         confirmButtonText: '확인',

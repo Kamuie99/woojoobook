@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
     });
 
     client.current.onWebSocketClose = (event) => {
-      console.log('WebSocket closed: ' + event);
+      console.log('웹소켓 연결 닫힘: ' + event);
       setIsConnected(false);
     };
 
