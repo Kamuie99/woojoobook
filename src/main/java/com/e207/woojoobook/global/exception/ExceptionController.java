@@ -1,5 +1,6 @@
 package com.e207.woojoobook.global.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,6 +17,12 @@ public class ExceptionController {
 			log.warn(ex.getMessage());
 		}
 		return ResponseEntity.status(ex.getErrorCode().getStatus()).body(ex.getErrorCode().getMessage());
+	}
+
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<?> handleIllegalStateException(IllegalStateException ex) {
+		log.warn(ex.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 	}
 
 }

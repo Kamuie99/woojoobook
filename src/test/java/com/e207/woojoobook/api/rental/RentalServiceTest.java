@@ -172,9 +172,10 @@ class RentalServiceTest {
 		// given
 		userbook.inactivate();
 		userbook = this.userbookRepository.save(userbook);
+		given(this.userHelper.findCurrentUser()).willReturn(user);
 
 		// expected
-		assertThrows(ErrorException.class,
+		assertThrows(IllegalStateException.class,
 			() -> this.rentalService.rentalOffer(userbook.getId()));
 	}
 
@@ -290,11 +291,7 @@ class RentalServiceTest {
 	@Test
 	void extension() {
 		// given
-		Rental rental = Rental.builder()
-			.user(user)
-			.userbook(userbook)
-			.rentalStatus(RentalStatus.IN_PROGRESS)
-			.build();
+		Rental rental = userbook.createRental(user);
 		rental.respond(true);
 		Rental save = this.rentalRepository.save(rental);
 		given(this.userHelper.findCurrentUser()).willReturn(user);

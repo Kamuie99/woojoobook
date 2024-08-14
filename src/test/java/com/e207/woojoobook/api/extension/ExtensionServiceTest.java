@@ -152,11 +152,7 @@ class ExtensionServiceTest {
 	}
 
 	private Rental createRental() {
-		Rental rental = Rental.builder()
-			.user(user)
-			.userbook(userbook)
-			.rentalStatus(RentalStatus.IN_PROGRESS)
-			.build();
+		Rental rental = userbook.createRental(user);
 		rental.respond(true);
 		Rental save = this.rentalRepository.save(rental);
 		return save;

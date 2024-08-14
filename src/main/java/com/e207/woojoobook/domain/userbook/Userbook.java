@@ -1,8 +1,10 @@
 package com.e207.woojoobook.domain.userbook;
 
 import com.e207.woojoobook.domain.book.Book;
+import com.e207.woojoobook.domain.rental.Rental;
 import com.e207.woojoobook.domain.user.User;
 
+import io.jsonwebtoken.lang.Assert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,6 +17,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import static com.e207.woojoobook.domain.rental.RentalStatus.OFFERING;
 
 @Getter
 @NoArgsConstructor
@@ -60,7 +64,7 @@ public class Userbook {
 
 	public boolean isAvailable() {
 		if (this.tradeStatus == TradeStatus.UNAVAILABLE || this.tradeStatus == TradeStatus.EXCHANGED
-			|| this.tradeStatus == TradeStatus.RENTED) {
+			|| this.tradeStatus == TradeStatus.RENTED || this.registerType == RegisterType.INACTIVE) {
 			return false;
 		}
 		return true;
@@ -76,6 +80,7 @@ public class Userbook {
 
 	public void removeUser(User user) {
 		this.user = user;
+		inactivate();
 	}
 
 	public void updateTradeStatus(TradeStatus tradeStatus) {
@@ -91,4 +96,20 @@ public class Userbook {
 		this.qualityStatus = qualityStatus;
 	}
 
+	public Rental createRental(User user) {
+		Assert.notNull(user, "유저가 없습니다.");
+
+		if (this.user.getId().equals(user.getId())) {
+			throw new IllegalStateException("동일한 유저입니다");
+		}
+
+		if (!isAvailable()) {
+			throw new IllegalStateException("접근할 수 없는 상태입니다");
+		}
+		return Rental.builder()
+			.user(user)
+			.userbook(this)
+			.rentalStatus(OFFERING)
+			.build();
+	}
 }
