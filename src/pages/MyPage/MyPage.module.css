@@ -17,7 +17,7 @@
   align-self: center;
 }
 
-.main_container {
+.mainContainer {
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
@@ -33,7 +33,7 @@
   }
 }
 
-.main_container_update {
+.mainContainerUpdate {
   display: flex;
   justify-content: space-around;
   width: 100%;
@@ -42,7 +42,7 @@
   padding: 20px;
 }
 
-.main_container_info {
+.mainContainerInfo {
   display: flex;
   width: 100%;
   height: 120px;
@@ -53,7 +53,7 @@
   padding: 20px;
 }
 
-.main_container_point {
+.mainContainerPoint {
   display: flex;
   width: 100%;
   height: 120px;
@@ -63,7 +63,7 @@
   padding: 20px;
 }
 
-.main_container_exp {
+.mainContainerExp {
   display: flex;
   width: 100%;
   height: 120px;
@@ -74,7 +74,7 @@
   padding: 20px;
 }
 
-.main_container_delete {
+.mainContainerDelete {
   display: flex;
   width: 100%;
   height: 120px;
@@ -84,28 +84,28 @@
   padding: 20px;
 }
 
-.to_mylibrary {
+.toMylibrary {
   background-color: var(--sub-color);
 }
 
-.update_info,
-.change_password {
+.updateInfo,
+.changePassword {
   background-color: var(--accent-sub-color); 
 }
 
-.main_container_update > * > a {
+.mainContainerUpdate > * > a {
   text-decoration: none;
   color: var(--main-color);
   padding: 20px;
 }
 
-.to_mylibrary > a {
+.toMylibrary > a {
   color: black;
 }
 
-.update_info,
-.change_password,
-.to_mylibrary {
+.updateInfo,
+.changePassword,
+.toMylibrary {
   display: flex;
   cursor: pointer;
   border-radius: 12px;
@@ -116,38 +116,37 @@
   margin: 10px;
 }
 
-.change_password {
+.changePassword {
   background-color: var(--accent-color);
 }
 
-.info_container {
+.infoContainer {
   padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: baseline;
 }
 
-.info_container > p {
+.infoContainer > p {
   font-size: 20px;
   margin: 10px 0;
 }
 
-.user_point,
-.user_exp,
-.user_grade {
+.userPoint,
+.userExp,
+.userGrade {
   padding: 20px;
   font-size: 20px; 
   display: flex;
   align-items: center;
 }
 
-
-.delete_container {
+.deleteContainer {
   display: flex;
   justify-content: flex-end;
 }
 
-.user_delete_button {
+.userDeleteButton {
   border-radius: 12px;
   height: 40px;
   width: 120px;
@@ -157,4 +156,40 @@
   background-color: var(--contrast-color);
   color: var(--main-color);
   cursor: pointer;
+}
+
+.userGrade {
+  position: relative;
+}
+
+.userGradeDescription {
+  position: absolute;
+  top: 85px;
+  left: 0;
+  width: 100%;
+  font-size: 18px;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 15px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.23);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.userGrade:hover .userGradeDescription {
+  visibility: visible;
+  opacity: 1;
+}
+
+.userGradeDescription:after {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
 }
