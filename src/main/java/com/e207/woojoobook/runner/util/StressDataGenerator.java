@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.e207.woojoobook.api.book.BookService;
 import com.e207.woojoobook.api.book.request.BookFindRequest;
-import com.e207.woojoobook.api.book.response.BookListResponse;
-import com.e207.woojoobook.api.book.response.BookResponse;
+import com.e207.woojoobook.api.book.response.BookItem;
+import com.e207.woojoobook.api.book.response.BookItems;
 import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.book.BookRepository;
 import com.e207.woojoobook.domain.user.User;
@@ -61,8 +60,10 @@ public class StressDataGenerator {
 		for (String keyword : keywords) {
 			log.info(keyword);
 			BookFindRequest request = BookFindRequest.builder().keyword(keyword).page(1).build();
-			BookListResponse response = bookService.findBookList(request);
-			response.bookList().stream().map(BookResponse::toEntity).forEach(bookList::add);
+			BookItems response = bookService.findBookList(request);
+			response.getBookItems().stream()
+				.map(BookItem::toEntity)
+				.forEach(bookList::add);
 		}
 		bookRepository.saveAll(bookList);
 	}

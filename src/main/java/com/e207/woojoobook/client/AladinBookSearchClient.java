@@ -1,7 +1,7 @@
 package com.e207.woojoobook.client;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -9,10 +9,11 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import com.e207.woojoobook.api.book.response.BookListResponse;
-import com.e207.woojoobook.api.book.response.BookResponse;
-import com.e207.woojoobook.api.book.response.aladin.AladinBookApiResponse;
-import com.e207.woojoobook.api.book.response.aladin.AladinBookItem;
+import com.e207.woojoobook.api.book.response.BookItem;
+import com.e207.woojoobook.api.book.response.BookItems;
+import com.e207.woojoobook.api.book.response.aladin.AladinBookResponse;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
@@ -22,72 +23,68 @@ import lombok.extern.slf4j.Slf4j;
 public class AladinBookSearchClient implements BookSearchClient {
 
 	private static final String CircuitBreakerName = "aladin-api-client";
+	private static final String RESPONSE_TYPE = "JS";
+	private static final String API_VERSION = "20131101";
 
 	private final RestClient restClient;
-	private final String CLIENT_TTBKEY;
+	private final String clientKey;
 
 	public AladinBookSearchClient(@Value("${api.aladin.baseUrl}") String baseUrl,
 		@Value("${api.aladin.timeout}") String timeout,
 		@Value("${aladin-client-ttbkey}") String aladinClientKey) {
 		restClient = createRestClient(baseUrl, Integer.valueOf(timeout));
-		this.CLIENT_TTBKEY = aladinClientKey;
+		this.clientKey = aladinClientKey;
 	}
 
 	@CircuitBreaker(name = CircuitBreakerName, fallbackMethod = "findBookFallback")
 	@Override
-	public BookListResponse findBookByKeyword(String keyword, Integer page, Integer size) {
-		AladinBookApiResponse aladinBookApiResponse = restClient.get()
+	public BookItems findBookByKeyword(String keyword, Integer page, Integer size) {
+		var aladinBookResponse = restClient.get()
 			.uri(uriBuilder -> uriBuilder.path("/ttb/api/ItemSearch.aspx")
-				.queryParam("ttbkey", CLIENT_TTBKEY)
+				.queryParam("ttbkey", clientKey)
 				.queryParam("Query", keyword)
 				.queryParam("start", page)
 				.queryParam("MaxResults", size)
-				.queryParam("output", "JS")
-				.queryParam("Version", "20131101")
+				.queryParam("output", RESPONSE_TYPE)
+				.queryParam("Version", API_VERSION)
 				.build()
 			)
 			.retrieve()
-			.body(AladinBookApiResponse.class);
+			.body(AladinBookResponse.class);
 
-		log.info("[Aladin api] findBookByKeyword");
+		log.info("[aladin api] find by keyword");
 
-		List<BookResponse> bookResponses = new ArrayList<>();
-		Integer totalResult = 0;
-		if (aladinBookApiResponse != null && aladinBookApiResponse.item() != null) {
-			totalResult = aladinBookApiResponse.totalResults();
-			for (AladinBookItem item : aladinBookApiResponse.item()) {
-				BookResponse bookResponse = item.toBookResponse();
-				bookResponses.add(bookResponse);
-			}
-		}
-		Integer maxPage = totalResult != 0 ? (totalResult + size - 1) / size : 0;
-		return new BookListResponse(maxPage, bookResponses);
+		List<BookItem> bookItems = Objects.requireNonNull(aladinBookResponse).getItems().stream()
+			.map(AladinBookResponse.Item::toBookItem)
+			.toList();
+
+		return BookItems.of(aladinBookResponse.getTotal(), size, bookItems);
 	}
 
 	@CircuitBreaker(name = CircuitBreakerName, fallbackMethod = "findBookFallback")
 	@Override
-	public Optional<BookResponse> findBookByIsbn(String isbn13) {
-		AladinBookApiResponse aladinBookApiResponse = restClient.get()
+	public Optional<BookItem> findBookByIsbn(String isbn) {
+		AladinBookResponse aladinBookResponse = restClient.get()
 			.uri(uriBuilder -> uriBuilder.path("/ttb/api/ItemLookUp.aspx")
-				.queryParam("ttbkey", CLIENT_TTBKEY)
+				.queryParam("ttbkey", clientKey)
 				.queryParam("ItemIdType", "ISBN13")
-				.queryParam("ItemId", isbn13)
+				.queryParam("ItemId", isbn)
 				.queryParam("output", "JS")
 				.queryParam("Version", "20131101")
 				.build()
 			)
 			.retrieve()
-			.body(AladinBookApiResponse.class);
+			.body(AladinBookResponse.class);
 
-		log.info("[Aladin api] findBookByIsbn");
+		log.info("[aladin api] find by isbn");
 
-		if (aladinBookApiResponse != null && aladinBookApiResponse.item() != null) {
-			return aladinBookApiResponse.item().stream()
-				.map(AladinBookItem::toBookResponse)
-				.findAny();
-		} else {
-			return Optional.empty();
-		}
+		return Optional.ofNullable(
+			Objects.requireNonNull(aladinBookResponse)
+				.getItems().stream()
+				.findAny()
+				.orElseThrow(() -> new ErrorException(ErrorCode.InvalidAccess, "존재하지 않는 isbn: " + isbn))
+				.toBookItem()
+		);
 	}
 
 	public void findBookFallback(Exception e) {

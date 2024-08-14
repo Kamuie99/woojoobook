@@ -24,14 +24,13 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import net.bytebuddy.utility.RandomString;
 
-import com.e207.woojoobook.api.book.response.BookResponse;
+import com.e207.woojoobook.api.book.response.BookItem;
 import com.e207.woojoobook.api.user.response.UserResponse;
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
 import com.e207.woojoobook.domain.book.Book;
 import com.e207.woojoobook.domain.user.User;
 import com.e207.woojoobook.domain.userbook.QualityStatus;
 import com.e207.woojoobook.domain.userbook.RegisterType;
-import com.e207.woojoobook.domain.userbook.TradeStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,7 +50,7 @@ class MyUserbookControllerTest {
 	void When_FindLikedUserbook_Expect_ReturnUserbookPage() throws Exception {
 		// given
 		UserResponse otherUser = createUser(2L);
-		List<BookResponse> bookList = List.of(createBook(), createBook());
+		List<BookItem> bookList = List.of(createBook(), createBook());
 		List<UserbookResponse> otherUserbookList = createUserbookList(bookList, otherUser,
 			RegisterType.RENTAL_EXCHANGE);
 		Page<UserbookResponse> expectResponse = new PageImpl<>(otherUserbookList);
@@ -72,7 +71,7 @@ class MyUserbookControllerTest {
 	void When_FindOwnedUserbook_Expect_ReturnUserbookPage() throws Exception {
 		// given
 		UserResponse currentUser = createUser(1L);
-		List<BookResponse> bookList = Stream.generate(this::createBook).limit(3).toList();
+		List<BookItem> bookList = Stream.generate(this::createBook).limit(3).toList();
 		List<UserbookResponse> currentUserbookList = createUserbookList(bookList, currentUser,
 			RegisterType.RENTAL_EXCHANGE);
 		PageImpl<UserbookResponse> expectedResponse = new PageImpl<>(currentUserbookList);
@@ -94,7 +93,7 @@ class MyUserbookControllerTest {
 	void When_FindMyExchangableUserbook_Expect_ReturnExchangableUserbookPage() throws Exception {
 		// given
 		UserResponse currentUser = createUser(1L);
-		List<BookResponse> bookList = Stream.generate(this::createBook).limit(3).toList();
+		List<BookItem> bookList = Stream.generate(this::createBook).limit(3).toList();
 		List<UserbookResponse> currentUserbookList = createUserbookList(bookList, currentUser, RegisterType.EXCHANGE);
 		PageImpl<UserbookResponse> expectedResponse = new PageImpl<>(currentUserbookList);
 		String expectedResponseJson = objectMapper.writeValueAsString(expectedResponse);
@@ -114,12 +113,12 @@ class MyUserbookControllerTest {
 		return UserResponse.of(user);
 	}
 
-	private BookResponse createBook() {
+	private BookItem createBook() {
 		Book book = Book.builder().isbn(RandomString.make()).build();
-		return BookResponse.of(book);
+		return BookItem.of(book);
 	}
 
-	private List<UserbookResponse> createUserbookList(List<BookResponse> bookList, UserResponse user,
+	private List<UserbookResponse> createUserbookList(List<BookItem> bookList, UserResponse user,
 		RegisterType registerType) {
 		return Stream.iterate(0, (id) -> id + 1)
 			.limit(bookList.size() - 1)
@@ -127,7 +126,7 @@ class MyUserbookControllerTest {
 			.toList();
 	}
 
-	private UserbookResponse createUserbookResponse(Long id, UserResponse owner, BookResponse book,
+	private UserbookResponse createUserbookResponse(Long id, UserResponse owner, BookItem book,
 		RegisterType registerType) {
 		return UserbookResponse.builder()
 			.id(id)

@@ -20,7 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.e207.woojoobook.api.book.response.BookResponse;
+import com.e207.woojoobook.api.book.response.BookItem;
 import com.e207.woojoobook.api.rental.RentalService;
 import com.e207.woojoobook.api.user.response.UserResponse;
 import com.e207.woojoobook.api.userbook.request.UserbookCreateRequest;
@@ -127,9 +127,9 @@ class UserbookControllerTest extends AbstractRestDocsTest {
 	private List<UserbookWithLike> createUserbookWithLikeList() {
 		List<UserbookWithLike> userbookList = new ArrayList<>();
 		for (int i = 1; i <= 3; i++) {
-			BookResponse bookResponse = createBookResponse(String.valueOf(i), "title" + i);
+			BookItem bookItem = createBookResponse(String.valueOf(i), "title" + i);
 			UserResponse userResponse = createUserResponse(Long.valueOf(i), "test" + i + "@test.com", "test" + i);
-			userbookList.add(new UserbookWithLike(Long.valueOf(i), bookResponse,userResponse,
+			userbookList.add(new UserbookWithLike(Long.valueOf(i), bookItem, userResponse,
 				RENTAL_EXCHANGE, RENTAL_EXCHANGE.getDefaultTradeStatus(), GOOD, "12345678", true));
 		}
 		return userbookList;
@@ -151,8 +151,8 @@ class UserbookControllerTest extends AbstractRestDocsTest {
 		return UserResponse.builder().id(id).email(email).nickname(nickname).build();
 	}
 
-	private BookResponse createBookResponse(String isbn, String title) {
-		return BookResponse.builder()
+	private BookItem createBookResponse(String isbn, String title) {
+		return BookItem.builder()
 			.isbn(isbn)
 			.title(title)
 			.author("author")

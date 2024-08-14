@@ -23,7 +23,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 import net.bytebuddy.utility.RandomString;
 
-import com.e207.woojoobook.api.book.response.BookResponse;
+import com.e207.woojoobook.api.book.response.BookItem;
 import com.e207.woojoobook.api.userbook.request.UserbookCreateRequest;
 import com.e207.woojoobook.api.userbook.request.UserbookUpdateRequest;
 import com.e207.woojoobook.api.userbook.response.UserbookResponse;
@@ -85,8 +85,8 @@ class UserbookServiceTest {
 		String expectIsbn = RandomString.make();
 		Book book = Book.builder().isbn(expectIsbn).description(RandomString.make()).build();
 
-		BookResponse bookResponse = BookResponse.of(book);
-		given(naverBookSearchClient.findBookByIsbn(any())).willReturn(Optional.of(bookResponse));
+		BookItem bookItem = BookItem.of(book);
+		given(naverBookSearchClient.findBookByIsbn(any())).willReturn(Optional.of(bookItem));
 
 		UserbookCreateRequest request = new UserbookCreateRequest(expectIsbn, RegisterType.RENTAL, QualityStatus.GOOD);
 

@@ -25,7 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.e207.woojoobook.api.book.response.BookResponse;
+import com.e207.woojoobook.api.book.response.BookItem;
 import com.e207.woojoobook.api.exchange.request.ExchangeCreateRequest;
 import com.e207.woojoobook.api.exchange.request.ExchangeFindCondition;
 import com.e207.woojoobook.api.exchange.request.ExchangeOfferRespondRequest;
@@ -188,8 +188,8 @@ class ExchangeServiceTest {
 		assertThatUserbookMatchExactly(result.senderBook(), mine);
 		assertThatUserbookMatchExactly(result.receiverBook(), userbook);
 
-		BookResponse senderBookInfo = result.senderBook().bookInfo();
-		BookResponse receiverBookInfo = result.receiverBook().bookInfo();
+		BookItem senderBookInfo = result.senderBook().bookInfo();
+		BookItem receiverBookInfo = result.receiverBook().bookInfo();
 		assertThatBookMatchExactly(senderBookInfo, mine.getBook());
 		assertThatBookMatchExactly(receiverBookInfo, userbook.getBook());
 	}
@@ -376,7 +376,7 @@ class ExchangeServiceTest {
 				pair.getTradeStatus());
 	}
 
-	private void assertThatBookMatchExactly(BookResponse target, Book pair) {
+	private void assertThatBookMatchExactly(BookItem target, Book pair) {
 		assertThat(target)
 			.extracting("isbn", "title", "author", "publisher", "publicationDate", "thumbnail", "description")
 			.containsExactly(pair.getIsbn(), pair.getTitle(), pair.getAuthor(), pair.getPublisher(),

@@ -1,7 +1,7 @@
 package com.e207.woojoobook.client;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -9,10 +9,11 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import com.e207.woojoobook.api.book.response.BookListResponse;
-import com.e207.woojoobook.api.book.response.BookResponse;
-import com.e207.woojoobook.api.book.response.naver.NaverBookApiResponse;
-import com.e207.woojoobook.api.book.response.naver.NaverBookItem;
+import com.e207.woojoobook.api.book.response.BookItem;
+import com.e207.woojoobook.api.book.response.BookItems;
+import com.e207.woojoobook.api.book.response.naver.NaverBookResponse;
+import com.e207.woojoobook.global.exception.ErrorCode;
+import com.e207.woojoobook.global.exception.ErrorException;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +25,8 @@ public class NaverBookSearchClient implements BookSearchClient {
 	private static final String CircuitBreakerName = "naver-api-client";
 
 	private final RestClient restClient;
-	private final String CLIENT_ID;
-	private final String CLIENT_SECRET;
+	private final String clientId;
+	private final String clientSecret;
 
 	private final BookSearchClient aladinBookSearchClient;
 
@@ -35,69 +36,66 @@ public class NaverBookSearchClient implements BookSearchClient {
 		@Value("${naver-client-key}") String clientId,
 		@Value("${naver-client-secret}") String clientSecret) {
 		this.restClient = createRestClient(baseUrl, Integer.valueOf(timeout));
-		this.CLIENT_ID = clientId;
-		this.CLIENT_SECRET = clientSecret;
+		this.clientId = clientId;
+		this.clientSecret = clientSecret;
 		this.aladinBookSearchClient = aladinBookSearchClient;
 	}
 
 	@CircuitBreaker(name = CircuitBreakerName, fallbackMethod = "searchByKeywordFallback")
 	@Override
-	public BookListResponse findBookByKeyword(String keyword, Integer page, Integer size) {
-		NaverBookApiResponse naverBookApiResponse = restClient.get()
+	public BookItems findBookByKeyword(String keyword, Integer page, Integer size) {
+		NaverBookResponse naverBookResponse = restClient.get()
 			.uri(uriBuilder -> uriBuilder.path("/v1/search/book.json")
 				.queryParam("query", keyword)
 				.queryParam("start", page)
 				.queryParam("display", size)
 				.build())
 			.headers(httpHeaders -> {
-				httpHeaders.set("X-Naver-Client-Id", CLIENT_ID);
-				httpHeaders.set("X-Naver-Client-Secret", CLIENT_SECRET);
+				httpHeaders.set("X-Naver-Client-Id", clientId);
+				httpHeaders.set("X-Naver-Client-Secret", clientSecret);
 			})
 			.retrieve()
-			.body(NaverBookApiResponse.class);
-		log.info("[Naver api] findBookByKeyword");
+			.body(NaverBookResponse.class);
 
-		List<BookResponse> bookResponses = new ArrayList<>();
-		Integer totalResult = 0;
-		if (naverBookApiResponse != null && naverBookApiResponse.items() != null) {
-			totalResult = naverBookApiResponse.total();
-			for (NaverBookItem item : naverBookApiResponse.items()) {
-				BookResponse bookResponse = item.toBookResponse();
-				bookResponses.add(bookResponse);
-			}
-		}
-		Integer maxPage = totalResult != 0 ? (totalResult + size - 1) / size : 0;
-		return new BookListResponse(maxPage, bookResponses);
+		log.info("[naver api] find by keyword");
+
+		List<BookItem> bookItems = Objects.requireNonNull(naverBookResponse).getItems().stream()
+			.map(NaverBookResponse.Item::toBookItem)
+			.toList();
+
+		return BookItems.of(naverBookResponse.getTotal(), size, bookItems);
 	}
 
 	@CircuitBreaker(name = CircuitBreakerName, fallbackMethod = "searchByIsbnFallback")
 	@Override
-	public Optional<BookResponse> findBookByIsbn(String isbn) {
-		NaverBookApiResponse naverBookApiResponse = restClient.get()
+	public Optional<BookItem> findBookByIsbn(String isbn) {
+		NaverBookResponse naverBookResponse = restClient.get()
 			.uri(uriBuilder -> uriBuilder.path("/v1/search/book_adv.json").queryParam("d_isbn", isbn).build())
 			.headers(httpHeaders -> {
-				httpHeaders.set("X-Naver-Client-Id", CLIENT_ID);
-				httpHeaders.set("X-Naver-Client-Secret", CLIENT_SECRET);
+				httpHeaders.set("X-Naver-Client-Id", clientId);
+				httpHeaders.set("X-Naver-Client-Secret", clientSecret);
 			})
 			.retrieve()
-			.body(NaverBookApiResponse.class);
+			.body(NaverBookResponse.class);
 
-		log.info("[Naver api] findBookByIsbn");
+		log.info("[naver api] find by isbn");
 
-		if (naverBookApiResponse != null && naverBookApiResponse.items() != null) {
-			return naverBookApiResponse.items().stream().map(NaverBookItem::toBookResponse).findAny();
-		} else {
-			return Optional.empty();
-		}
+		return Optional.ofNullable(
+			Objects.requireNonNull(naverBookResponse)
+				.getItems().stream()
+				.findAny()
+				.orElseThrow(() -> new ErrorException(ErrorCode.InvalidAccess, "존재하지 않는 isbn: " + isbn))
+				.toBookItem()
+		);
 	}
 
-	public BookListResponse searchByKeywordFallback(String keyword, Integer page, Integer size, Exception e) {
+	public BookItems searchByKeywordFallback(String keyword, Integer page, Integer size, Exception e) {
 		log.error("[" + CircuitBreakerName + "] request fail(keyword: {}, page: {}, pageSize: {}): ", keyword, page,
 			size, e);
 		return this.fallbackByKeyword(aladinBookSearchClient, keyword, page, size);
 	}
 
-	public Optional<BookResponse> searchByIsbnFallback(String isbn, Exception e) {
+	public Optional<BookItem> searchByIsbnFallback(String isbn, Exception e) {
 		log.error("[" + CircuitBreakerName + "] request fail(isbn: {}): ", isbn, e);
 		return this.fallbackByIsbn(aladinBookSearchClient, isbn);
 	}

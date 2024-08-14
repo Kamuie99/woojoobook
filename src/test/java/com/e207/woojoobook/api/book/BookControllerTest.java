@@ -18,8 +18,8 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.e207.woojoobook.api.book.request.BookFindRequest;
-import com.e207.woojoobook.api.book.response.BookListResponse;
-import com.e207.woojoobook.api.book.response.BookResponse;
+import com.e207.woojoobook.api.book.response.BookItem;
+import com.e207.woojoobook.api.book.response.BookItems;
 import com.e207.woojoobook.global.security.SecurityConfig;
 import com.e207.woojoobook.restdocs.AbstractRestDocsTest;
 
@@ -40,7 +40,7 @@ class BookControllerTest extends AbstractRestDocsTest {
 			.page(1)
 			.build();
 
-		BookResponse bookResponse = BookResponse.builder()
+		BookItem bookItem = BookItem.builder()
 			.isbn("1234567890")
 			.title("Galaxies and Stars")
 			.author("Neil deGrasse Tyson")
@@ -50,9 +50,9 @@ class BookControllerTest extends AbstractRestDocsTest {
 			.description("A comprehensive guide to the universe.")
 			.build();
 
-		BookListResponse mockResponse = BookListResponse.builder()
+		BookItems mockResponse = BookItems.builder()
 			.maxPage(1)
-			.bookList(List.of(bookResponse))
+			.bookItems(List.of(bookItem))
 			.build();
 
 		given(this.bookService.findBookList(eq(bookFindRequest))).willReturn(mockResponse);
@@ -76,9 +76,9 @@ class BookControllerTest extends AbstractRestDocsTest {
 			.page(1)
 			.build();
 
-		BookListResponse mockResponse = BookListResponse.builder()
+		BookItems mockResponse = BookItems.builder()
 			.maxPage(0)
-			.bookList(Collections.emptyList())
+			.bookItems(Collections.emptyList())
 			.build();
 
 		given(this.bookService.findBookList(eq(bookFindRequest))).willReturn(mockResponse);

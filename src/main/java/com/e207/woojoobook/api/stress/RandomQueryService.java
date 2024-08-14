@@ -6,16 +6,12 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.e207.woojoobook.api.book.response.BookResponse;
-import com.e207.woojoobook.api.exchange.response.ExchangeResponse;
-import com.e207.woojoobook.api.extension.ExtensionResponse;
-import com.e207.woojoobook.api.rental.response.RentalResponse;
+import com.e207.woojoobook.api.book.response.BookItem;
 import com.e207.woojoobook.api.stress.repository.RandomBookRepository;
 import com.e207.woojoobook.api.stress.repository.RandomExchangeOfferRepository;
 import com.e207.woojoobook.api.stress.repository.RandomExtensionOfferRepository;
 import com.e207.woojoobook.api.stress.repository.RandomRentalOfferRepository;
 import com.e207.woojoobook.api.stress.repository.RandomUserbookRepository;
-import com.e207.woojoobook.api.userbook.response.UserbookResponse;
 import com.e207.woojoobook.domain.exchange.Exchange;
 import com.e207.woojoobook.domain.extension.Extension;
 import com.e207.woojoobook.domain.rental.Rental;
@@ -40,8 +36,8 @@ public class RandomQueryService {
 	private final UserHelper userHelper;
 
 	@Transactional(readOnly = true)
-	public BookResponse findBook() {
-		return BookResponse.of(randomBookRepository.findRandomBook());
+	public BookItem findBook() {
+		return BookItem.of(randomBookRepository.findRandomBook());
 	}
 
 	@Transactional(readOnly = true)

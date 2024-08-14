@@ -35,8 +35,8 @@ class NaverBookSearchClientTest {
 		var actual = sut.findBookByKeyword(keyword, PAGE, PAGE_SIZE);
 
 		// then
-		assertThat(actual.maxPage()).isEqualTo(1);
-		assertThat(actual.bookList()).hasSize(5);
+		assertThat(actual.getMaxPage()).isEqualTo(1);
+		assertThat(actual.getBookItems()).hasSize(5);
 	}
 
 	@Test
@@ -49,7 +49,7 @@ class NaverBookSearchClientTest {
 		var actual = sut.findBookByKeyword(keyword, PAGE, PAGE_SIZE);
 
 		// then
-		assertThat(actual.maxPage()).isEqualTo(1);
-		assertThat(actual.bookList()).hasSize(5);
+		assertThat(actual.getMaxPage()).isEqualTo(1);
+		assertThat(actual.getBookItems()).hasSize(5);
 	}
 }

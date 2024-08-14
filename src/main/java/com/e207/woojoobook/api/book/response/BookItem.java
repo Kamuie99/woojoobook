@@ -7,13 +7,13 @@ import com.e207.woojoobook.domain.book.Book;
 import lombok.Builder;
 
 @Builder
-public record BookResponse(String isbn, String title, String author, String publisher, LocalDate publicationDate,
-						   String thumbnail, String description) {
+public record BookItem(String isbn, String title, String author, String publisher, LocalDate publicationDate,
+					   String thumbnail, String description) {
 
 	private static final int MAX_DESC_LENGTH = 103;
 
-	public static BookResponse of(Book book) {
-		return BookResponse.builder()
+	public static BookItem of(Book book) {
+		return BookItem.builder()
 			.isbn(book.getIsbn())
 			.title(book.getTitle())
 			.author(book.getAuthor())
@@ -27,7 +27,7 @@ public record BookResponse(String isbn, String title, String author, String publ
 	public Book toEntity() {
 		String description = this.description;
 		if (description.length() > MAX_DESC_LENGTH) {
-			description = description.substring(0, MAX_DESC_LENGTH-3) + "...";
+			description = description.substring(0, MAX_DESC_LENGTH - 3) + "...";
 		}
 
 		return Book.builder()

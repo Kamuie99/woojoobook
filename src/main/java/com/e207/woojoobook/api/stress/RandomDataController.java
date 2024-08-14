@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.e207.woojoobook.api.book.response.BookResponse;
+import com.e207.woojoobook.api.book.response.BookItem;
 import com.e207.woojoobook.domain.userbook.RegisterType;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class RandomDataController {
 	private final RandomQueryService randomQueryService;
 
 	@GetMapping("/book")
-	public ResponseEntity<BookResponse> findRandomBook() {
+	public ResponseEntity<BookItem> findRandomBook() {
 		return ResponseEntity.ok(randomQueryService.findBook());
 	}
 

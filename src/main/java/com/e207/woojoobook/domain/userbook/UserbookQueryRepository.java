@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import com.e207.woojoobook.api.book.response.BookResponse;
+import com.e207.woojoobook.api.book.response.BookItem;
 import com.e207.woojoobook.api.user.response.UserResponse;
 import com.e207.woojoobook.api.userbook.request.UserbookListRequest;
 import com.e207.woojoobook.api.userbook.response.UserbookWithLike;
@@ -43,29 +43,29 @@ public class UserbookQueryRepository {
 
 	public List<UserbookWithLike> findUserbookListWithLikeStatus(Long userId, UserbookListRequest request) {
 		return queryFactory.select(
-			Projections.constructor(
-				UserbookWithLike.class,
-				userbook.id,
-				Projections.constructor(BookResponse.class,
-					userbook.book.isbn,
-					userbook.book.title,
-					userbook.book.author,
-					userbook.book.publisher,
-					userbook.book.publicationDate,
-					userbook.book.thumbnail,
-					userbook.book.description
-				),
-				Projections.constructor(UserResponse.class,
-					userbook.user.id,
-					userbook.user.nickname,
-					userbook.user.email
-				),
-				userbook.registerType,
-				userbook.tradeStatus,
-				userbook.qualityStatus,
-				userbook.areaCode,
-				wishbook.isNotNull()
-			))
+				Projections.constructor(
+					UserbookWithLike.class,
+					userbook.id,
+					Projections.constructor(BookItem.class,
+						userbook.book.isbn,
+						userbook.book.title,
+						userbook.book.author,
+						userbook.book.publisher,
+						userbook.book.publicationDate,
+						userbook.book.thumbnail,
+						userbook.book.description
+					),
+					Projections.constructor(UserResponse.class,
+						userbook.user.id,
+						userbook.user.nickname,
+						userbook.user.email
+					),
+					userbook.registerType,
+					userbook.tradeStatus,
+					userbook.qualityStatus,
+					userbook.areaCode,
+					wishbook.isNotNull()
+				))
 			.from(userbook)
 			.join(userbook.book, book)
 			.join(userbook.user, user)
@@ -90,7 +90,7 @@ public class UserbookQueryRepository {
 	}
 
 	private BooleanExpression ltUserbookId(Long userbookId) {
-		if(userbookId == null) {
+		if (userbookId == null) {
 			return null;
 		}
 		return userbook.id.lt(userbookId);
