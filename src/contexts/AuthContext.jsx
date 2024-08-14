@@ -9,7 +9,7 @@ export const AuthContext = createContext();
 // eslint-disable-next-line react/prop-types
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [sub, setSub] = useState('');
   const [user, setUser] = useState(null);  // 유저 정보 추가 항목
   const [isConnected, setIsConnected] = useState(false);
@@ -79,32 +79,52 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    if (storedToken) {
-      setToken(storedToken);
-      setIsLoggedIn(true);
-      const decodedToken = jwtDecode(storedToken);
-      setSub(decodedToken.sub);
-      fetchUserDetails(storedToken);
-      connectWithToken(storedToken); // 여기서 직접 토큰을 전달
-      resetLogoutTimer();
+    const checkLoginStatus = async () => {
+      const storedToken = localStorage.getItem('token');
+      if (storedToken) {
+        try {
+            setToken(storedToken);
+            setIsLoggedIn(true);
+            const decodedToken = jwtDecode(storedToken);
+            setSub(decodedToken.sub);
+            await fetchUserDetails(storedToken);
+            connectWithToken(storedToken);
+            resetLogoutTimer();
   
-      // 사용자 활동 감지
-      const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
-      const handleUserActivity = () => resetLogoutTimer();
-      activityEvents.forEach(event => 
-        document.addEventListener(event, handleUserActivity)
-      );
+            // 사용자 활동 감지
+            const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+            const handleUserActivity = () => resetLogoutTimer();
+            activityEvents.forEach(event => 
+              document.addEventListener(event, handleUserActivity)
+            );
   
-      return () => {
-        activityEvents.forEach(event => 
-          document.removeEventListener(event, handleUserActivity)
-        );
-      };
-    } else {
-      logout();
+            return () => {
+              activityEvents.forEach(event => 
+                document.removeEventListener(event, handleUserActivity)
+              );
+            };
+        } catch (error) {
+          console.error('로그인 상태 확인 중 오류 발생:', error);
+          performLogout();
+        }
+      } else {
+        setIsLoggedIn(false);
+      }
+    };
+  
+    checkLoginStatus();
+  }, []);
+
+  const performLogout = () => {
+    setToken(null);
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    setSub('');
+    setUser(null);
+    if (client.current) {
+      client.current.deactivate();
     }
-  }, [token]);
+  };
 
   const fetchUserDetails = async (token) => {
     try {
@@ -146,16 +166,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    if (client.current) {
-      client.current.deactivate();
-    }
-    setToken(null);
-    localStorage.removeItem('token');
-    setIsLoggedIn(false);
-    setSub('');
-    setUser(null);
-    setIsConnected(false);
-    
+    performLogout();
     Swal.fire({
       title: '로그아웃 되었습니다.',
       confirmButtonText: '확인',
