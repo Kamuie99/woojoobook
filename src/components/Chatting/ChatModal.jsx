@@ -193,7 +193,7 @@ const ChatModal = ({
             <IconButton onClick={() => handleBack()}>
               <IoChatbubblesOutline size={30} />
             </IconButton>
-            <IconButton aria-label="close" onClick={handleClose}>
+            <IconButton aria-label="close" onClick={() => handleClose(chatRoom)}>
               <IoMdCloseCircleOutline size={30} />
             </IconButton>
           </div>

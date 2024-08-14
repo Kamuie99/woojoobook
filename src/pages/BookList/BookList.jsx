@@ -73,7 +73,7 @@ const BookList = ({setDirectMessage}) => {
       setTimeout(() => {
         setOnlineUsers(response.data)
       }, 10);
-      console.log(onlineUsers)
+      // console.log(onlineUsers)
     } catch (err) {
       console.error(err)
     }
@@ -143,7 +143,7 @@ const BookList = ({setDirectMessage}) => {
           }
         }, 0);
       }
-      console.log(books)
+      // console.log(books) 
       return response.data.content;
     } catch (err) {
       setError('로딩중 ..')

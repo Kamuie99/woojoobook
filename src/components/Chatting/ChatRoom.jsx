@@ -38,8 +38,11 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
         }
         const scrollableDiv = scrollBarRef.current;
         
-        const heightDiff = scrollableDiv.scrollHeight - scrollableDiv.scrollTop - 555
-        const isAtBottom = Math.abs(heightDiff) < 1
+        const heightDiff = scrollableDiv.scrollHeight - scrollableDiv.scrollTop - 800
+        console.log(scrollableDiv.scrollHeight)
+        console.log(scrollableDiv.scrollTop);
+        console.log(heightDiff);
+        const isAtBottom = heightDiff < 1
 
         setMessages((prev) => [
           {

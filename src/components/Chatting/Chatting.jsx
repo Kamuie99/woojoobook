@@ -109,7 +109,11 @@ const Chatting = ({ onClose, newMessageChatRooms, setNewMessage, newMessage, dir
     }, 900);
   }
   
-  const handleClose = () => {
+  const handleClose = (chatRoom) => {
+    if (chatRoom) {
+      console.log(chatRoom)
+      newMessageChatRooms.current[chatRoom.id] = false;
+    }
     setNewMessage(false);
     setMessages([]);
     setChatRoom('');

@@ -25,7 +25,7 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
 
   const isRentalEnabled = book.tradeStatus === 'RENTAL_AVAILABLE' || book.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE';
   const isExchangeEnabled = book.tradeStatus === 'EXCHANGE_AVAILABLE' || book.tradeStatus === 'RENTAL_EXCHANGE_AVAILABLE';
-  const isOwner = user && user.id === book.userbookid;
+  const isOwner = user && user.id === book.user.id;
 
   const handleExchangeRequest = () => {
     if (isExchangeEnabled && !isOwner) {
