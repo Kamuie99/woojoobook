@@ -127,6 +127,14 @@
   color: var(--accent-sub-color);
 }
 
+.pagination button:disabled {
+  color: gray
+}
+
+.pagination button:hover:not(:disabled) {
+  color: var(--accent-color);
+}
+
 .modalFooter {
   position: absolute;
   bottom: 0;

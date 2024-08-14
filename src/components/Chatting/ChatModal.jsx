@@ -153,8 +153,8 @@ const ChatModal = ({
           )}
           <button
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages - 1}
-          >
+            disabled={currentPage >= totalPages -1}
+            >
             <IoCaretForward size={20} />
           </button>
         </div>
