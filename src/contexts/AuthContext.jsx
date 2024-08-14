@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 
   const brokerURL = import.meta.env.VITE_APP_STOMP_BROKER_URL;
 
-  const connect = () => {
+  const connectWithToken = (token) => {
     if (!token) {
       console.error('연결에 사용할 수 있는 토큰이 없습니다');
       return;
@@ -29,9 +29,6 @@ export const AuthProvider = ({ children }) => {
       connectHeaders: {
         'Authorization': `Bearer ${token}`
       },
-      // debug: function (str) {
-      //   console.log(str);
-      // },
       onConnect: () => {
         console.log('웹소켓 연결 성공');
         setIsConnected(true);
@@ -71,30 +68,41 @@ export const AuthProvider = ({ children }) => {
     logoutTimer.current = setTimeout(logout, 30 * 60 * 1000); // 30분 > 1분으로 수정
   };
 
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem('token', token);
-      setIsLoggedIn(true);
+  const isTokenValid = (token) => {
+    if (!token) return false;
+    try {
       const decodedToken = jwtDecode(token);
-      setSub(decodedToken.sub);
-      fetchUserDetails(token);
-      connect();
-      resetLogoutTimer();
+      return decodedToken.exp * 1000 > Date.now();
+    } catch (error) {
+      return false;
+    }
+  };
 
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      setToken(storedToken);
+      setIsLoggedIn(true);
+      const decodedToken = jwtDecode(storedToken);
+      setSub(decodedToken.sub);
+      fetchUserDetails(storedToken);
+      connectWithToken(storedToken); // 여기서 직접 토큰을 전달
+      resetLogoutTimer();
+  
       // 사용자 활동 감지
       const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
       const handleUserActivity = () => resetLogoutTimer();
       activityEvents.forEach(event => 
         document.addEventListener(event, handleUserActivity)
       );
+  
+      return () => {
+        activityEvents.forEach(event => 
+          document.removeEventListener(event, handleUserActivity)
+        );
+      };
     } else {
-      localStorage.removeItem('token');
-      setIsLoggedIn(false);
-      setSub('');
-      setUser(null);
-      if (client.current) {
-        client.current.deactivate();
-      }
+      logout();
     }
   }, [token]);
 
@@ -103,7 +111,7 @@ export const AuthProvider = ({ children }) => {
       const response = await axiosInstance.get('/users', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-
+  
       if (response.status === 200) {
         setUser(response.data);
         return response.data;
@@ -112,7 +120,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('사용자 정보를 가져오는데 실패했습니다:', error);
-      setUser(null);
+      logout();
       return null;
     }
   };
@@ -121,25 +129,38 @@ export const AuthProvider = ({ children }) => {
     setUser(prevUser => ({ ...prevUser, ...updatedUserData }));
   };
 
-  const login = (newToken) => {
-    setToken(newToken);
-    resetLogoutTimer();
+  const login = async (newToken) => {
+    try {
+      setToken(newToken);
+      localStorage.setItem('token', newToken);
+      setIsLoggedIn(true);
+      const decodedToken = jwtDecode(newToken);
+      setSub(decodedToken.sub);
+      await fetchUserDetails(newToken);
+      resetLogoutTimer();
+      connectWithToken(newToken); // 새로운 함수 사용
+    } catch (error) {
+      console.error('Login error:', error);
+      logout();
+    }
   };
 
   const logout = () => {
+    if (client.current) {
+      client.current.deactivate();
+    }
     setToken(null);
     localStorage.removeItem('token');
     setIsLoggedIn(false);
     setSub('');
     setUser(null);
-    if (client.current) {
-      client.current.deactivate();
-    }
+    setIsConnected(false);
+    
     Swal.fire({
       title: '로그아웃 되었습니다.',
       confirmButtonText: '확인',
       icon: 'info'
-    })
+    });
   };
 
   const value = useMemo(() => ({
