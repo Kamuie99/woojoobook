@@ -1,7 +1,6 @@
 import styles from './Policy.module.css'
 
 const TermsOfService = () => {
-  // 이용약관
   return (
     <>
       <div className={styles.section}>

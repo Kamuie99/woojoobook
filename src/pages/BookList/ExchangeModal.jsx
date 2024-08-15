@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import axiosInstance from '../../util/axiosConfig';
 import Swal from 'sweetalert2';
@@ -54,7 +53,6 @@ const ExchangeModal = ({ receiverBook, onClose }) => {
           senderBookId: selectedBook.id,
           receiverBookId: receiverBook.userbookid
         });
-        // console.log('교환 신청 성공:', response.data);
 
         await Swal.fire({
           title: '교환 신청 완료',

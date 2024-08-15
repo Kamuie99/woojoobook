@@ -1,8 +1,6 @@
-/* eslint-disable react/prop-types */
 import styles from './SelectedBook.module.css';
 import { getEmotionImage } from '../../util/get-emotion-image';
 
-// eslint-disable-next-line react/prop-types
 const SelectedBook = ({ book, isRentable, setIsRentable, isExchangeable, setIsExchangeable, quality, setQuality }) => {
   const getQualityFromCondition = (condition) => {
     switch(condition) {

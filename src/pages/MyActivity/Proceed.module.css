@@ -4,7 +4,6 @@
   height: calc(100vh - 165px);
 }
 
-/* WebKit browsers (Chrome, Safari) */
 .bigContainer::-webkit-scrollbar {
   width: 10px;
   height: 10px;

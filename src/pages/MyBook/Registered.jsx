@@ -90,11 +90,9 @@ const Registered = () => {
       <h2 className={styles.registered}><strong>내가 등록한 책 | </strong> {totalElementsCount}권</h2>
       <select className={styles.option} value={tradeStatus} onChange={handleSelectChange}>
         <option value="">전체</option>
-        {/* <option value="RENTAL_EXCHANGE_AVAILABLE">대여, 교환 가능</option> */}
         <option value="RENTAL_AVAILABLE">대여 가능</option>
         <option value="EXCHANGE_AVAILABLE">교환 가능</option>
         <option value="RENTED">대여중</option>
-        {/* <option value="UNAVAILABLE">거래 불가능</option> */}
       </select>
     </div>
     <div

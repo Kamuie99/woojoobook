@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../../util/axiosConfig';
 import Header2 from '../../components/Header2';
-// import Logo from '../../assets/Logo.png';
 import Logo from '../../assets/logoWithLetter.webp';
 import '../../styles/Register.css';
 import EmailForm from './EmailForm';
@@ -38,17 +37,14 @@ const Register = () => {
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
-    setEmailError(''); // 에러 메시지 초기화
+    setEmailError('');
     try {
       // 이메일 중복 검사
       const checkResponse = await axiosInstance.get(`users/emails/${email}`);
-      // console.log(checkResponse)
       if (checkResponse.data.isDuplicated  === true) {
         setEmailError('이미 가입된 이메일입니다.');
         return;
       }
-      // console.log('중복아님')
-
       // 중복이 없는경우 로직 실행
       await axiosInstance.post('users/emails', { email });
       setStep(2);

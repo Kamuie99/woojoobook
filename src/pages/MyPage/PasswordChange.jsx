@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import { FaUserCircle } from "react-icons/fa";
 import { AuthContext } from '../../contexts/AuthContext';
 import styles from './PasswordChange.module.css';
-import Logo from '../../assets/Logo.png';
+import Logo from '../../assets/logoWithLetter.webp';
 
 const PasswordChange = () => {
   const { user } = useContext(AuthContext);
@@ -79,7 +79,7 @@ const PasswordChange = () => {
       <Header2 />
       <main className={styles.userUpdate}>
         <Link to="/">
-          <img src={Logo} width='170px' alt="Home" style={{ cursor: 'pointer' }} />
+          <img src={Logo} width='220px' alt="Home" style={{ cursor: 'pointer' }} />
         </Link>
         <div className={styles.titleDiv}>
           <FaUserCircle /> 비밀번호 변경

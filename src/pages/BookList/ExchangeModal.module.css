@@ -18,12 +18,11 @@
   max-width: 600px;
   width: 90%;
   max-height: 90vh;
-  overflow: hidden; /* 변경 */
-  display: flex; /* 추가 */
-  flex-direction: column; /* 추가 */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); /* 그림자 추가 */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
 
-  /* 스크롤바 스타일 */
   scrollbar-width: thin;
   scrollbar-color: var(--accent-sub-color) #f1f1f1;
 }
@@ -31,9 +30,7 @@
 .modalInnerContent {
   padding: 20px;
   overflow-y: auto;
-  flex-grow: 1; /* 추가 */
-
-  /* 스크롤바 스타일 */
+  flex-grow: 1;
   scrollbar-width: thin;
   scrollbar-color: var(--accent-sub-color) #f1f1f1;
 }
@@ -117,8 +114,6 @@
   background-color: var(--accent-color);
 }
 
-
-/* 웹킷 기반 브라우저용 스크롤바 스타일 */
 .modalInnerContent::-webkit-scrollbar {
   width: 8px;
 }

@@ -66,7 +66,7 @@
 
 .checkboxGroup input[type="checkbox"] {
   margin-right: 5px;
-  cursor: pointer; /* Add this line */
+  cursor: pointer;
 }
 
 .bookCondition {
@@ -95,7 +95,6 @@
   opacity: 0.2;
 }
 
-/* 새로 추가된 스타일 */
 .statusText {
   font-weight: bold;
   padding: 2px 5px;

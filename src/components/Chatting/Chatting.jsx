@@ -111,7 +111,6 @@ const Chatting = ({ onClose, newMessageChatRooms, setNewMessage, newMessage, dir
   
   const handleClose = (chatRoom) => {
     if (chatRoom) {
-      console.log(chatRoom)
       newMessageChatRooms.current[chatRoom.id] = false;
     }
     setNewMessage(false);

@@ -1,7 +1,6 @@
 import styles from './Policy.module.css'
 
 const PrivacyPolicy = () => {
-  // 개인정보처리방침
   return (
     <>
       <div className={styles.section}>

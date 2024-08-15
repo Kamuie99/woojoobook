@@ -5,11 +5,11 @@
   margin-bottom: 20px;
   overflow: hidden;
   transition: max-height 0.3s ease-out;
-  max-height: 60px; /* 접힌 상태의 높이 */
+  max-height: 60px;
 }
 
 .historyContainerInner.expanded {
-  max-height: 1000px; /* 충분히 큰 값으로 설정 */
+  max-height: 1000px;
 }
 
 .historyContainerInner > h2 {
@@ -37,7 +37,6 @@
   height: calc(100vh - 165px);
 }
 
-/* WebKit browsers (Chrome, Safari) */
 .historyContainer::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -174,6 +173,5 @@
 .listHeader {
   display: flex;
   justify-content: space-between;
-  /* font-weight: bold; */
   padding: 10px 20px;
 }

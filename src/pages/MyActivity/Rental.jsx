@@ -458,12 +458,6 @@ const Rental = () => {
             </div>
           </>
         );
-      // case MODAL_TYPES.REJECTED_REQUEST:
-      //   return (
-      //     <>
-      //       <h2>{selectedItem.userbook.bookInfo.title}</h2>
-      //     </>
-      //   );
       default:
         return null;
     }

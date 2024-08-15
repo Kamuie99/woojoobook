@@ -1,6 +1,5 @@
 import { FaAngleRight } from "react-icons/fa6";
 
-// eslint-disable-next-line react/prop-types
 const VerificationForm = ({ verificationCode, setVerificationCode, handleVerificationSubmit }) => {
   return (
     <form onSubmit={handleVerificationSubmit} className='emailForm'> 

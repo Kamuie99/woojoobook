@@ -15,7 +15,6 @@ import BookModal from './BookModal';
 import Swal from 'sweetalert2'
 import styles from './BookList.module.css';
 
-// eslint-disable-next-line react/prop-types
 const BookList = ({setDirectMessage}) => {
   const { searchTerm: initialSearchTerm } = useSearch();
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
@@ -23,7 +22,6 @@ const BookList = ({setDirectMessage}) => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  // const [areaNames, setAreaNames] = useState({});
   const [selectedArea, setSelectedArea] = useState(null);
   const { user, sub: userId, client, isConnected } = useContext(AuthContext);
   const [selectedBook, setSelectedBook] = useState(null);
@@ -50,12 +48,10 @@ const BookList = ({setDirectMessage}) => {
       
       subscription = client.current.subscribe(destination, (message) => {
         const messageBody = JSON.parse(message.body);
-        // console.log(messageBody);
         setOnlineUsers([]);
         setTimeout(() => {
           setOnlineUsers(messageBody);
         }, 10);
-        // console.log(onlineUsers)
       });
     }
   
@@ -73,7 +69,6 @@ const BookList = ({setDirectMessage}) => {
       setTimeout(() => {
         setOnlineUsers(response.data)
       }, 10);
-      // console.log(onlineUsers)
     } catch (err) {
       console.error(err)
     }
@@ -122,7 +117,6 @@ const BookList = ({setDirectMessage}) => {
     setLoading(true);
     setError(null);
     try {
-      // String areaCode, String keyword, Long userbookId, int pageSize
       const prevScrollTop = mainRef.current ? mainRef.current.scrollTop : 0;
 
       const params = { 
@@ -143,7 +137,6 @@ const BookList = ({setDirectMessage}) => {
           }
         }, 0);
       }
-      // console.log(books) 
       return response.data.content;
     } catch (err) {
       setError('로딩중 ..')
@@ -210,27 +203,8 @@ const BookList = ({setDirectMessage}) => {
   useEffect(() => {
     if (isBottomVisible) {
       fetchBooks(searchTerm, lastUserbook.userbookid, false)
-      // 추가 작업 수행
     }
   }, [isBottomVisible]);
-
-  // const fetchAreaNames = async (books) => {
-  //   const areaPromises = books.map(book => 
-  //     axiosInstance.get('/area', { params: { areaCode: book.areaCode } })
-  //   );
-    
-  //   try {
-  //     const areaResponses = await Promise.all(areaPromises);
-  //     const newAreaNames = {};
-  //     areaResponses.forEach((response, index) => {
-  //       newAreaNames[books[index].userbook.areaCode] = response.data.dongName;
-  //     });
-  //     setAreaNames(newAreaNames);
-  //     console.log(areaNames)
-  //   } catch (err) {
-  //     console.error('지역코드로 동 이름 조회중 에러가 발생: ', err);
-  //   }
-  // };
 
   useEffect(() => {
     fetchBooks(searchTerm)

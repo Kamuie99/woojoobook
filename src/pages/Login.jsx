@@ -5,7 +5,6 @@ import Header2 from "../components/Header2";
 import { AuthContext } from '../contexts/AuthContext';
 import Swal from 'sweetalert2';
 import '../styles/Login.css';
-// import Logo from '../assets/Logo.png';
 import Logo from '../assets/logoWithLetter.webp';
 
 const Login = () => {

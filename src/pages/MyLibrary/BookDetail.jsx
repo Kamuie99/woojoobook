@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-// BookDetail.jsx
 import styles from './BookDetail.module.css';
 
 const BookDetail = ({ book }) => {

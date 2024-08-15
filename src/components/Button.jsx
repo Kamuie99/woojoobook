@@ -1,6 +1,5 @@
 import '../styles/Button.css';
 
-// eslint-disable-next-line react/prop-types
 const Button = ({ text, type, onClick, color }) => {
   return (
     <button 

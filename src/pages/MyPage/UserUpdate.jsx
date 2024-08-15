@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUserCircle } from "react-icons/fa";
@@ -8,7 +7,7 @@ import axiosInstance from '../../util/axiosConfig';
 import Header2 from "../../components/Header2";
 import AreaSelector from '../../components/AreaSelector';
 import styles from './UserUpdate.module.css';
-import Logo from '../../assets/Logo.png';
+import Logo from '../../assets/logoWithLetter.webp';
 
 const UserUpdate = () => {
   const [userId, setUserId] = useState('');
@@ -106,7 +105,6 @@ const UserUpdate = () => {
         nickname,
         areaCode: selectedArea.areaCode
       });
-      // console.log(response);
       if (response.status === 200) {
         updateUser({
           nickname,
@@ -141,7 +139,7 @@ const UserUpdate = () => {
       <Header2 />
       <main className={styles.userUpdate}>
         <Link to="/">
-          <img src={Logo} width='170px' alt="Home" style={{ cursor: 'pointer' }} />
+          <img src={Logo} width='220px' alt="Home" style={{ cursor: 'pointer' }} />
         </Link>
         <div className={styles.titleDiv}>
           <FaUserCircle /> 회원정보 수정

@@ -12,9 +12,24 @@ export const AuthProvider = ({ children }) => {
   const [sub, setSub] = useState('');
   const [user, setUser] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const client = useRef(null);
 
   const brokerURL = import.meta.env.VITE_APP_STOMP_BROKER_URL;
+
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      setIsLoading(true);
+      const token = localStorage.getItem('token');
+      if (token && isTokenValid(token)) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
 
   const connectWithToken = (token) => {
     if (!token) {
@@ -69,18 +84,19 @@ export const AuthProvider = ({ children }) => {
 
   const checkLoginStatus = () => {
     const storedToken = localStorage.getItem('token');
+  
     const lastCloseTime = localStorage.getItem('lastCloseTime');
     const currentTime = Date.now();
-
+  
     if (lastCloseTime && currentTime - parseInt(lastCloseTime) > 30 * 60 * 1000) {
       logout(true);
       return false;
     }
-
+  
     if (storedToken && isTokenValid(storedToken)) {
       return true;
     }
-
+  
     logout(true);
     return false;
   };
@@ -94,13 +110,18 @@ export const AuthProvider = ({ children }) => {
           setIsLoggedIn(true);
           const decodedToken = jwtDecode(storedToken);
           setSub(decodedToken.sub);
-          await fetchUserDetails(storedToken);
-          connectWithToken(storedToken);
+          const userDetails = await fetchUserDetails(storedToken);
+          if (userDetails) {
+            connectWithToken(storedToken);
+          } else {
+            logout(true);
+          }
         } catch (error) {
           console.error('로그인 상태 초기화 중 오류 발생:', error);
           logout(true);
         }
       }
+      setIsLoading(false);
     };
 
     initializeAuth();
@@ -138,20 +159,22 @@ export const AuthProvider = ({ children }) => {
   }, [isLoggedIn]);
 
   const fetchUserDetails = async (token) => {
+    setIsLoading(true);
     try {
       const response = await axiosInstance.get('/users', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-
+  
       if (response.status === 200) {
         setUser(response.data);
+        setIsLoading(false);
         return response.data;
       } else {
         throw new Error('사용자 정보를 가져오는데 실패했습니다.');
       }
     } catch (error) {
       console.error('사용자 정보를 가져오는데 실패했습니다:', error);
-      logout();
+      setIsLoading(false);
       return null;
     }
   };
@@ -195,9 +218,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const value = useMemo(() => ({
-    token, isLoggedIn, user, sub, client, isConnected,
+    token, isLoggedIn, user, sub, client, isConnected, isLoading,
     login, logout, updateUser, setUser
-  }), [token, isLoggedIn, user, sub, client, isConnected]);
+  }), [token, isLoggedIn, user, sub, client, isConnected, isLoading]);
 
   return (
     <AuthContext.Provider value={value}>

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './BookModal.module.css';
@@ -57,7 +56,6 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
       if (result.isConfirmed) {
         try {
           const response = await axiosInstance.post(`/userbooks/${book.userbookid}/rentals/offer`);
-          // console.log('대여 신청 성공:', response.data);
 
           await Swal.fire({
             title: '대여 신청 완료',
@@ -84,15 +82,6 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
             confirmButtonText: '확인',
             icon: 'warning'
           });
-          // const errMsg2 = error.response.data === '포인트가 부족합니다.' ?
-          //   '포인트가 부족합니다.' :
-          //   '대여 신청 중 오류가 발생했습니다.'
-          // Swal.fire({
-          //   title: '포인트 부족',
-          //   text: errMsg2,
-          //   confirmButtonText: '확인',
-          //   icon: 'warning'
-          // });
         }
       }
     }

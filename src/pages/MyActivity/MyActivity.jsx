@@ -58,7 +58,6 @@ const MyActivity = () => {
         clearLocalStorage();
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, clearLocalStorage]);
 
   if (!isLoggedIn || user === null) {

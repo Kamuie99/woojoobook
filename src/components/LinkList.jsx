@@ -1,7 +1,4 @@
-/* eslint-disable no-unused-vars */
 import '../styles/LinkList.css'
-import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import LinkItem from './LinkItem';
 import { LuBookPlus } from "react-icons/lu";
 import { FaBook } from "react-icons/fa";

@@ -243,12 +243,6 @@ const History = (userId) => {
                 </div>
               </>
             )}
-            {/* <div className={styles.rentalInfo}>
-              <h2>교환자</h2>
-              <p>{selectedItem.receiverBook.ownerInfo.nickname}</p>
-              <h2>교환일</h2>
-              <p>{selectedItem.exchangeDate.split('T')[0]}</p>
-            </div> */}
           </>
         );
       default:
@@ -319,11 +313,6 @@ const History = (userId) => {
               items={exchangeHistory}
               emptyMessage="목록이 없습니다"
               renderItem={(item) => {
-                // console.log('Item:', item);
-                // console.log('userId:', userId);
-                // console.log('Sender ID:', item.senderBook.ownerInfo.id);
-                // console.log('Is sender:', item.senderBook.ownerInfo.id == userId);
-              
                 return (
                   <div className={styles.exchangeBook} onClick={() => openModal(item, MODAL_TYPES.EXCHANGE_HISTORY)} style={{cursor: 'pointer'}}>
                     <div className={styles.senderBook}>

@@ -126,7 +126,6 @@
 .listHeader {
   display: flex;
   justify-content: space-between;
-  /* font-weight: bold; */
   padding: 10px 20px;
 }
 

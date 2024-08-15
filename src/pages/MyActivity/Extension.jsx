@@ -333,12 +333,6 @@ const Extension = () => {
             </div>
           </>
         );
-      // case MODAL_TYPES.REJECTED_REQUEST:
-      //   return (
-      //     <>
-      //       <h2>{selectedItem.rentalResponse.userbook.bookInfo.title}</h2>
-      //     </>
-      //   );
       default:
         return null;
     }

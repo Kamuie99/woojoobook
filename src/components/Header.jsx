@@ -1,7 +1,5 @@
-
 import '../styles/Header.css';
 import Button from '../components/Button';
-// import LogoSmall from '../assets/LogoSmall.png';
 import LogoSmall from '../assets/logo_boomerang.webp';
 import Sidebar from '../components/Sidebar';
 
@@ -12,24 +10,24 @@ import { IoMenu } from "react-icons/io5";
 
 const Header = () => {
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(false); // 사이드바 열림/닫힘 상태 관리
-  const sidebarRef = useRef(null); // 사이드바 참조
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const sidebarRef = useRef(null);
 
   const handleLeftClick = () => {
-    navigate(-1); // 이전 페이지로 이동
+    navigate(-1);
   };
 
   const handleLogoClick = () => {
-    navigate('/'); // 홈으로 이동
+    navigate('/');
   };
 
   const handleSidebarToggle = () => {
-    setSidebarOpen(!sidebarOpen); // 사이드바 열림/닫힘 상태 토글
+    setSidebarOpen(!sidebarOpen);
   };
 
   const handleClickOutside = (event) => {
     if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-      setSidebarOpen(false); // 사이드바 닫기
+      setSidebarOpen(false);
     }
   };
 
@@ -47,8 +45,8 @@ const Header = () => {
   const menuItemStyles = {
     button: {
       '&:hover': {
-        backgroundColor: 'var(--sub-color)', // 원하는 hover 배경색 설정
-        color: 'white' // 원하는 hover 텍스트 색상 설정
+        backgroundColor: 'var(--sub-color)',
+        color: 'white'
       },
     },
   };

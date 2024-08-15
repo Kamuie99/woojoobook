@@ -4,8 +4,12 @@ import { AuthContext } from '../contexts/AuthContext';
 import Swal from "sweetalert2";
 
 const ProtectedRoute = () => {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, isLoading } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   if (!isLoggedIn) {
     Swal.fire({
@@ -21,7 +25,7 @@ const ProtectedRoute = () => {
       }
     });
     
-    return null; // SweetAlert가 표시되는 동안 아무것도 렌더링하지 않음
+    return null;
   }
 
   return <Outlet />;

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Box, IconButton, CircularProgress } from '@mui/material';
-import { IoChatbubblesOutline, IoSettingsOutline, IoCaretBack, IoCaretForward, IoEllipse, IoEllipseOutline } from "react-icons/io5";
-import { FaExchangeAlt } from "react-icons/fa";
+import { IoChatbubblesOutline, IoCaretBack, IoCaretForward, IoEllipse, IoEllipseOutline } from "react-icons/io5";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { AuthContext } from '../../contexts/AuthContext';
 import axiosInstance from '../../util/axiosConfig';
@@ -88,12 +87,6 @@ const ChatModal = ({
       newMessageChatRooms.current[roomId] = false;
     }
   };
-
-  // const openManagement = () => {
-  //   setReceiverId('');
-  //   setChatRoom('');
-  //   setOpenChatManagement(true);
-  // }
 
   const renderContent = () => {
     if (isLoading) {

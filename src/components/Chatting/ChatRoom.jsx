@@ -39,9 +39,6 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
         const scrollableDiv = scrollBarRef.current;
         
         const heightDiff = scrollableDiv.scrollHeight - scrollableDiv.scrollTop - 800
-        console.log(scrollableDiv.scrollHeight)
-        console.log(scrollableDiv.scrollTop);
-        console.log(heightDiff);
         const isAtBottom = heightDiff < 1
 
         setMessages((prev) => [
@@ -173,7 +170,6 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
   };
 
   const sendMessage = async () => {
-    // console.log('Attempting to send message', client.current);
     if (client.current && client.current.connected) {
       const newMessage = {
         content: chat,
@@ -186,7 +182,6 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
         destination: '/app/chat',
         body: JSON.stringify(newMessage),
       });
-      // console.log('Message sent', newMessage);
       setChat('');
       scrollToBottom();
     } else {
@@ -236,7 +231,6 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
           value={chat}
           onChange={(e) => setChat(e.target.value)}
           onKeyDown={handleSendMessage}
-          // placeholder="메시지 입력"
           placeholder={deactivateChat ? '탈퇴한 사용자입니다.' : '메시지 입력'}
           fullWidth
           className={styles.messageInput}
@@ -248,13 +242,10 @@ const ChatRoom = ({ chatRoom, receiverId }) => {
             className={styles.inputButton}
             disabled={deactivateChat}  
           />
-          {/* <Button>
-          </Button> */}
         </div>
       </div>
       <Snackbar
         open={newMessageAlert}
-        // autoHideDuration={5000}
         onClose={handleCloseSnackbar}
         message="새 메시지가 도착했습니다."
         action={

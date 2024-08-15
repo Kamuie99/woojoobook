@@ -7,7 +7,6 @@ import Swal from 'sweetalert2';
 import { HiOutlineInformationCircle } from "react-icons/hi";
 
 
-// eslint-disable-next-line react/prop-types
 const BookSearch = ({ onSelectBook }) => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [bookList, setBookList] = useState([]);
@@ -36,7 +35,6 @@ const BookSearch = ({ onSelectBook }) => {
         }
       });
       const newBooktest = response.data
-      // console.log(newBooktest.bookItems);
       const newBooks = response.data.bookItems.filter(book => !uniqueBooks.current.has(book.isbn));
       newBooks.forEach(book => uniqueBooks.current.add(book.isbn));
       setBookList(newBooks);

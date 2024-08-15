@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import axiosInstance from "../util/axiosConfig";
 
-// eslint-disable-next-line react/prop-types
 const AreaSelector = ({ onAreaSelected, initialArea }) => {
   const [siList, setSiList] = useState([]);
   const [guList, setGuList] = useState([]);
@@ -66,7 +65,6 @@ const AreaSelector = ({ onAreaSelected, initialArea }) => {
     } else {
       onAreaSelected(null);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSi, selectedGu, selectedDong]);
   
   const fetchSiList = async () => {

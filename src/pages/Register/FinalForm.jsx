@@ -4,7 +4,7 @@ import AreaSelector from "../../components/AreaSelector";
 import PrivacyModal from "./PrivacyModal";
 import axiosInstance from '../../util/axiosConfig';
 
-// eslint-disable-next-line react/prop-types
+
 const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm, passwordMismatch, nickname, setNickname, setAreaCode, handleFinalSubmit }) => {
   const [selectedAreaName, setSelectedAreaName] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
@@ -45,8 +45,7 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
   const checkNicknameAvailability = async () => {
     try {
       const response = await axiosInstance.get(`/users/nicknames/${nickname}`);
-      // console.log('서버 응답:', response.data);
-      // console.log(nickname)
+
       setIsNicknameAvailable(response.data.isDuplicated);
       setIsNicknameChecked(true);
     } catch (error) {
@@ -60,7 +59,6 @@ const FinalForm = ({ password, setPassword, passwordConfirm, setPasswordConfirm,
     <form onSubmit={handleFinalSubmit}>
       <div className='titleBox'>
         <p>회원가입 (3/3)</p>
-        {/* <h2>거의 다 됐습니다!</h2> */}
       </div>
       <div className='input_button2'>
         <div>

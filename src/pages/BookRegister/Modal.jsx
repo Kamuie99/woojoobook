@@ -3,7 +3,6 @@ import styles from './Modal.module.css';
 
 ReactModal.setAppElement('#root');
 
-// eslint-disable-next-line react/prop-types
 const Modal = ({ isOpen, onRequestClose, contentLabel, children }) => {
   return (
     <ReactModal
@@ -13,9 +12,7 @@ const Modal = ({ isOpen, onRequestClose, contentLabel, children }) => {
       className={styles.modal}
       overlayClassName={styles.overlay}
     >
-      {/* <button className={styles.closeButton} onClick={onRequestClose}>
-        <IoCloseSharp />
-      </button> */}
+
       {children}
     </ReactModal>
   );

@@ -2,7 +2,6 @@ import { createContext, useState, useContext, useMemo } from 'react';
 
 const SearchContext = createContext();
 
-// eslint-disable-next-line react/prop-types
 export const SearchProvider = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -18,5 +17,4 @@ export const SearchProvider = ({ children }) => {
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useSearch = () => useContext(SearchContext);

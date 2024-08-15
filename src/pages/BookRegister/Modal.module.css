@@ -26,7 +26,6 @@
   background: rgba(0, 0, 0, 0.75);
 }
 
-/* WebKit browsers (Chrome, Safari) */
 .modal::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -36,7 +35,3 @@
   background: var(--accent-sub-color);
   border-radius: 10px;
 }
-
-/* .ReactModal__Content::-webkit-scrollbar-track {
-  background: var(--main-color);
-} */

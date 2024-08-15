@@ -361,13 +361,6 @@ const Exchange = () => {
             </div>
           </>
         );
-      // case MODAL_TYPES.REJECTED_REQUEST:
-      //   return (
-      //     <>
-      //       <div>{item.senderBook.bookInfo.title}</div>
-      //       <div>{item.receiverBook.bookInfo.title}</div>
-      //     </>
-      //   );
       default:
         return null;
     }

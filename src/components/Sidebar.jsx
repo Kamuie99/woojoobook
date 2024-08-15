@@ -12,7 +12,6 @@ import { RiCustomerService2Line } from "react-icons/ri";
 import { IoIosLogIn, IoIosLogOut } from "react-icons/io";
 import '../styles/Sidebar.css';
 
-// eslint-disable-next-line react/prop-types
 const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles }) => {
   const { isLoggedIn, logout, user, sub } = useContext(AuthContext);
   const navigate = useNavigate();

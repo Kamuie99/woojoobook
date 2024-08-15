@@ -44,11 +44,10 @@
 }
 
 .PolicyInner {
-  height: calc(100vh - 240px); /* 계산된 높이 */
+  height: calc(100vh - 240px);
   overflow-y: auto;
 }
 
-/* WebKit browsers (Chrome, Safari) */
 .PolicyInner::-webkit-scrollbar {
   width: 10px;
 }

@@ -1,7 +1,6 @@
 import styles from './Policy.module.css'
 
 const OperationPolicy = () => {
-  // 운영정책
   return (
     <>
       <div className={styles.section}>
