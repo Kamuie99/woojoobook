@@ -76,7 +76,7 @@ const BookRegister = () => {
           icon: 'success'
         });
         
-        navigate(`/${user.id}/mybook`);
+        navigate(`/mybook`);
       } catch (error) {
         await Swal.fire({
           title: '오류',
