@@ -1,3 +1,7 @@
+:global(.ReactModal__Content) {
+  height: fit-content;
+}
+
 .rentalContainer {
   padding: 10px 0;
 }
