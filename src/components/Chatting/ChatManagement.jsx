@@ -5,9 +5,9 @@ import styles from "./ChatManagement.module.css"
 const ChatManagement = ({ chatRooms, userId, fetchOrCreateChatRoom }) => {
   const receiverIdRef = useRef(null);
 
-  const deleteChatRooms = (roomId) => {
-    console.log(roomId)
-  };
+  // const deleteChatRooms = (roomId) => {
+  //   console.log(roomId)
+  // };
   
   const handleNewChat = (e) => {
     e.preventDefault();

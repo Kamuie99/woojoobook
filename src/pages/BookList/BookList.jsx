@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useContext, useRef } from "react";
 import { useSearch } from '../../contexts/SearchContext';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { LuBookPlus } from "react-icons/lu";
 import { IoHeartOutline, IoHeartSharp } from "react-icons/io5";
 import { getEmotionImage } from '../../util/get-emotion-image';
@@ -31,6 +31,7 @@ const BookList = ({setDirectMessage}) => {
   const [showOnlineUsers, setShowOnlineUsers] = useState(false);
   const [lastUserbook, setLastUserBook] = useState(null);
   const [isBottomVisible, setIsBottomVisible] = useState(false);
+  const navigate = useNavigate();
   const mainRef = useRef(null);
 
   useEffect(() => {
@@ -286,6 +287,10 @@ const BookList = ({setDirectMessage}) => {
     setShowOnlineUsers(!showOnlineUsers);
   };
 
+  const handleLibraryClick = (userId) => {
+    navigate('/myLibrary', { state: { userId }});
+  }
+
   return (
     <>
       <Header />
@@ -301,10 +306,10 @@ const BookList = ({setDirectMessage}) => {
                 </p>
                 {onlineUsers.length > 0 ? (
                   onlineUsers.map((user) => (
-                    <Link to={`/${user.id}/mylibrary`} key={user.id} className={styles.onlineUserLink}>
+                    <div onClick={() => handleLibraryClick(user.id)} key={user.id} className={styles.onlineUserLink}>
                       <span className={styles.onlineIndicator}></span>
                       {user.nickname}
-                    </Link>
+                    </div>
                   ))
                 ) : (
                   <p>현재 온라인인 유저가 없습니다.</p>

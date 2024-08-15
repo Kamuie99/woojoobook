@@ -19,10 +19,10 @@
 
 .mainContainer {
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   flex-direction: column;
-  justify-content: space-around;
-  width: 80%;
+  /* justify-content: space-around; */
+  /* width: 80%; */
   padding: 20px;
 }
 
@@ -35,9 +35,10 @@
 
 .mainContainerUpdate {
   display: flex;
-  justify-content: space-around;
+  flex-wrap: wrap;
+  justify-content: end;
   width: 100%;
-  height: 120px;
+  /* height: 120px; */
   align-items: center;
   padding: 20px;
 }
@@ -114,6 +115,7 @@
   justify-content: center;
   padding: 20px;
   margin: 10px;
+  min-width: 200px;
 }
 
 .changePassword {

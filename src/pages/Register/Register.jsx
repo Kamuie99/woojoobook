@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { AuthContext } from '../../contexts/AuthContext';
 import axiosInstance from '../../util/axiosConfig';
 import Header2 from '../../components/Header2';
 import Logo from '../../assets/logoWithLetter.webp';
@@ -21,6 +22,7 @@ const Register = () => {
   const [areaCode, setAreaCode] = useState('');
   const [emailError, setEmailError] = useState(' ');
   const [passwordMismatch, setPasswordMismatch] = useState(false);
+  const { isLoggedIn } = useContext(AuthContext)
 
   const mySwal = (title,  confirmButtonText, icon, text = null) => {
     Swal.fire({
@@ -30,6 +32,12 @@ const Register = () => {
       icon
     })
   }
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/');
+    }
+  }, []);
 
   useEffect(() => {
     setPasswordMismatch(password !== passwordConfirm);

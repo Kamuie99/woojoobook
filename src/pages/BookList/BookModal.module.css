@@ -165,7 +165,7 @@
   padding: 5px 10px;
   position: absolute;
   z-index: 1;
-  top: 170%;
+  top: 130%;
   left: 25%;
   margin-left: -100px;
   opacity: 0;
@@ -188,11 +188,13 @@
   border-color: transparent transparent #555 transparent;
 }
 
-.toLibraryButton > a {
+.toLibraryButton > div {
+  width: fit-content;
   text-decoration: none;
   color: inherit;
   border: 1px solid black;
   padding: 7px 12px;
   border-radius: 50px;
   background-color: var(--sub-color);
+  cursor: pointer;
 }

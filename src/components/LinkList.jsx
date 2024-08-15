@@ -7,9 +7,19 @@ import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { BsFillPersonLinesFill } from "react-icons/bs";
 import { RiCustomerService2Line } from "react-icons/ri";
+import { useNavigate } from 'react-router-dom';
 
 const LinkList = () => {
   const { sub } = useContext(AuthContext)
+  const navigate = useNavigate();
+
+  const handleLibraryClick = () => {
+    if (sub) {
+      navigate('/mylibrary', { state: { userId: sub } });
+    } else {
+      navigate('/mypage');
+    }
+  };
 
   return (
     <div className="LinkList">
@@ -19,15 +29,15 @@ const LinkList = () => {
       />
       <LinkItem icon={<FaBook size='40'/>} 
         text={'우주도서 관리'} 
-        to={sub ? `/${sub}/mybook` : '/mypage'}
+        to={sub ? `/mybook` : '/mypage'}
       />
       <LinkItem icon={<IoLibraryOutline size='40' />} 
         text={'나의 서재'}
-        to={sub ? `/${sub}/mylibrary` : '/mypage'}
+        onClick={handleLibraryClick}
       />
       <LinkItem icon={<BsFillPersonLinesFill size='40'/>} 
         text={'나의 활동'}
-        to={sub ? `/${sub}/myactivity` : '/mypage'}
+        to={sub ? `/myactivity` : '/mypage'}
       />
       <LinkItem icon={<RiCustomerService2Line size='40'/>} 
         text={'이용안내 및 정책'}

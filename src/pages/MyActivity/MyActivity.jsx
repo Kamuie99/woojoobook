@@ -10,8 +10,7 @@ import styles from './MyActivity.module.css'
 
 const MyActivity = () => {
   const navigate = useNavigate()
-  const {userId} = useParams()
-  const {isLoggedIn, sub: loggedInUserId, user} = useContext(AuthContext)
+  const {isLoggedIn, sub: userId, user} = useContext(AuthContext)
   const [activeContent, setActiveContent] = useState('proceed');
 
   const clearLocalStorage = useCallback(() => {
@@ -35,18 +34,10 @@ const MyActivity = () => {
       if (user === null) {
         return;
       }
-
-      if (userId !== loggedInUserId) {
-        Swal.fire({
-          title: "접근 권한이 없습니다",
-          icon: "error"
-        });
-        navigate(-1);
-      }
     };
 
     checkAccess();
-  }, [isLoggedIn, userId, loggedInUserId, user, navigate]);
+  }, [isLoggedIn, userId, user, navigate]);
 
   useEffect(() => {
     localStorage.setItem('myActivityActiveContent', activeContent);

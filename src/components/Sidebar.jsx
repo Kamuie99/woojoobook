@@ -1,5 +1,5 @@
 import Button from '../components/Button';
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
 import { Sidebar as ProSidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
@@ -15,6 +15,10 @@ import '../styles/Sidebar.css';
 const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles }) => {
   const { isLoggedIn, logout, user, sub } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  const handleLibraryClick = () => {
+    navigate('/myLibrary', { state: { userId: sub }});
+  }
 
   const handleLogout = () => {
     logout();
@@ -57,15 +61,15 @@ const Sidebar = ({ sidebarOpen, handleSidebarToggle, sidebarRef, menuItemStyles 
               <MenuItem component={<Link to='/booklist' />} icon={<CgPlayListSearch size={'25px'}/>}>우주 도서 검색</MenuItem>
               <SubMenu label="나의 우주도서" icon={<FaSpaceAwesome size={'18px'}/>}>
                 <MenuItem component={<Link to='/bookregister' />}>우주도서 등록 </MenuItem>
-                <MenuItem component={<Link to={`/${sub}/mybook`} />}>우주도서 관리 </MenuItem>
+                <MenuItem component={<Link to={`/mybook`} />}>우주도서 관리 </MenuItem>
               </SubMenu>
               <MenuItem 
-                component={<Link to={`/${sub}/mylibrary`} />} 
+                onClick={handleLibraryClick}
                 icon={<IoLibraryOutline size={'21px'}/>}
               > 
                 나의 서재 
               </MenuItem>
-              <MenuItem component={<Link to={`/${sub}/myactivity`} />} icon={<BsFillPersonLinesFill size={'20px'} /> }> 나의 활동 </MenuItem>
+              <MenuItem component={<Link to={`/myactivity`} />} icon={<BsFillPersonLinesFill size={'20px'} /> }> 나의 활동 </MenuItem>
             </>
           )}
           <MenuItem component={<Link to='/policy' />} icon={<RiCustomerService2Line size={'20px'}/>}> 이용안내 및 정책 </MenuItem>

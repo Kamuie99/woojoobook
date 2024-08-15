@@ -74,9 +74,9 @@ function App() {
 
         <Route element={<ProtectedRoute />}>        
           <Route path='/bookregister' element={<BookRegister />} />
-          <Route path='/:userId/mybook' element={<MyBook/>} />
-          <Route path='/:userId/myactivity' element={<MyActivity />} />
-          <Route path='/:userId/mylibrary' element={<MyLibrary />} />
+          <Route path='/mybook' element={<MyBook/>} />
+          <Route path='/myactivity' element={<MyActivity />} />
+          <Route path='/mylibrary' element={<MyLibrary />} />
           <Route path='/mypage' element={<MyPage />} />
           <Route path='/userupdate' element={<UserUpdate />} />
           <Route path='/passwordchange' element={<PasswordChange />} />

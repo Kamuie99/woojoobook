@@ -11,8 +11,8 @@ import styles from './MyBook.module.css';
 
 const MyBook = () => {
   const navigate = useNavigate();
-  const {userId} = useParams();
-  const {isLoggedIn, sub: loggedInUserId, user} = useContext(AuthContext)
+  // const {userId} = useParams();
+  const {isLoggedIn, sub: userId, user} = useContext(AuthContext)
 
   const initialContent = localStorage.getItem('MyBookContent') || 'registered';
   const [activeContent, setActiveContent] = useState(initialContent);
@@ -22,19 +22,10 @@ const MyBook = () => {
       if (user === null) {
         return;
       }
-
-      if (userId !== loggedInUserId) {
-        Swal.fire({
-          title: '접근 권한이 없습니다.',
-          confirmButtonText: '확인',
-          icon: "error"
-        });
-        navigate(-1);
-      }
     }
     
     checkAccess();
-  }, [isLoggedIn, userId, loggedInUserId, user, navigate]);
+  }, [isLoggedIn, userId, user, navigate]);
   
   useEffect(() => {
     localStorage.setItem('MyBookContent', activeContent);

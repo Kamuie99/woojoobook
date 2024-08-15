@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState, useMemo } from "react"
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { AuthContext } from "../../contexts/AuthContext"
 import Header from "../../components/Header"
 import axiosInstance from "../../util/axiosConfig"
@@ -14,7 +14,8 @@ import { IoLibraryOutline } from "react-icons/io5";
 import { HiOutlineInformationCircle } from "react-icons/hi";
 
 const MyLibrary = () => {
-  const {userId} = useParams()
+  const location = useLocation();
+  const { userId } = location.state || {};
   const {sub: loggedInUserId} = useContext(AuthContext)
   const [isOwnLibrary, setIsOwnLibrary] = useState(false)
   const [userNickname, setUserNickName] = useState('')

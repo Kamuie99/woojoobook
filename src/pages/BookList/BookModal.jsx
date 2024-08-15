@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './BookModal.module.css';
 import { getEmotionImage } from '../../util/get-emotion-image';
 import axiosInstance from '../../util/axiosConfig';
@@ -10,6 +10,7 @@ import ExchangeModal from './ExchangeModal';
 const BookModal = ({ book, onClose, onChatOpen }) => {
   const { user } = useContext(AuthContext);
   const [showExchangeModal, setShowExchangeModal] = useState(false);
+  const navigate = useNavigate();
 
   const getQualityEmoticon = (qualityStatus) => {
     switch (qualityStatus) {
@@ -92,6 +93,10 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
     onChatOpen(ownerId);
   }
 
+  const handleLibraryClick = (userId) => {
+    navigate('/myLibrary', { state: { userId }});
+  }
+
   return (
     <div className={styles.modalBackdrop} onClick={onClose}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
@@ -115,9 +120,9 @@ const BookModal = ({ book, onClose, onChatOpen }) => {
             <p><strong>저자 |</strong> {book.book.author}</p>
             <div className={styles.tooltipContainer}>
               <p className={styles.toLibraryButton}>
-                <Link to={`/${book.user.id}/mylibrary`}>
+                <div onClick={() => handleLibraryClick(book.user.id)}>
                   <strong className={styles.specialUser}>책권자 |</strong> {book.user.nickname}
-                </Link>
+                </div>
               </p>
               {<span className={styles.libraryTooltip}>
                 {book.user.nickname === user.nickname ?

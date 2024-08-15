@@ -227,6 +227,7 @@ const Exchange = () => {
     }
     : {
       title: '교환 신청을 거절하시겠습니까?',
+      text: '요청을 거절하면, 같은 요청은 다시 받을 수 없습니다.',
       showCancelButton: true,
       confirmButtonText: '거절',
       cancelButtonText: '취소',
