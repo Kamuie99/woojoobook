@@ -1,5 +1,6 @@
 :global(.ReactModal__Content) {
   height: fit-content;
+  max-height: 80vh;
 }
 
 .rentalContainer {
