@@ -74,7 +74,7 @@ const CategoryItem = ({category, isOwnLibrary, index, onUpdate, onDelete, moveCa
   const handleBookClick = async (book) => {
     try {
       const response = await axiosInstance.get(`/books?keyword=${book.isbn}&page=1`);
-      setBookDetail(response.data.bookList[0]);
+      setBookDetail(response.data.bookItems[0]);
       setShowModal(true);
     } catch (error) {
       console.error('Error fetching book details:', error);

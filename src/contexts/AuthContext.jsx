@@ -14,6 +14,10 @@ export const AuthProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const client = useRef(null);
+  const [wsConnectionStatus, setWsConnectionStatus] = useState('connected');
+  const reconnectAttempts = useRef(0);
+  const maxReconnectAttempts = 100;
+  const reconnectDelay = 5000;
 
   const brokerURL = import.meta.env.VITE_APP_STOMP_BROKER_URL;
 
@@ -26,6 +30,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         setIsLoggedIn(false);
       }
+      setIsLoading(false);
     };
 
     checkAuthStatus();
@@ -36,7 +41,7 @@ export const AuthProvider = ({ children }) => {
       console.error('연결에 사용할 수 있는 토큰이 없습니다');
       return;
     }
-
+  
     client.current = new StompJs.Client({
       brokerURL,
       connectHeaders: {
@@ -45,31 +50,82 @@ export const AuthProvider = ({ children }) => {
       onConnect: () => {
         console.log('웹소켓 연결 성공');
         setIsConnected(true);
+        setWsConnectionStatus('connected');
+        reconnectAttempts.current = 0;
       },
       onStompError: (frame) => {
         console.error('Broker reported error: ' + frame.headers['message']);
         console.error('Additional details: ' + frame.body);
+        setIsConnected(false);
+        handleWebSocketError();
       },
-      reconnectDelay: 5000,
+      reconnectDelay,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
     });
-
+  
     client.current.onWebSocketClose = (event) => {
       console.log('웹소켓 연결 닫힘: ' + event);
       setIsConnected(false);
+      handleWebSocketError();
     };
-
+  
     client.current.onWebSocketError = (event) => {
       console.error('WebSocket error: ' + event);
-    };
-
-    client.current.onDisconnect = () => {
-      console.log('연결 끊김');
       setIsConnected(false);
+      handleWebSocketError();
     };
-
+  
     client.current.activate();
+  };
+
+  const handleWebSocketError = () => {
+    setWsConnectionStatus('disconnected');
+    if (reconnectAttempts.current < maxReconnectAttempts) {
+      reconnectAttempts.current += 1;
+      setTimeout(() => {
+        if (client.current) {
+          client.current.deactivate();
+          client.current.activate();
+        }
+      }, reconnectDelay);
+    } else {
+      console.error('최대 재연결 시도 횟수 초과');
+      handleConnectionError();
+    }
+  };
+  
+  const handleConnectionError = () => {
+    if (isConnected) {
+      return;
+    }
+  
+    Swal.fire({
+      title: '연결 오류',
+      text: '서버와의 연결에 문제가 발생했습니다. 다시 연결을 시도하시겠습니까?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '재연결',
+      cancelButtonText: '로그아웃'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        console.log('사용자가 재연결을 선택했습니다.');
+        reconnectWebSocket();
+      } else {
+        console.log('사용자가 로그아웃을 선택했습니다.');
+        logout(true);
+      }
+    });
+  };
+
+  const reconnectWebSocket = () => {
+    if (client.current) {
+      client.current.deactivate();
+      client.current.activate();
+    } else {
+      console.error('WebSocket client is not initialized');
+      connectWithToken(token);
+    }
   };
 
   const isTokenValid = (token) => {
@@ -78,17 +134,17 @@ export const AuthProvider = ({ children }) => {
       const decodedToken = jwtDecode(token);
       return decodedToken.exp * 1000 > Date.now();
     } catch (error) {
+      console.error('토큰 검증 오류:', error);
       return false;
     }
   };
 
   const checkLoginStatus = () => {
     const storedToken = localStorage.getItem('token');
-  
-    const lastCloseTime = localStorage.getItem('lastCloseTime');
+    const lastActiveTime = localStorage.getItem('lastActiveTime');
     const currentTime = Date.now();
   
-    if (lastCloseTime && currentTime - parseInt(lastCloseTime) > 30 * 60 * 1000) {
+    if (lastActiveTime && currentTime - parseInt(lastActiveTime) > 30 * 60 * 1000) {
       logout(true);
       return false;
     }
@@ -100,6 +156,16 @@ export const AuthProvider = ({ children }) => {
     logout(true);
     return false;
   };
+
+  useEffect(() => {
+    const checkConnectionStatus = setInterval(() => {
+      if (isLoggedIn && wsConnectionStatus === 'disconnected') {
+        connectWithToken(token);
+      }
+    }, 60000);
+  
+    return () => clearInterval(checkConnectionStatus);
+  }, [isLoggedIn, wsConnectionStatus, token]);
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -131,7 +197,7 @@ export const AuthProvider = ({ children }) => {
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
 
-    const tokenCheckInterval = setInterval(checkLoginStatus, 60000);
+    const tokenCheckInterval = setInterval(checkLoginStatus, 5 * 60 * 1000);
 
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
@@ -207,7 +273,7 @@ export const AuthProvider = ({ children }) => {
     if (client.current) {
       client.current.deactivate();
     }
-
+  
     if (!silent) {
       Swal.fire({
         title: '로그아웃 되었습니다.',

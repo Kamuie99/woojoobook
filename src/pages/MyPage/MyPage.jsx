@@ -156,6 +156,10 @@ const MyPage = () => {
     return gradeMap[grade];
   }
 
+  const handleLibraryClick = () => {
+    navigate('/myLibrary', { state: { userId: sub }});
+  }
+
   return (
     <>
       <Header />
@@ -166,8 +170,10 @@ const MyPage = () => {
         <div className={styles.MyPage}>
           <div className={styles.mainContainer}>
             <div className={styles.mainContainerUpdate}>
-              <div className={styles.toMylibrary}>
-                <Link to={`/${sub}/mylibrary`}>나의 서재 바로가기</Link>
+              <div className={styles.toMylibrary}
+                onClick={handleLibraryClick}
+              >
+                나의 서재 바로가기
               </div>
               <div className={styles.updateInfo}>
                 <Link to='/userupdate'>회원정보 수정</Link>

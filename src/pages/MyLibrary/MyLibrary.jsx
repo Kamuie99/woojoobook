@@ -25,7 +25,7 @@ const MyLibrary = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
-    setIsOwnLibrary(userId === loggedInUserId)
+    setIsOwnLibrary(userId == loggedInUserId)
     fetchCategories()
   }, [userId, loggedInUserId])
 
