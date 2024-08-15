@@ -370,7 +370,7 @@ const BookList = ({setDirectMessage}) => {
                       <p className={styles.ownerNickname}>
                         <strong>책권자 |</strong> {book.user.nickname}
                       </p>
-                      <p>책 ID {book.userbookid}</p>
+                      {/* <p>책 ID {book.userbookid}</p> */}
                     </div>
                     <div className={styles.innerBox}>
                       <p><strong>출판사 |</strong> {book.book.publisher}</p>
