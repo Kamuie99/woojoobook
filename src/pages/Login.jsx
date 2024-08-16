@@ -11,10 +11,10 @@ const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, isLoggedIn } = useContext(AuthContext);
+  const { login, isConnected } = useContext(AuthContext);
   
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isConnected) {
       navigate('/');
     }
   }, []);

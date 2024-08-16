@@ -98,7 +98,7 @@ const Registered = () => {
     <div
       className={styles.registeredUserbooksList}
       id="registeredUserbooksList"
-      style={{ height: 'calc(100vh - 320px)', overflow: 'auto' }}
+      style={{ height: 'calc(100vh - 240px)', overflow: 'auto' }}
     >
       <InfiniteScroll
         dataLength={registeredUserbooks.length}

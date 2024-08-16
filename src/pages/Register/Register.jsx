@@ -22,7 +22,7 @@ const Register = () => {
   const [areaCode, setAreaCode] = useState('');
   const [emailError, setEmailError] = useState(' ');
   const [passwordMismatch, setPasswordMismatch] = useState(false);
-  const { isLoggedIn } = useContext(AuthContext)
+  const { isConnected } = useContext(AuthContext)
 
   const mySwal = (title,  confirmButtonText, icon, text = null) => {
     Swal.fire({
@@ -34,7 +34,7 @@ const Register = () => {
   }
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isConnected) {
       navigate('/');
     }
   }, []);
